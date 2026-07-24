@@ -1,0 +1,67 @@
+{
+  "id": "TASK-007",
+  "title": "Epic 架構基礎（字典/字幕整合）",
+  "content": "新增 vocabulary.en_definition 欄位與 subtitle_line 表；共用外部 API client 封裝。詳見 ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-007.md。",
+  "stage": "done",
+  "risk": "medium",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語字典與 SRT 字幕對齊",
+  "userStory": "Epic 架構基礎",
+  "dependsOn": ["TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006"],
+  "order": 7,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-007.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/models/subtitle_line.py",
+    "backend/app/services/http_client.py",
+    "backend/alembic/versions/d2f0916462fe_add_en_definition_and_subtitle_line.py"
+  ],
+  "evidence": {
+    "commands": [
+      "alembic revision --autogenerate -m \"add en_definition and subtitle_line\"",
+      "alembic upgrade head",
+      "pytest -q",
+      "ruff check ."
+    ],
+    "findings": [
+      "48 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!",
+      "subtitle_line ON DELETE CASCADE verified against real SQLite connection",
+      "get_json() verified for success/4xx/timeout/connection-error/non-JSON-body via httpx.MockTransport",
+      "architect agent: PASS with concerns (return type annotation, SubtitleLine timestamp omission, no batch-mode SQLite migration) — annotation fixed, others accepted as-is",
+      "security-reviewer agent: CONCERNS — get_json() leaked unwrapped ValueError on non-JSON/redirect responses — fixed (wrapped into ExternalApiError, explicit follow_redirects=False, added regression test)",
+      "test-engineer agent: PASS — 46/46 then re-verified 48/48 after fix, ruff clean, acceptance criteria covered"
+    ],
+    "residual": "get_json() 新增可選 client 參數供測試注入 mock transport，正式路徑未受影響。security-reviewer 建議 TASK-008/009 呼叫端點需對 headword 做 URL-safe encoding，已記錄於任務卡供後續任務遵守。"
+  },
+  "comments": [
+    "2026-07-24: architecture/security/test 三個審查 agent 已跑完，發現的 http_client.py 問題已修正並補測試（48 passed）。",
+    "2026-07-24: Niko 已核准，轉 done。"
+  ]
+}

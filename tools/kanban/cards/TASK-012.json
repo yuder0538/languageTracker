@@ -1,0 +1,73 @@
+{
+  "id": "TASK-012",
+  "title": "SRS 排程資料模型與核心演算法",
+  "content": "vocabulary 新增 SRS 排程欄位、新增 review_log 表、封裝簡化版 SM-2 演算法純函式。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-012.md。",
+  "stage": "done",
+  "risk": "medium",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語 SRS 與 Flashcard 測驗",
+  "userStory": "SRS 排程資料模型與核心演算法",
+  "dependsOn": ["TASK-001", "TASK-002", "TASK-003", "TASK-006"],
+  "order": 12,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-012.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/models/vocabulary.py",
+    "backend/app/models/review_log.py",
+    "backend/app/models/enums.py",
+    "backend/app/services/srs.py",
+    "backend/alembic/versions/3bdbced4ba98_add_srs_scheduling_fields_and_review_log.py",
+    "backend/tests/test_srs_algorithm.py",
+    "backend/tests/test_srs_migration.py"
+  ],
+  "evidence": {
+    "commands": [
+      "alembic revision --autogenerate -m \"add srs scheduling fields and review_log\"",
+      "alembic upgrade head",
+      "pytest -q",
+      "ruff check ."
+    ],
+    "findings": [
+      "108 passed, 1 warning（審查後補測試，原始 105 passed）",
+      "ruff check: All checks passed!",
+      "SM-2 演算法各分支（again/hard/good/easy、ease factor 下限多起始值）皆有單元測試",
+      "review_log ON DELETE CASCADE 驗證通過真實 SQLite 連線",
+      "autogenerate 對既有資料列的 NOT NULL 欄位缺 server_default，已手動修正並補上自動化 backfill 回歸測試",
+      "architect agent: APPROVE — 抓到 test_srs_migration.py 有跟 test_epic2_migration.py 一樣的 head/-1 脆弱性 — 已修正為指定明確 revision id",
+      "security-reviewer agent: PASS — 本卡無 API 端點，無新增攻擊面",
+      "test-engineer agent: CONCERNS→已補 — 缺 backfill 回歸測試與 ease factor 下限多起始值測試，皆已補上"
+    ],
+    "residual": "修正了既有 test_epic2_migration.py 的 head 相依性問題（新 migration 加入後原本的 downgrade(-1) 假設不成立），並在自己新寫的測試裡預先避免同樣的問題再發生一次。"
+  },
+  "comments": [
+    "2026-07-24: Schema 設計（vocabulary 六個 SRS 欄位 + review_log 表）已於對話中經 Niko 核准。",
+    "2026-07-24: 實作完成，105 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡發現的問題皆已修正並補測試（108 passed）。核准轉 done。"
+  ]
+}

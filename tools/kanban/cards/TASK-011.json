@@ -1,0 +1,61 @@
+{
+  "id": "TASK-011",
+  "title": "例句對齊（Enrich Example Sentence）",
+  "content": "POST /vocabulary/{id}/enrich/example-sentence，在關聯字幕中找單字所在行回填 example_sentence。詳見 ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-011.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語字典與 SRT 字幕對齊",
+  "userStory": "SRT 字幕解析與例句對齊",
+  "dependsOn": ["TASK-010"],
+  "order": 11,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-011.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/api/vocabulary.py",
+    "backend/tests/test_vocabulary_enrich_example_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "94 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/vocabulary/{vocabulary_id}/enrich/example-sentence 已掛載",
+      "422x2（無 media_log_id / 未上傳字幕）、404x2（vocabulary 不存在 / 字幕查無單字）、大小寫不敏感比對，皆有測試覆蓋",
+      "architect agent: PASS — 兩次查詢設計正確、與既有 ilike 慣例一致，MECE 收尾檢查確認 TASK-007~011 完整覆蓋原始三項需求無遺漏",
+      "security-reviewer agent: PASS — 參數化查詢無注入風險",
+      "test-engineer agent: PASS — 六項驗收標準逐一覆蓋，無需修正"
+    ],
+    "residual": "僅做子字串比對，不處理斷詞/字形變化，符合任務卡已知限制。headword 含 % / _ 會被當 LIKE 萬用字元（既有慣例，非本卡新增）。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，94 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡皆 PASS，無需修正。Niko 核准轉 done。Epic「雙語字典與 SRT 字幕對齊」全數完成（TASK-007~011）。"
+  ]
+}

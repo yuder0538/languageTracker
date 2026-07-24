@@ -1,0 +1,64 @@
+{
+  "id": "TASK-009",
+  "title": "德文→繁中翻譯",
+  "content": "POST /vocabulary/{id}/enrich/de-translation，呼叫 MyMemory Translation API 回填 translation_zh。詳見 ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-009.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語字典與 SRT 字幕對齊",
+  "userStory": "德文→繁中翻譯",
+  "dependsOn": ["TASK-007"],
+  "order": 9,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-009.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/core/config.py",
+    "backend/app/services/de_translation.py",
+    "backend/app/api/vocabulary.py",
+    "backend/tests/test_de_translation_service.py",
+    "backend/tests/test_vocabulary_enrich_de_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "70 passed, 1 warning (審查後修正+補測試，原始 68 passed)",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/vocabulary/{vocabulary_id}/enrich/de-translation 已掛載",
+      "422 (language!=de) / 404 / 502x2（MyMemory responseStatus 非 200 vs 外部連線失敗，訊息可分辨）皆有測試覆蓋",
+      "architect agent: APPROVE with concern — responseStatus 字串/整數型別不一致會誤判成功為失敗 — 已修正並補測試",
+      "security-reviewer agent: PASS — 提醒 translatedText 直接 subscript 可能 KeyError — 已改用 .get() 防護並補測試",
+      "test-engineer agent: PASS"
+    ],
+    "residual": "MyMemory 額度用盡以 responseStatus 非 200 表示（非 HTTP status），已在 service 層檢查；翻譯品質為已知限制。translation_zh 無條件覆蓋語意與 TASK-008 一致，已依 Niko 先前確認維持現狀。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，68 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡皆通過，架構+安全性發現的兩個問題已修正（70 passed）。Niko 核准轉 done。"
+  ]
+}

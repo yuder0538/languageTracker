@@ -1,0 +1,63 @@
+{
+  "id": "TASK-003",
+  "title": "核心資料模型基礎",
+  "content": "SQLAlchemy 建立 media_log 與 vocabulary 資料表（含語言隔離與德文特化欄位），Alembic 初始遷移。欄位設計需人工核准後才可實作。詳見 ai/artifacts/專案設置/task-cards/TASK-003.md。",
+  "stage": "done",
+  "risk": "medium",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "專案設置",
+  "userStory": "核心資料模型基礎",
+  "dependsOn": ["TASK-001", "TASK-002"],
+  "order": 3,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-003.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/models/media_log.py",
+    "backend/app/models/vocabulary.py",
+    "backend/app/core/db.py",
+    "backend/alembic/versions/eff9d22d5269_create_media_log_and_vocabulary_tables.py"
+  ],
+  "evidence": {
+    "commands": [
+      "alembic revision --autogenerate -m \"create media_log and vocabulary tables\"",
+      "alembic upgrade head",
+      "alembic downgrade base && alembic upgrade head",
+      "pytest -q",
+      "ruff check ."
+    ],
+    "findings": [
+      "11 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!",
+      "migration reversible: downgrade base drops both tables, re-upgrade restores them",
+      "FK media_log_id ON DELETE SET NULL verified against a real SQLite connection with PRAGMA foreign_keys=ON"
+    ],
+    "residual": "修正一個 SQLAlchemy Enum 預設存 name 而非 value 的潛在 bug（已加 values_callable 修正並重新生成遷移）。alembic/versions/ 排除在 ruff 檢查範圍外。"
+  },
+  "comments": []
+}

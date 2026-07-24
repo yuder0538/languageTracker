@@ -1,0 +1,60 @@
+{
+  "id": "TASK-001",
+  "title": "技術骨架初始化",
+  "content": "建立 backend/ 目錄結構、Python 3.11 + FastAPI 專案骨架、requirements.txt、lint/test 指令與最小可跑的 /health 端點。詳見 ai/artifacts/專案設置/task-cards/TASK-001.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "專案設置",
+  "userStory": "技術骨架初始化",
+  "dependsOn": [],
+  "order": 1,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-001.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/main.py",
+    "backend/requirements.txt",
+    "backend/tests/test_health.py"
+  ],
+  "evidence": {
+    "commands": [
+      "python -m venv venv",
+      "python -m pip install -r requirements.txt",
+      "pytest -q",
+      "ruff check .",
+      "uvicorn app.main:app --port 8123 (curl /health -> 200 {\"status\":\"ok\"})"
+    ],
+    "findings": [
+      "1 passed, 1 warning (starlette.testclient httpx deprecation notice, non-blocking)",
+      "ruff check: All checks passed!"
+    ],
+    "residual": "本機只有 Python 3.12 可用（無 3.11），已用 3.12 建立 venv，程式碼對 3.11 相容。"
+  },
+  "comments": []
+}

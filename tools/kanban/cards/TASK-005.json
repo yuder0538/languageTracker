@@ -1,0 +1,60 @@
+{
+  "id": "TASK-005",
+  "title": "Media Log CRUD API（含語言篩選）",
+  "content": "media_log 的新增/查詢/更新/刪除端點，強制以 language 篩選查詢。詳見 ai/artifacts/多語言資料庫與後端API/task-cards/TASK-005.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "多語言資料庫與後端 API",
+  "userStory": "Media Log CRUD API（含語言篩選）",
+  "dependsOn": ["TASK-004"],
+  "order": 5,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/多語言資料庫與後端API/task-cards/TASK-005.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/api/media_log.py",
+    "backend/app/schemas/media_log.py",
+    "backend/tests/conftest.py"
+  ],
+  "evidence": {
+    "commands": [
+      "pytest -q",
+      "ruff check .",
+      "uvicorn app.main:app --port 8125 (POST/GET media-logs manual smoke test)"
+    ],
+    "findings": [
+      "23 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!",
+      "language query param required on list endpoint (422 when omitted), verified",
+      "PATCH ignores language field, verified"
+    ],
+    "residual": "新增 tests/conftest.py 的 StaticPool in-memory DB fixture，並回頭修正 TASK-004 遺留的 test_api_scaffold.py 改用同一套隔離機制（不再寫進真實 dev DB）。"
+  },
+  "comments": []
+}

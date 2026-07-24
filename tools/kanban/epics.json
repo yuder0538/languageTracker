@@ -1,0 +1,109 @@
+{
+  "epics": [
+    {
+      "name": "專案設置",
+      "definition": "跨 Epic 共用的技術骨架、金鑰設定與核心資料模型基礎，所有功能 Epic 都建立在這之上。",
+      "stories": [
+        {
+          "name": "技術骨架初始化",
+          "definition": "Python/FastAPI 專案初始化、目錄結構、requirements.txt、lint/test 執行方式。"
+        },
+        {
+          "name": "環境變數與金鑰設定",
+          "definition": ".env.example、SQLite 檔案路徑與未來字典/LLM API 金鑰的存放慣例。"
+        },
+        {
+          "name": "核心資料模型基礎",
+          "definition": "支援 en/de 雙語隔離與德文特化欄位的 Media Log 與 Vocabulary SQLite 資料表，供後續所有 Epic 共用。"
+        }
+      ]
+    },
+    {
+      "name": "多語言資料庫與後端 API",
+      "definition": "Phase 1：在核心資料模型之上，提供可依語言（en/de）篩選的 Media Log 與 Vocabulary CRUD API。",
+      "stories": [
+        {
+          "name": "API 服務骨架",
+          "definition": "FastAPI app factory、DB session 依賴注入、共用錯誤/回應格式、語言參數驗證，供本 Epic 底下所有端點共用。"
+        },
+        {
+          "name": "Media Log CRUD API（含語言篩選）",
+          "definition": "劇集/影集追蹤紀錄的新增、查詢（可依 language 篩選）、更新、刪除端點。"
+        },
+        {
+          "name": "Vocabulary CRUD API（含語言隔離與德文特化欄位）",
+          "definition": "單字庫的新增、查詢（依 language 隔離）、更新、刪除端點，德文含冠詞/複數/變位欄位驗證。"
+        }
+      ]
+    },
+    {
+      "name": "雙語字典與 SRT 字幕對齊",
+      "definition": "Phase 2：英文 Free Dictionary API 自動查詢、德文免費字典 API（冠詞/複數/變位）查詢，與 SRT 字幕例句對齊。",
+      "stories": [
+        {
+          "name": "Epic 架構基礎",
+          "definition": "schema 擴充（vocabulary.en_definition、新增 subtitle_line 表）與共用的外部 API client 封裝。"
+        },
+        {
+          "name": "英文單字自動查詢（音標+解釋）",
+          "definition": "手動觸發端點，呼叫 Free Dictionary API 回填 ipa 與 en_definition。"
+        },
+        {
+          "name": "德文→繁中翻譯",
+          "definition": "手動觸發端點，呼叫 MyMemory Translation API 回填 translation_zh。"
+        },
+        {
+          "name": "SRT 字幕解析與例句對齊",
+          "definition": "上傳 .srt 字幕檔並解析存檔，另一個手動觸發端點在字幕中找到單字所在對話行回填 example_sentence。"
+        },
+        {
+          "name": "德文單字自動查詢（冠詞/複數/變位）",
+          "definition": "德文結構化文法資料自動查詢。暫緩：目前沒有公認穩定、免金鑰、保證回傳乾淨結構化資料的免費來源，先手動填欄位，待有可靠資料來源再展開任務卡。"
+        }
+      ]
+    },
+    {
+      "name": "雙語 SRS 與 Flashcard 測驗",
+      "definition": "Phase 3：英文與德文各自獨立的間隔重複複習週期，含德文專屬 der/die/das 冠詞填空卡片。",
+      "stories": [
+        {
+          "name": "SRS 排程資料模型與核心演算法",
+          "definition": "Epic 架構基礎：新增排程相關欄位/表（下次複習時間、難度係數、連續答對/答錯次數等），實作簡化版間隔重複演算法（如 SM-2），供本 Epic 其餘任務卡共用。"
+        },
+        {
+          "name": "複習佇列 API",
+          "definition": "依 en/de 語言各自查詢今日到期待複習的卡片，含每日新卡引入上限控制，避免一次湧入太多新卡。"
+        },
+        {
+          "name": "複習作答評分 API",
+          "definition": "使用者對卡片評分（例如忘記/困難/普通/簡單）後，依核心演算法更新該卡片的下次複習時間；連續答錯多次的卡片標記為困難/leech，複習佇列優先出現。"
+        },
+        {
+          "name": "複習統計與進度追蹤",
+          "definition": "今日已複習張數、正確率、連續複習天數（streak）等統計資料，供之後 Phase 4 Dashboard 使用。"
+        }
+      ],
+      "backlogNotes": "德文冠詞（der/die/das）填空卡片：Epic 定義原本就包含此項，2026-07-24 與 Niko 確認本輪先不拆任務卡，保留待後續補上，非遺漏。"
+    },
+    {
+      "name": "資料匯出入與備份",
+      "definition": "本地 SQLite 資料的匯出入（CSV/Anki 格式）與備份還原，避免單機資料遺失後求助無門。",
+      "stories": []
+    },
+    {
+      "name": "搜尋與篩選",
+      "definition": "跨劇集紀錄與單字庫的全文搜尋、多條件篩選，隨單字量與劇集數成長後的可用性需求。",
+      "stories": []
+    },
+    {
+      "name": "設定與偏好",
+      "definition": "集中管理 API 金鑰、每日複習目標、預設語言視角等全域設定頁。",
+      "stories": []
+    },
+    {
+      "name": "本地 Web UI",
+      "definition": "Phase 4：React SPA，一鍵切換英文/德文視角的 Dashboard，展示追劇時數、單字增長曲線與複習日曆。",
+      "stories": []
+    }
+  ]
+}

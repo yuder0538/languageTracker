@@ -1,0 +1,62 @@
+{
+  "id": "TASK-015",
+  "title": "複習統計與進度追蹤",
+  "content": "GET /reviews/stats?language=en|de，回傳今日複習張數、正確率、連續複習天數。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-015.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語 SRS 與 Flashcard 測驗",
+  "userStory": "複習統計與進度追蹤",
+  "dependsOn": ["TASK-012"],
+  "order": 15,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-015.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/schemas/review.py",
+    "backend/app/api/reviews.py",
+    "backend/tests/test_reviews_stats_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "127 passed, 52 warnings（datetime.utcnow() deprecation，非阻塞）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 GET /api/v1/reviews/stats 已掛載",
+      "今日複習數/正確率、streak 含中斷與今日未複習不歸零、語言隔離、422 缺參數，皆有測試覆蓋",
+      "architect agent: APPROVE — 演算法與迴圈邊界正確；Epic 收尾檢查確認 TASK-012~015 無缺口無重疊",
+      "security-reviewer agent: PASS — 純聚合唯讀端點，曝露資料比 TASK-013 更少",
+      "test-engineer agent: PASS — 六項驗收標準皆有明確測試"
+    ],
+    "residual": "streak 判斷依伺服器本機日期分組，與 TASK-013 相同時區簡化假設，屬本地單人工具可接受簡化。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，127 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡皆 PASS，無需修正。核准轉 done。Epic「雙語 SRS 與 Flashcard 測驗」核心四張卡（TASK-012~015）全數完成，德文冠詞卡片保留待後續補上。"
+  ]
+}

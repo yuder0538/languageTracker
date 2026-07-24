@@ -1,0 +1,63 @@
+{
+  "id": "TASK-013",
+  "title": "複習佇列 API",
+  "content": "GET /reviews/queue?language=en|de，回傳到期複習卡+受每日新卡上限限制的新卡清單。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-013.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語 SRS 與 Flashcard 測驗",
+  "userStory": "複習佇列 API",
+  "dependsOn": ["TASK-012"],
+  "order": 13,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-013.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/core/config.py",
+    "backend/app/api/reviews.py",
+    "backend/app/api/router.py",
+    "backend/tests/test_reviews_queue_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "116 passed, 14 warnings（datetime.utcnow() deprecation，非阻塞）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 GET /api/v1/reviews/queue 已掛載",
+      "到期卡排序、新卡上限截斷、今日已用額度計算、語言隔離、422 缺參數，皆有測試覆蓋",
+      "architect agent: APPROVE — 子查詢邏輯、router 邊界、已知限制皆確認合理",
+      "security-reviewer agent: PASS — 無新增攻擊面",
+      "test-engineer agent: PASS — 發現測試死碼過濾條件已修正"
+    ],
+    "residual": "datetime.utcnow() 為維持與既有 func.now() 一致而暫不改用 timezone-aware；每日新卡額度以伺服器本機日期計算，不處理跨時區，符合任務卡已知限制。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，116 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡皆通過，核准轉 done。"
+  ]
+}

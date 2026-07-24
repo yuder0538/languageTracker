@@ -1,0 +1,62 @@
+{
+  "id": "TASK-014",
+  "title": "複習作答評分 API",
+  "content": "POST /vocabulary/{id}/review，依 SM-2 演算法更新排程狀態並寫入 review_log。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-014.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語 SRS 與 Flashcard 測驗",
+  "userStory": "複習作答評分 API",
+  "dependsOn": ["TASK-012"],
+  "order": 14,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-014.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/schemas/review.py",
+    "backend/app/api/vocabulary.py",
+    "backend/tests/test_vocabulary_review_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "120 passed, 18 warnings（datetime.utcnow() deprecation，非阻塞）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/vocabulary/{vocabulary_id}/review 已掛載",
+      "全新單字初始化排程、again 重置間隔+lapses 遞增、404、422（grade 非法值），皆有測試覆蓋（直接查 DB 驗證 SRS 欄位，因 VocabularyRead 不曝露這些欄位）",
+      "security-reviewer agent: CONCERNS→已修 — ease factor 無上限導致連續 easy 評分約 11 次後 OverflowError → 500，已加 MAX_SRS_INTERVAL_DAYS=100年 截斷並補回歸測試（121 passed）",
+      "architect agent: APPROVE — 日期運算邊界正確；回應不含更新後 SRS 狀態為已記錄的刻意範圍決定",
+      "test-engineer agent: PASS — 補上 ease_factor 與 next_review_at 一致性斷言強化 wiring 錯誤偵測"
+    ],
+    "residual": "VocabularyRead 不曝露 srs_* 欄位，屬本卡範圍內的刻意決定；srs_interval_days 上限鎖定 100 年。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，120 passed，等待審查關卡。",
+    "2026-07-24: 安全性關卡抓到 OverflowError 真實 bug 已修正並補測試（121 passed）。三關皆過，核准轉 done。"
+  ]
+}

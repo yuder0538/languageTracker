@@ -1,0 +1,60 @@
+{
+  "id": "TASK-002",
+  "title": "環境變數與金鑰設定",
+  "content": "pydantic-settings 集中設定、.env.example、SQLite 路徑與未來字典/LLM 金鑰欄位預留。詳見 ai/artifacts/專案設置/task-cards/TASK-002.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "專案設置",
+  "userStory": "環境變數與金鑰設定",
+  "dependsOn": ["TASK-001"],
+  "order": 2,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-002.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/core/config.py",
+    "backend/.env.example",
+    "backend/tests/test_config.py"
+  ],
+  "evidence": {
+    "commands": [
+      "pytest -q",
+      "ruff check .",
+      "git check-ignore -v backend/.env.example",
+      "git check-ignore -v backend/.env"
+    ],
+    "findings": [
+      "4 passed, 1 warning (non-blocking httpx deprecation notice carried over from TASK-001)",
+      "ruff check: All checks passed!",
+      ".env.example not ignored (trackable); .env correctly ignored"
+    ],
+    "residual": "de_dictionary_api_base_url 預設空字串，實際供應商留給 Phase 2 決定。"
+  },
+  "comments": []
+}

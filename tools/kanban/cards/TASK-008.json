@@ -1,0 +1,61 @@
+{
+  "id": "TASK-008",
+  "title": "英文單字自動查詢（音標+解釋）",
+  "content": "POST /vocabulary/{id}/enrich/en-dictionary，呼叫 Free Dictionary API 回填 ipa/en_definition。詳見 ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-008.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語字典與 SRT 字幕對齊",
+  "userStory": "英文單字自動查詢（音標+解釋）",
+  "dependsOn": ["TASK-007"],
+  "order": 8,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語字典與SRT字幕對齊/task-cards/TASK-008.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/services/en_dictionary.py",
+    "backend/app/api/vocabulary.py",
+    "backend/app/schemas/vocabulary.py",
+    "backend/tests/test_en_dictionary_service.py",
+    "backend/tests/test_vocabulary_enrich_en_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "60 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/vocabulary/{vocabulary_id}/enrich/en-dictionary 已掛載",
+      "422 (language!=en) / 404 (vocabulary 不存在) / 502x2（字典查無此字 vs 外部服務失敗，訊息可分辨）皆有測試覆蓋"
+    ],
+    "residual": "headword 已做 URL-safe encoding；404 判斷透過 ExternalApiError.__cause__ 是否為 httpx.HTTPStatusError(404)，未修改 TASK-007 的 http_client.py。ipa/en_definition 查到但缺欄位時會覆蓋為 None（清空舊值）——Niko 已確認維持此行為，符合任務卡「重新查一次即覆蓋」規格。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，60 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡皆通過（架構 APPROVE/安全性 PASS/測試 PASS）。Niko 確認 ipa/en_definition 無條件覆蓋語意維持現狀，核准轉 done。"
+  ]
+}

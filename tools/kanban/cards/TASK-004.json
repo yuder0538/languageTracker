@@ -1,0 +1,58 @@
+{
+  "id": "TASK-004",
+  "title": "API 服務骨架",
+  "content": "FastAPI router 彙總、DB session 依賴注入、共用回應/錯誤格式。詳見 ai/artifacts/多語言資料庫與後端API/task-cards/TASK-004.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "多語言資料庫與後端 API",
+  "userStory": "API 服務骨架",
+  "dependsOn": ["TASK-001", "TASK-002", "TASK-003"],
+  "order": 4,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/多語言資料庫與後端API/task-cards/TASK-004.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/api/router.py",
+    "backend/app/api/deps.py",
+    "backend/app/main.py"
+  ],
+  "evidence": {
+    "commands": [
+      "pytest -q",
+      "ruff check .",
+      "uvicorn app.main:app --port 8124 (curl /health and /api/v1/ping -> 200)"
+    ],
+    "findings": [
+      "13 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!"
+    ],
+    "residual": "schemas/common.py 未建立（目前沒有具體需求，TASK-005/006 若真的需要共用 schema 再補）。"
+  },
+  "comments": []
+}

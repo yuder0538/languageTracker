@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+dist/
+build/
+coverage/
+.cache/
+tmp/
+
+# Python
+backend/venv/
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# SQLite data (local-only, never versioned)
+backend/data/
+*.db
+*.db-journal
+

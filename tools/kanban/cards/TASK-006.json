@@ -1,0 +1,59 @@
+{
+  "id": "TASK-006",
+  "title": "Vocabulary CRUD API（含語言隔離與德文特化欄位）",
+  "content": "vocabulary 的新增/查詢/更新/刪除端點，含英德語言特化欄位的跨欄位驗證。詳見 ai/artifacts/多語言資料庫與後端API/task-cards/TASK-006.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "多語言資料庫與後端 API",
+  "userStory": "Vocabulary CRUD API（含語言隔離與德文特化欄位）",
+  "dependsOn": ["TASK-004"],
+  "order": 6,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/多語言資料庫與後端API/task-cards/TASK-006.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/api/vocabulary.py",
+    "backend/app/schemas/vocabulary.py"
+  ],
+  "evidence": {
+    "commands": [
+      "pytest -q",
+      "ruff check .",
+      "uvicorn app.main:app --port 8126 (manual smoke test of create/reject/list)"
+    ],
+    "findings": [
+      "39 passed, 1 warning (non-blocking httpx deprecation notice carried over)",
+      "ruff check: All checks passed!",
+      "en+de_artikel rejected with 422; de word with de_artikel/de_plural accepted; language filter isolates en/de rows",
+      "media_log_id language mismatch rejected with 422"
+    ],
+    "residual": "PATCH 驗證順序刻意在 setattr 前先算合併後的有效值並驗證，避免驗證失敗時污染同一 session 的 in-memory 狀態。"
+  },
+  "comments": []
+}
