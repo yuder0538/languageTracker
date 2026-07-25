@@ -1,4 +1,3 @@
-import { toast } from "sonner"
 import { LayoutDashboardIcon, BookOpenIcon, ClapperboardIcon } from "lucide-react"
 
 import { useLanguage, type AppLanguage } from "@/lib/language-context"
@@ -7,6 +6,7 @@ import { useRouter, type AppRoute } from "@/lib/router"
 const NAV_ITEMS: { route: AppRoute; label: string; icon: typeof LayoutDashboardIcon }[] = [
   { route: "/", label: "Dashboard", icon: LayoutDashboardIcon },
   { route: "/vocabulary", label: "單字庫", icon: BookOpenIcon },
+  { route: "/media-logs", label: "追劇紀錄", icon: ClapperboardIcon },
 ]
 
 export function AppRail() {
@@ -35,14 +35,6 @@ export function AppRail() {
             <Icon className="size-[18px]" />
           </button>
         ))}
-        <button
-          type="button"
-          aria-label="追劇紀錄"
-          onClick={() => toast.info("追劇紀錄尚未實作，敬請期待")}
-          className="flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          <ClapperboardIcon className="size-[18px]" />
-        </button>
       </nav>
       <div className="flex flex-col gap-1">
         {(["de", "en"] as AppLanguage[]).map((lang) => (

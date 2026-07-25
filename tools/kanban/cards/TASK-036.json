@@ -1,0 +1,54 @@
+{
+  "id": "TASK-036",
+  "title": "追劇紀錄管理頁面",
+  "content": "新增追劇紀錄管理頁面（列表/新增/編輯/刪除），版型直接沿用已核准的單字庫模式，串接既有 media-logs API。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-036.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "追劇紀錄管理頁面",
+  "dependsOn": ["TASK-035"],
+  "order": 36,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-036.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "新增 createMediaLog/updateMediaLog/deleteMediaLog（dashboard-api.ts），呼叫既有、Epic 1 已測試過的 media-logs API，未動 backend/。",
+      "MediaLog.tsx 結構直接複製 Vocabulary.tsx 已核准的模式（Dialog 彈窗新增/編輯 + 確認對話框刪除），版型問題已在單字庫解決過，未重新走 mockup-gate。",
+      "AppRail 的「追劇紀錄」從 toast 佔位改為真正導覽到 /media-logs。",
+      "一次做完整 CRUD（不像單字庫當初分批），因為版型已驗證、需求已知。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機測試：從側邊欄導覽到追劇紀錄頁、新增一筆、編輯、刪除，確認四個 CRUD 動作都正常。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+  ]
+}

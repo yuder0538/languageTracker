@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
-export type AppRoute = "/" | "/vocabulary" | "/review"
+export type AppRoute = "/" | "/vocabulary" | "/review" | "/media-logs"
 
-const KNOWN_ROUTES: AppRoute[] = ["/vocabulary", "/review"]
+const KNOWN_ROUTES: AppRoute[] = ["/vocabulary", "/review", "/media-logs"]
 
 function normalize(pathname: string): AppRoute {
   return KNOWN_ROUTES.includes(pathname as AppRoute) ? (pathname as AppRoute) : "/"
@@ -15,8 +15,8 @@ const RouterContext = createContext<{
 
 /**
  * Minimal hand-rolled router (History API pushState/popstate) instead of a
- * routing library — only two pages exist so far, and this environment has no
- * Node.js to verify a new npm dependency actually installs/builds cleanly.
+ * routing library — a handful of flat routes so far, and this environment has
+ * no Node.js to verify a new npm dependency actually installs/builds cleanly.
  * Revisit with a real router once route count/nesting grows.
  */
 export function RouterProvider({ children }: { children: ReactNode }) {

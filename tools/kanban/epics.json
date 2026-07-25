@@ -147,6 +147,10 @@
         {
           "name": "單字自動查字典/翻譯",
           "definition": "2026-07-25 Niko 確認要做：單字庫列表每列加一個「自動查詢」動作，英文單字呼叫既有的 POST /vocabulary/{id}/enrich/en-dictionary（回填音標/英文解釋），德文單字呼叫既有的 POST /vocabulary/{id}/enrich/de-translation（回填中文翻譯）。純前端串接既有後端能力，不含 CSV 匯入匯出、例句對齊（SRT 字幕）。"
+        },
+        {
+          "name": "追劇紀錄管理頁面",
+          "definition": "2026-07-25 與單字庫平行的另一個「列表＋CRUD」畫面：列出/新增/編輯/刪除追劇紀錄。版型直接沿用已核准的單字庫模式（Dialog 彈窗新增/編輯＋確認對話框刪除），不再走一次 mockup-gate。不含字幕（.srt）上傳、CSV 匯入匯出。"
         }
       ]
     }

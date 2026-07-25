@@ -62,6 +62,23 @@ export interface VocabularyUpdate {
   notes?: string | null
 }
 
+export interface MediaLogCreate {
+  language: AppLanguage
+  title: string
+  media_type: string
+  watched_date: string
+  duration_minutes: number
+  notes?: string | null
+}
+
+export interface MediaLogUpdate {
+  title?: string
+  media_type?: string
+  watched_date?: string
+  duration_minutes?: number
+  notes?: string | null
+}
+
 export function fetchVocabulary(language: AppLanguage) {
   return apiGet<VocabularyRead[]>("/vocabulary", { language })
 }
@@ -106,4 +123,16 @@ export type ReviewGrade = "again" | "hard" | "good" | "easy"
 
 export function submitReview(id: number, grade: ReviewGrade) {
   return apiPost<VocabularyRead>(`/vocabulary/${id}/review`, { grade })
+}
+
+export function createMediaLog(payload: MediaLogCreate) {
+  return apiPost<MediaLogRead>("/media-logs", payload)
+}
+
+export function updateMediaLog(id: number, payload: MediaLogUpdate) {
+  return apiPatch<MediaLogRead>(`/media-logs/${id}`, payload)
+}
+
+export function deleteMediaLog(id: number) {
+  return apiDelete<void>(`/media-logs/${id}`)
 }
