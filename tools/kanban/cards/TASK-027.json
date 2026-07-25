@@ -1,0 +1,63 @@
+{
+  "id": "TASK-027",
+  "title": "本地 Web UI — Epic 架構基礎",
+  "content": "API client 封裝、en/de 語言 context 與切換、Vite dev server 代理設定，供本 Epic後續所有頁面共用。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-027.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "Epic 架構基礎",
+  "dependsOn": [
+    "TASK-001", "TASK-002", "TASK-003", "TASK-004", "TASK-005", "TASK-006",
+    "TASK-007", "TASK-008", "TASK-009", "TASK-010", "TASK-011", "TASK-012",
+    "TASK-013", "TASK-014", "TASK-015", "TASK-016", "TASK-017", "TASK-018",
+    "TASK-019", "TASK-020", "TASK-021", "TASK-022", "TASK-023", "TASK-024",
+    "TASK-025", "TASK-026"
+  ],
+  "order": 27,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-027.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "新增 frontend/src/lib/api.ts（apiGet fetch 封裝，統一 /api/v1 前綴與 FastAPI detail 錯誤格式解析）。",
+      "新增 frontend/src/lib/language-context.tsx（en/de 語言 context，預設 de，持久化到 localStorage，與 next-themes 的主題持久化手法一致）。",
+      "vite.config.ts 新增 dev proxy（/api -> http://127.0.0.1:8000），開發時不需處理 CORS。",
+      "main.tsx 掛上 LanguageProvider。",
+      "刻意不引入路由器與寫入方法（POST/PATCH/DELETE），因為目前只有 Dashboard 一個唯讀頁面，避免過度設計；等下一個真正頁面動工時再擴充。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm install/build/lint 驗證。Niko 核准前請在本機執行 npm run build 與 npm run lint（會有一個可預期的 react/only-export-components warning，屬正常，見任務卡驗證契約說明）。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證 npm run build/lint 後轉 done。"
+  ]
+}

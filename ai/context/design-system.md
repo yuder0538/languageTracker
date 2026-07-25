@@ -156,27 +156,27 @@
 
 每做一個核心元件就登記一列。後續 Epic 缺元件、照風格補做後也要回來補登。
 
-底層採 shadcn/ui「base-nova」style（S1 核准的策略：程式碼直接複製進專案），元件皆以 `@base-ui/react` primitive 包裝、`class-variance-authority` 管理 variant，樣式全部走 S3 token 產出的 Tailwind 語意 class（`bg-primary`、`text-destructive`、`ring-ring/50` 等），未手刻任何獨立色值。真實 token 檔：`frontend/src/index.css`（primitive 色票 `--grey-*`/`--brand-*`/`--info-*` 與 light/`​.dark` 兩組 semantic 變數）＋ `frontend/tailwind.config` 由 `@theme inline` 直接在 CSS 內映射（Tailwind v4 不需獨立 config 檔）。狀態示範頁：`frontend/src/App.tsx`（`npm run dev` 後開啟即為完整元件庫展示，含亮／暗模式切換）。
+底層採 shadcn/ui「base-nova」style（S1 核准的策略：程式碼直接複製進專案），元件皆以 `@base-ui/react` primitive 包裝、`class-variance-authority` 管理 variant，樣式全部走 S3 token 產出的 Tailwind 語意 class（`bg-primary`、`text-destructive`、`ring-ring/50` 等），未手刻任何獨立色值。真實 token 檔：`frontend/src/index.css`（primitive 色票 `--grey-*`/`--brand-*`/`--info-*` 與 light/`​.dark` 兩組 semantic 變數）＋ `frontend/tailwind.config` 由 `@theme inline` 直接在 CSS 內映射（Tailwind v4 不需獨立 config 檔）。狀態示範頁：`frontend/src/pages/ComponentShowcase.tsx`（本地 Web UI Epic 開始接真實頁面後，`App.tsx` 改為渲染 `Dashboard`；元件庫展示頁保留在原始碼中供之後補頁面時參考，目前尚未掛路由，見 TASK-027）。
 
 | 元件 | 狀態 | 涵蓋狀態 | 用到的 token | 檔案位置 | 截圖 | 來源階段 |
 |---|---|---|---|---|---|---|
-| Button | 完成 | 預設/hover/focus/停用/載入（新增 `loading` prop + `Loader2Icon` spinner） | `color.accent`/`color.bg.surface-hover`／`radius.control`／`duration.fast` | `frontend/src/components/ui/button.tsx` | App.tsx「Button」區塊 | S4 |
-| Input | 完成 | 預設/focus/停用/錯誤（`aria-invalid`） | `color.border.default`／`color.danger`／`radius.control` | `frontend/src/components/ui/input.tsx` | App.tsx「Form」區塊 | S4 |
-| Select | 完成 | 預設/focus/停用/錯誤/開啟中 | `color.border.default`／`color.bg.surface`／`radius.control` | `frontend/src/components/ui/select.tsx` | App.tsx「Form」區塊 | S4 |
-| Checkbox | 完成 | 預設/勾選/停用/錯誤 | `color.accent`／`radius.control`（4px） | `frontend/src/components/ui/checkbox.tsx` | App.tsx「Form」區塊 | S4 |
-| Field（Form 組合） | 完成 | 預設/含說明文字/錯誤（label 連動變色） | `color.danger`／`space.stack-sm` | `frontend/src/components/ui/field.tsx` | App.tsx「Form」區塊 | S4 |
-| Card | 完成 | 預設/hover（table row 有 hover，card 本身依 S2 決議不做 hover 位移） | `color.bg.surface`／`radius.card`／`space.card` | `frontend/src/components/ui/card.tsx` | App.tsx「Card」區塊（der Tisch 單字卡／Friends 追劇紀錄卡） | S4 |
-| Nav | 完成 | 預設/hover/focus/使用中（active） | `color.bg.surface-hover`／`radius.control` | `frontend/src/components/ui/navigation-menu.tsx` | App.tsx 頁首導覽列 | S4 |
-| Modal/Dialog | 完成 | 開啟/關閉動畫/遮罩/focus trap（base-ui 內建） | `color.bg.surface`／`radius.modal`／`z.modal`／`duration.base` | `frontend/src/components/ui/dialog.tsx` | App.tsx「Modal」區塊（刪除單字確認） | S4 |
-| Table | 完成 | 預設列/hover/選取（`data-state=selected`） | `color.border.default`／`color.bg.surface-hover` | `frontend/src/components/ui/table.tsx` | App.tsx「Table」區塊（單字庫列表） | S4 |
-| Form | 完成 | 見 Field／Input／Select／Checkbox 各列 | — | `frontend/src/components/ui/field.tsx` | App.tsx「Form」區塊 | S4 |
-| Toast | 完成 | success/error/info/loading 四種語意（sonner 內建） | `color.success`／`color.danger`／`color.info` | `frontend/src/components/ui/sonner.tsx` | App.tsx「Toast」區塊（點擊按鈕觸發） | S4 |
-| Alert | 完成 | 預設/危險（destructive） | `color.bg.surface`／`color.danger` | `frontend/src/components/ui/alert.tsx` | App.tsx「Alert / Badge」區塊 | S4 |
-| Badge | 完成 | default/secondary/destructive/success/warning/outline/ghost/link | `color.accent`／`color.success`／`color.warning`／`color.danger` | `frontend/src/components/ui/badge.tsx` | App.tsx「Card」「Table」「Alert / Badge」區塊 | S4 |
+| Button | 完成 | 預設/hover/focus/停用/載入（新增 `loading` prop + `Loader2Icon` spinner） | `color.accent`/`color.bg.surface-hover`／`radius.control`／`duration.fast` | `frontend/src/components/ui/button.tsx` | pages/ComponentShowcase.tsx「Button」區塊 | S4 |
+| Input | 完成 | 預設/focus/停用/錯誤（`aria-invalid`） | `color.border.default`／`color.danger`／`radius.control` | `frontend/src/components/ui/input.tsx` | pages/ComponentShowcase.tsx「Form」區塊 | S4 |
+| Select | 完成 | 預設/focus/停用/錯誤/開啟中 | `color.border.default`／`color.bg.surface`／`radius.control` | `frontend/src/components/ui/select.tsx` | pages/ComponentShowcase.tsx「Form」區塊 | S4 |
+| Checkbox | 完成 | 預設/勾選/停用/錯誤 | `color.accent`／`radius.control`（4px） | `frontend/src/components/ui/checkbox.tsx` | pages/ComponentShowcase.tsx「Form」區塊 | S4 |
+| Field（Form 組合） | 完成 | 預設/含說明文字/錯誤（label 連動變色） | `color.danger`／`space.stack-sm` | `frontend/src/components/ui/field.tsx` | pages/ComponentShowcase.tsx「Form」區塊 | S4 |
+| Card | 完成 | 預設/hover（table row 有 hover，card 本身依 S2 決議不做 hover 位移） | `color.bg.surface`／`radius.card`／`space.card` | `frontend/src/components/ui/card.tsx` | pages/ComponentShowcase.tsx「Card」區塊（der Tisch 單字卡／Friends 追劇紀錄卡） | S4 |
+| Nav | 完成 | 預設/hover/focus/使用中（active） | `color.bg.surface-hover`／`radius.control` | `frontend/src/components/ui/navigation-menu.tsx` | pages/ComponentShowcase.tsx 頁首導覽列 | S4 |
+| Modal/Dialog | 完成 | 開啟/關閉動畫/遮罩/focus trap（base-ui 內建） | `color.bg.surface`／`radius.modal`／`z.modal`／`duration.base` | `frontend/src/components/ui/dialog.tsx` | pages/ComponentShowcase.tsx「Modal」區塊（刪除單字確認） | S4 |
+| Table | 完成 | 預設列/hover/選取（`data-state=selected`） | `color.border.default`／`color.bg.surface-hover` | `frontend/src/components/ui/table.tsx` | pages/ComponentShowcase.tsx「Table」區塊（單字庫列表） | S4 |
+| Form | 完成 | 見 Field／Input／Select／Checkbox 各列 | — | `frontend/src/components/ui/field.tsx` | pages/ComponentShowcase.tsx「Form」區塊 | S4 |
+| Toast | 完成 | success/error/info/loading 四種語意（sonner 內建） | `color.success`／`color.danger`／`color.info` | `frontend/src/components/ui/sonner.tsx` | pages/ComponentShowcase.tsx「Toast」區塊（點擊按鈕觸發） | S4 |
+| Alert | 完成 | 預設/危險（destructive） | `color.bg.surface`／`color.danger` | `frontend/src/components/ui/alert.tsx` | pages/ComponentShowcase.tsx「Alert / Badge」區塊 | S4 |
+| Badge | 完成 | default/secondary/destructive/success/warning/outline/ghost/link | `color.accent`／`color.success`／`color.warning`／`color.danger` | `frontend/src/components/ui/badge.tsx` | pages/ComponentShowcase.tsx「Card」「Table」「Alert / Badge」區塊 | S4 |
 
 （「來源階段」記錄這個元件是 S4 初建，還是後續某個功能 Epic 補做並回登的。）
 
-- 人工核准：Niko / 2026-07-25（在本機執行 `npm install && npm run dev` 開啟 App.tsx 展示頁確認暗色背景、八大區塊、亮暗模式切換、德文單字表格皆正常，並跑過 `npm run build`／`npm run lint` 皆無錯誤，核准）。
+- 人工核准：Niko / 2026-07-25（在本機執行 `npm install && npm run dev` 開啟 pages/ComponentShowcase.tsx 展示頁確認暗色背景、八大區塊、亮暗模式切換、德文單字表格皆正常，並跑過 `npm run build`／`npm run lint` 皆無錯誤，核准）。
 
 ## S5 各介面版面
 

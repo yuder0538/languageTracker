@@ -130,8 +130,17 @@
     },
     {
       "name": "本地 Web UI",
-      "definition": "Phase 4：React SPA，一鍵切換英文/德文視角的 Dashboard，展示追劇時數、單字增長曲線與複習日曆。",
-      "stories": []
+      "definition": "Phase 4：React SPA，一鍵切換英文/德文視角的 Dashboard，展示追劇時數、單字增長曲線與複習日曆。UI 設計系統（框架/風格/token/元件庫/Dashboard 版型）已於 Epic 0 完成，本 Epic 開始把版型與元件接上真實資料，變成可用的 App。",
+      "stories": [
+        {
+          "name": "Epic 架構基礎",
+          "definition": "前端與後端串接的共用基礎：API client 封裝（fetch wrapper + 錯誤處理）、en/de 語言 context 與切換、Vite dev server 代理設定，供本 Epic 後續所有頁面共用。"
+        },
+        {
+          "name": "Dashboard 頁面實作",
+          "definition": "把 S5 核准的變體 C（Command Center）版型接上真實資料：今日待複習、連續複習天數、正確率、觀看時數、單字成長趨勢、複習日曆熱力圖、複習佇列、最近追劇紀錄。含一張後端任務卡（複習歷史聚合 API，補上原本沒有的多日複習紀錄查詢）。"
+        }
+      ]
     }
   ]
 }

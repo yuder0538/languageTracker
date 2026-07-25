@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
@@ -10,8 +10,10 @@ from app.core.config import get_settings
 from app.models.enums import Language, ReviewGrade
 from app.models.review_log import ReviewLog
 from app.models.vocabulary import Vocabulary
-from app.schemas.review import ReviewStats
+from app.schemas.review import ReviewHistoryDay, ReviewStats
 from app.schemas.vocabulary import VocabularyRead
+
+MAX_HISTORY_DAYS = 90
 
 router = APIRouter(prefix="/reviews", tags=["reviews"])
 
@@ -133,3 +135,54 @@ def get_review_stats(language: Language, db: Session = Depends(get_db)) -> Revie
         accuracy_today=accuracy_today,
         streak_days=streak_days,
     )
+
+
+@router.get("/history", response_model=list[ReviewHistoryDay])
+def get_review_history(
+    language: Language,
+    days: int = 35,
+    db: Session = Depends(get_db),
+) -> list[ReviewHistoryDay]:
+    """Daily review counts for the trailing `days` days (oldest first, today last),
+    including zero-count days. Powers the Dashboard's review-calendar heatmap and
+    multi-day accuracy trend (a single endpoint backs both, one source of truth)."""
+    if days < 1 or days > MAX_HISTORY_DAYS:
+        raise HTTPException(
+            status_code=422, detail=f"days 必須介於 1 到 {MAX_HISTORY_DAYS} 之間"
+        )
+
+    end_date = date.today()
+    start_date = end_date - timedelta(days=days - 1)
+    start_dt = datetime.combine(start_date, datetime.min.time())
+    end_dt = datetime.combine(end_date, datetime.min.time()) + timedelta(days=1)
+
+    rows = (
+        db.query(
+            func.date(ReviewLog.reviewed_at).label("day"),
+            func.count().label("reviewed_count"),
+            func.sum(case((ReviewLog.grade != ReviewGrade.AGAIN, 1), else_=0)).label(
+                "correct_count"
+            ),
+        )
+        .join(Vocabulary, Vocabulary.id == ReviewLog.vocabulary_id)
+        .filter(
+            Vocabulary.language == language,
+            ReviewLog.reviewed_at >= start_dt,
+            ReviewLog.reviewed_at < end_dt,
+        )
+        .group_by(func.date(ReviewLog.reviewed_at))
+        .all()
+    )
+    counts_by_day = {row.day: (row.reviewed_count, row.correct_count or 0) for row in rows}
+
+    result: list[ReviewHistoryDay] = []
+    cursor = start_date
+    while cursor <= end_date:
+        reviewed_count, correct_count = counts_by_day.get(cursor.isoformat(), (0, 0))
+        result.append(
+            ReviewHistoryDay(
+                date=cursor, reviewed_count=reviewed_count, correct_count=correct_count
+            )
+        )
+        cursor += timedelta(days=1)
+    return result

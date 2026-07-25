@@ -1,0 +1,56 @@
+{
+  "id": "TASK-029",
+  "title": "Dashboard 頁面實作（含前後端串接）",
+  "content": "把 S5 核准的變體 C（Command Center）版型改寫成真正的 React 元件並串接真實後端資料，取代 mockup 假資料，處理載入中/空狀態/錯誤三態。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-029.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "Dashboard 頁面實作",
+  "dependsOn": ["TASK-027", "TASK-028"],
+  "order": 29,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/專案設置/screen-spec-dashboard.md",
+    "mockupDecision": "ai/artifacts/專案設置/mockup-decision-dashboard.md",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-029.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "App.tsx 改為渲染新的 Dashboard 頁面；原本 S4 元件展示頁搬到 pages/ComponentShowcase.tsx 保留（暫無路由可開啟，design-system.md 已同步更新檔案位置）。",
+      "新增 pages/Dashboard.tsx：進度環、單字成長趨勢圖、複習日曆熱力圖、複習佇列、最近追劇、KPI 統計，全部改用 useApi hook 串接 TASK-027 的 API client 與 TASK-028 的新端點，每個區塊各自處理 loading/error/empty 三態。",
+      "圖表資料皆動態計算（非寫死座標/數字），資料庫全空時各區塊會顯示對應空狀態文案。",
+      "複習佇列不顯示到期/Leech 徽章（VocabularyRead 沒有回傳 SRS 內部欄位），簡化為只顯示單字+詞性，避免顯示不存在的假資料。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm install/dev/build/lint 做實機驗證，也沒有瀏覽器可截圖。Niko 核准前請本機同時啟動後端（uvicorn app.main:app --reload）與前端（npm run dev）確認頁面真的能抓到資料、語言切換有效、錯誤/空狀態畫面正常。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機同時跑後端+前端驗證後轉 done。"
+  ]
+}

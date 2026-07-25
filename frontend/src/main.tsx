@@ -4,12 +4,15 @@ import { ThemeProvider } from 'next-themes'
 import './index.css'
 import App from './App.tsx'
 import { Toaster } from '@/components/ui/sonner'
+import { LanguageProvider } from '@/lib/language-context'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <App />
-      <Toaster />
+      <LanguageProvider>
+        <App />
+        <Toaster />
+      </LanguageProvider>
     </ThemeProvider>
   </StrictMode>,
 )

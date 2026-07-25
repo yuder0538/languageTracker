@@ -1,0 +1,54 @@
+{
+  "id": "TASK-028",
+  "title": "複習歷史聚合 API",
+  "content": "新增 GET /api/v1/reviews/history，回傳過去 N 天每日複習張數與正確題數（含零複習日），供 Dashboard 的複習日曆熱力圖與 7 日正確率使用。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-028.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": false,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "Dashboard 頁面實作",
+  "dependsOn": ["TASK-027"],
+  "order": 28,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": true,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/專案設置/screen-spec-dashboard.md",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-028.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "新增 GET /api/v1/reviews/history?language=&days=（預設 35），沿用 get_review_stats 既有的 SQLite func.date() 分組寫法，回傳陣列一定補齊零複習日、由舊到新排到今天。",
+      "days 限制 1-90，超出範圍回 422；language 沿用既有驗證慣例，未帶回 422。",
+      "無資料表/schema 變更，不需要 Alembic migration。",
+      "新增 backend/tests/test_reviews_history_api.py，7 個測試涵蓋預設天數、含零複習日、days 參數、日期排序、單日計數、語言隔離、參數驗證。"
+    ],
+    "residual": "無。此環境有 Python，已完整安裝依賴並實際跑過測試與 lint。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，pytest 185/185 通過（178 既有 + 7 新增）、ruff 全數通過，純後端 API 擴充無視覺輸出、不需人工 UI 審查，轉 done。"
+  ]
+}
