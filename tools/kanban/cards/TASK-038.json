@@ -1,0 +1,58 @@
+{
+  "id": "TASK-038",
+  "title": "修正德文翻譯回傳簡體字（改用繁體）",
+  "content": "MyMemory 翻譯 API 的 langpair 從 de|zh 改成 de|zh-TW，修正自動翻譯回傳簡體中文的問題。已用真實 API 請求驗證。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-038.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": false,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "單字自動查字典/翻譯",
+  "dependsOn": ["TASK-031"],
+  "order": 38,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": true,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-038.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [
+      "curl \"https://api.mymemory.translated.net/get?q=laufen&langpair=de%7Czh-TW\"",
+      "curl \"https://api.mymemory.translated.net/get?q=laufen&langpair=de%7Czh\"",
+      "pytest -q",
+      "ruff check ."
+    ],
+    "findings": [
+      "Niko 實測發現自動翻譯回傳簡體中文，例如 laufen 被翻成「运行」。",
+      "用真實 MyMemory API 請求比對確認：langpair=de|zh 預設解析成 zh-CN（簡體），langpair=de|zh-TW 才會解析成 zh-TW（繁體），改一個參數即可修正。",
+      "185 個 pytest 全數通過（含更新的測試斷言），ruff 全數通過。"
+    ],
+    "residual": "無。此環境有網路存取，已對真實 MyMemory API 做過修正前後對照測試，非憑空猜測的修法。"
+  },
+  "comments": [
+    "2026-07-25: Niko 回報自動翻譯是簡體字，建卡並用真實 API 請求確認根因、修正、跑測試，純後端 bug 修正、已測試驗證，直接轉 done。"
+  ]
+}

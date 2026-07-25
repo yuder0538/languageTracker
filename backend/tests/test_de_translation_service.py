@@ -6,7 +6,7 @@ from app.services.http_client import ExternalApiError
 
 def test_fetch_returns_translated_text(monkeypatch):
     def fake_get_json(url: str, params=None, **kwargs):
-        assert params == {"q": "laufen", "langpair": "de|zh"}
+        assert params == {"q": "laufen", "langpair": "de|zh-TW"}
         return {
             "responseData": {"translatedText": "跑步"},
             "responseStatus": 200,

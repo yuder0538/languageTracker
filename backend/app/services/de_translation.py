@@ -8,7 +8,9 @@ class TranslationApiError(Exception):
 
 def fetch_de_to_zh_translation(headword: str) -> str:
     settings = get_settings()
-    params = {"q": headword, "langpair": "de|zh"}
+    # "zh" alone resolves to Simplified Chinese on MyMemory; this project's UI
+    # and users are Traditional Chinese, so pin the target explicitly.
+    params = {"q": headword, "langpair": "de|zh-TW"}
 
     data = get_json(settings.de_translation_api_base_url, params=params)
 
