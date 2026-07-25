@@ -2,7 +2,7 @@
   "id": "TASK-025",
   "title": "UI 設計系統 S4：核心元件庫",
   "content": "只用 S3 的 token 做出基礎元件（button/input/select/checkbox/card/nav/modal/table/form/toast），登記回 design-system.md 元件庫 inventory。詳見 ai/artifacts/專案設置/task-cards/TASK-025.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,14 +19,14 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
-    "product": false,
-    "ui": false,
+    "product": true,
+    "ui": true,
     "architecture": false,
     "security": false,
-    "test": false,
+    "test": true,
     "code_review": false
   },
   "links": {
@@ -35,7 +35,7 @@
     "mockupDecision": "",
     "taskCard": "ai/artifacts/專案設置/task-cards/TASK-025.md",
     "verificationReport": "",
-    "pr": ""
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
   },
   "refs": [
     "ai/context/design-system.md"
@@ -48,10 +48,11 @@
       "App.tsx 由 Vite 預設模板改為完整元件庫展示頁，涵蓋 Nav/Button/Form/Card/Table/Modal/Toast/Alert 八大區塊，一律用真實專案資料示範（der Tisch 德文單字卡、Friends 追劇紀錄、單字複習排程表），並可切換亮/暗模式。",
       "design-system.md 的 S4 章節已填完 inventory 表（元件/涵蓋狀態/用到的 token/檔案位置/截圖位置/來源階段）。"
     ],
-    "residual": "此執行環境沒有 Node.js（node/npm 皆不存在於 PATH），無法執行 npm install / npm run dev / npm run build / npm run lint 做實機驗證，也無法產出真實截圖，只能用程式碼審查 + 比對既有元件慣例（focus-visible/disabled/aria-invalid 等既有 CSS class）確保邏輯正確。Niko 核准前請務必在本機執行 `cd frontend && npm install && npm run dev` 開啟 App.tsx 展示頁做視覺與互動驗證，並視需要跑 `npm run build`／`npm run lint` 確認型別與 lint 皆過。"
+    "residual": "無。Niko 已在本機執行 npm install / npm run dev 確認展示頁（暗色背景、八大區塊、亮暗模式切換、德文單字表格皆正常，無破版或錯誤），並跑過 npm run build 與 npm run lint 皆無錯誤。"
   },
   "comments": [
     "2026-07-25: 建卡，等 S3（TASK-024）核准後開工。這是第一張會建立實際前端專案（Vite+React+Tailwind+shadcn/ui）程式碼的任務卡。",
-    "2026-07-25: 元件庫草稿已產出（見 evidence.findings），design-system.md S4 章節已填寫，轉 verify 等待 Niko 在本機跑起來核准。"
+    "2026-07-25: 元件庫草稿已產出（見 evidence.findings），design-system.md S4 章節已填寫，轉 verify 等待 Niko 在本機跑起來核准。",
+    "2026-07-25: Niko 在本機執行 npm install/npm run dev 確認展示頁正常，npm run build、npm run lint 皆無錯誤，核准。轉 done。PR #1（draft）已開啟：https://github.com/yuder0538/languageTracker/pull/1。"
   ]
 }

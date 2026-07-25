@@ -8,10 +8,10 @@
 - 上層 User Story：UI 設計系統
 - 分軌：不適用（本任務卡不拆分軌，一次做完整個元件庫）
 - 前置任務（dependsOn）：TASK-024（S3 已核准：字幕夜場 Subtitle Room 完整 primitive/semantic token）
-- 狀態：verify（等待人工核准）
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：Niko（待簽）
+- 人工核准者：Niko / 2026-07-25
 
 ## 目標
 
@@ -54,10 +54,10 @@
 - 單元測試：不適用（此階段無測試框架設置，元件皆為 shadcn/ui 標準包裝）。
 - 整合測試：不適用。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build`（`tsc -b && vite build`）確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint`（oxlint）確認；此執行環境無 Node.js，未能跑。
-- Build：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- 螢幕截圖：待人工在本機執行 `npm run dev` 後截圖／目視確認；此執行環境無瀏覽器/螢幕截圖工具，未能產出。
+- 型別檢查：Niko 在本機執行 `npm run build`（`tsc -b && vite build`）確認，無錯誤。
+- Lint：Niko 在本機執行 `npm run lint`（oxlint）確認，無錯誤。
+- Build：Niko 在本機執行 `npm run build` 確認，無錯誤。
+- 螢幕截圖：Niko 在本機執行 `npm run dev` 後目視確認展示頁（暗色背景、八大區塊標題皆顯示、亮暗模式切換正常、單字表格顯示德文資料、無破版或錯誤）。
 - 安全性檢查：不適用（純前端展示元件，無外部輸入處理、無網路請求）。
 
 ## 完成證據
@@ -68,12 +68,13 @@
   - `frontend/src/App.tsx`（改為完整元件庫展示頁）
   - `frontend/src/App.css`、`frontend/src/assets/{react.svg,vite.svg,hero.png}`（刪除，Vite 模板殘留）
   - `ai/context/design-system.md`（填寫 S4 章節 inventory 表）
-  - `tools/kanban/cards/TASK-025.json`（stage 轉 verify）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約與已知限制）。
-- 測試輸出：不適用，待人工本機驗證。
-- 螢幕截圖：不適用，待人工本機執行 `npm run dev` 後目視確認 `App.tsx` 展示頁。
+  - `tools/kanban/cards/TASK-025.json`（stage 轉 done）
+- 執行過的指令：Agent 端無（此環境無 Node.js）；Niko 本機執行 `npm install`、`npm run dev`、`npm run build`、`npm run lint`，皆無錯誤。
+- 測試輸出：無自動化測試（此階段無測試框架設置），以 `npm run build`／`npm run lint` 通過 + 人工目視驗證為準。
+- 螢幕截圖：Niko 本機執行 `npm run dev` 目視確認，未另外產出圖檔。
 - 已知限制：
-  1. 此執行環境沒有 Node.js，`npm install`／`npm run dev`／`npm run build`／`npm run lint` 均未執行，程式碼正確性僅靠審查與比對既有元件慣例把關，尚未經編譯器與 lint 實際驗證。
+  1. Agent 執行環境沒有 Node.js，程式碼由 Niko 在本機驗證，Agent 端未親自跑過編譯器與 lint。
   2. Form 元件刻意不含 react-hook-form 等表單狀態管理庫（見實作備註理由），若後續功能 Epic 出現複雜表單驗證需求，屆時再評估是否要補上。
   3. Checkbox 沒有獨立的「載入」狀態示範（設計上 checkbox 沒有非同步載入語意，故此狀態不適用）。
-- 後續任務：TASK-026（S5 Dashboard 版面 mockup，需等本卡人工核准、`gates.ui` 通過後才能開工）。
+- PR：https://github.com/yuder0538/languageTracker/pull/1（draft）
+- 後續任務：TASK-026（S5 Dashboard 版面 mockup），`gates.ui`／`gates.product`／`gates.test` 已通過，可以開工。

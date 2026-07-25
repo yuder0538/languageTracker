@@ -2,7 +2,7 @@
 
 由 Epic 0「專案設置」的「UI 設計系統」User Story 分五階段（框架 → 風格 → design token → 元件庫 → 版面）逐步填寫。**這份文件是後續所有功能 Epic 做 UI 時的單一事實來源**：任何前端任務開工前都要先讀它，能用既有 token／元件就必須用；缺的元件要照既有風格補做並登記回這裡（見 `ai/skills/project-kickoff.md` 步驟 6 與 `ai/skills/ui-mockup-gate.md`）。
 
-狀態：S1、S2、S3 已核准；S4 草稿已產出待人工核准；S5 待展開。
+狀態：S1、S2、S3、S4 已核准；S5 待展開。
 
 ## S1 底層框架
 
@@ -176,7 +176,7 @@
 
 （「來源階段」記錄這個元件是 S4 初建，還是後續某個功能 Epic 補做並回登的。）
 
-- 人工核准：待補（核准人／日期）—— Niko 需在本機執行 `cd frontend && npm install && npm run dev` 開啟 App.tsx 展示頁，確認亮／暗模式與各元件狀態後在此填入核准紀錄。此執行環境無 Node.js，未能跑 `npm run build`／`npm run lint` 或截圖，詳見 TASK-025 完成證據的已知限制。
+- 人工核准：Niko / 2026-07-25（在本機執行 `npm install && npm run dev` 開啟 App.tsx 展示頁確認暗色背景、八大區塊、亮暗模式切換、德文單字表格皆正常，並跑過 `npm run build`／`npm run lint` 皆無錯誤，核准）。
 
 ## S5 各介面版面
 
