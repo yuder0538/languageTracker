@@ -97,3 +97,9 @@ export function enrichEnDictionary(id: number) {
 export function enrichDeTranslation(id: number) {
   return apiPost<VocabularyRead>(`/vocabulary/${id}/enrich/de-translation`, {})
 }
+
+export type ReviewGrade = "again" | "hard" | "good" | "easy"
+
+export function submitReview(id: number, grade: ReviewGrade) {
+  return apiPost<VocabularyRead>(`/vocabulary/${id}/review`, { grade })
+}

@@ -1,9 +1,11 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
-export type AppRoute = "/" | "/vocabulary"
+export type AppRoute = "/" | "/vocabulary" | "/review"
+
+const KNOWN_ROUTES: AppRoute[] = ["/vocabulary", "/review"]
 
 function normalize(pathname: string): AppRoute {
-  return pathname === "/vocabulary" ? "/vocabulary" : "/"
+  return KNOWN_ROUTES.includes(pathname as AppRoute) ? (pathname as AppRoute) : "/"
 }
 
 const RouterContext = createContext<{

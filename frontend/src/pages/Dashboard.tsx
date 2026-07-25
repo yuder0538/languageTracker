@@ -1,10 +1,10 @@
-import { toast } from "sonner"
 import { RotateCcwIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { AppRail } from "@/components/app-rail"
 import { useLanguage } from "@/lib/language-context"
+import { useRouter } from "@/lib/router"
 import { useApi } from "@/hooks/use-api"
 import {
   fetchMediaLogs,
@@ -55,6 +55,7 @@ function FocusCard({
   queueCount,
   queueError,
   retryQueue,
+  onStartReview,
 }: {
   stats: ReviewStats | null
   statsError: string | null
@@ -62,6 +63,7 @@ function FocusCard({
   queueCount: number | null
   queueError: string | null
   retryQueue: () => void
+  onStartReview: () => void
 }) {
   const loading = stats === null && !statsError
   const remaining = queueCount ?? 0
@@ -116,7 +118,7 @@ function FocusCard({
         <Button
           className="mt-1 self-start"
           disabled={remaining === 0}
-          onClick={() => toast.info("複習頁面尚未實作，敬請期待")}
+          onClick={onStartReview}
         >
           {remaining > 0 ? "繼續複習 →" : "今天沒有待複習"}
         </Button>
@@ -261,6 +263,7 @@ function ReviewHeatmap({ history }: { history: ReviewHistoryDay[] }) {
 
 export default function Dashboard() {
   const { language } = useLanguage()
+  const { navigate } = useRouter()
 
   const stats = useApi(() => fetchReviewStats(language), [language])
   const queue = useApi(() => fetchReviewQueue(language), [language])
@@ -307,6 +310,7 @@ export default function Dashboard() {
           queueCount={queue.status === "success" ? queue.data.length : null}
           queueError={queue.status === "error" ? queue.message : null}
           retryQueue={queue.retry}
+          onStartReview={() => navigate("/review")}
         />
 
         <Card>
