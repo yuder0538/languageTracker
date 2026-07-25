@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon } from "lucide-react"
+import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon, Volume2Icon } from "lucide-react"
 
 import { AppRail } from "@/components/app-rail"
 import { Button } from "@/components/ui/button"
@@ -48,6 +48,24 @@ const DE_ARTIKEL_OPTIONS = ["der", "die", "das"] as const
 
 function formatDateTime(iso: string) {
   return iso.slice(0, 10)
+}
+
+/**
+ * Browser-native TTS (Web Speech API) — no backend call, no new dependency.
+ * Machine-synthesized, not a real recording; good enough for a quick check,
+ * revisit with a real dictionary-audio source later if that matters more.
+ */
+function speak(text: string, language: "en" | "de", onEnd: () => void) {
+  if (!("speechSynthesis" in window)) {
+    toast.error("這個瀏覽器不支援語音朗讀")
+    return
+  }
+  window.speechSynthesis.cancel()
+  const utterance = new SpeechSynthesisUtterance(text)
+  utterance.lang = language === "de" ? "de-DE" : "en-US"
+  utterance.onend = onEnd
+  utterance.onerror = onEnd
+  window.speechSynthesis.speak(utterance)
 }
 
 function AddWordDialog({
@@ -240,8 +258,14 @@ export default function Vocabulary() {
   const vocabulary = useApi(() => fetchVocabulary(language), [language])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [enrichingIds, setEnrichingIds] = useState<Set<number>>(new Set())
+  const [speakingId, setSpeakingId] = useState<number | null>(null)
 
   const list: VocabularyRead[] = vocabulary.status === "success" ? vocabulary.data : []
+
+  function handleSpeak(word: VocabularyRead) {
+    setSpeakingId(word.id)
+    speak(word.headword, word.language, () => setSpeakingId(null))
+  }
 
   async function handleEnrich(word: VocabularyRead) {
     setEnrichingIds((prev) => new Set(prev).add(word.id))
@@ -323,7 +347,19 @@ export default function Vocabulary() {
                   return (
                     <TableRow key={word.id}>
                       <TableCell className="font-medium">
-                        {word.headword}
+                        <span className="inline-flex items-center gap-1.5">
+                          {word.headword}
+                          <button
+                            type="button"
+                            onClick={() => handleSpeak(word)}
+                            aria-label={`朗讀「${word.headword}」`}
+                            className={`text-muted-foreground hover:text-foreground ${
+                              speakingId === word.id ? "text-primary" : ""
+                            }`}
+                          >
+                            <Volume2Icon className="size-3.5" />
+                          </button>
+                        </span>
                         {word.ipa && (
                           <span className="ml-2 font-mono text-xs text-muted-foreground">/{word.ipa}/</span>
                         )}

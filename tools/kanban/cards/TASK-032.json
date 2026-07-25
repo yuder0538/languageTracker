@@ -1,0 +1,53 @@
+{
+  "id": "TASK-032",
+  "title": "單字發音朗讀（瀏覽器 TTS）",
+  "content": "單字庫列表每個單字加喇叭圖示，用瀏覽器內建 Web Speech API 朗讀，依語言設定腔調，不需後端支援。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-032.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "單字自動查字典/翻譯",
+  "dependsOn": ["TASK-031"],
+  "order": 32,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/本地 Web UI/screen-spec-vocabulary.md",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-032.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "用瀏覽器原生 Web Speech API（speechSynthesis），不需後端、不需新增 npm 套件、不需外部金鑰。",
+      "依 word.language 設定朗讀語言代碼（en-US/de-DE）；每次朗讀前 cancel() 前一個，避免連續點擊時聲音疊在一起。",
+      "瀏覽器不支援時顯示 toast 錯誤，不會噴出未處理的 JS 例外。"
+    ],
+    "residual": "此執行環境沒有 Node.js 也沒有喇叭可實際聽，未能跑 npm run build/lint，也無法驗證實際發音效果。Niko 核准前請本機點擊喇叭圖示確認真的有聲音、且德文/英文腔調正確。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證（含實際聽發音）後轉 done。"
+  ]
+}
