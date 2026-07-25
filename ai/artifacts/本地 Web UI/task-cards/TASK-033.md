@@ -8,10 +8,10 @@
 - 上層 User Story：單字庫管理頁面（原本明確排除編輯，本卡補上；見下方情境包）
 - 分軌：前端（後端 `PATCH /vocabulary/{id}` 已存在，見情境包）
 - 前置任務（dependsOn）：TASK-030
-- 狀態：verify（等待人工本機驗證）
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待 Niko 本機驗證後追加簽核）
+- 人工核准者：Niko / 2026-07-25（本機把「das Fenster」的翻譯從「此」改成「窗戶」，確認編輯功能正常，`npm run build`／`npm run lint` 皆通過）
 
 ## 目標
 
@@ -52,10 +52,10 @@
 - 單元測試：不適用（此階段前端無測試框架）。
 - 整合測試：不適用（呼叫的既有後端端點已有 Epic 1 的 pytest 覆蓋）。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint` 確認；此執行環境無 Node.js，未能跑。
-- Build：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- 螢幕截圖：待人工本機驗證後提供；此環境無瀏覽器/螢幕截圖工具，未能產出。
+- 型別檢查：Niko 本機執行 `npm run build` 確認通過，無錯誤。
+- Lint：Niko 本機執行 `npm run lint` 確認通過，無錯誤。
+- Build：Niko 本機執行 `npm run build` 確認通過。
+- 螢幕截圖：未產出圖檔，Niko 目視確認編輯「das Fenster」翻譯欄成功從「此」改成「窗戶」，表格立即更新。
 - 安全性檢查：不適用（呼叫既有後端 API，無新輸入處理邏輯）。
 
 ## 完成證據
@@ -64,11 +64,11 @@
   - `frontend/src/lib/api.ts`（新增 `apiPatch`）
   - `frontend/src/lib/dashboard-api.ts`（新增 `updateVocabulary`／`VocabularyUpdate`）
   - `frontend/src/pages/Vocabulary.tsx`（`AddWordDialog` 重構為 `WordDialog`，支援新增/編輯兩種模式；表格新增編輯圖示）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約）。
-- 測試輸出：不適用，待人工本機驗證。
+- 執行過的指令：Agent 端無（此環境無 Node.js）；Niko 本機執行 `npm run build`、`npm run lint`，皆通過；本機手動測試編輯流程。
+- 測試輸出：無自動化測試，以本機建置/lint 通過 + 人工手動操作驗證為準。
 - 螢幕截圖：不適用，待人工本機執行後補上。
 - 已知限制：
   1. 此執行環境沒有 Node.js，程式碼正確性僅靠審查把關。
   2. 不能編輯 `ipa`／`en_definition`／`example_sentence`（刻意排除，見情境包假設）；若使用者想手動修正這幾個欄位，目前還是只能透過 API 文件。
   3. 不支援刪除單字（仍是刻意排除的範圍，留給後續 User Story）。
-- 後續任務：Niko 本機驗證後回填人工核准；下一個候選是「單字刪除」或「複習流程頁面」。
+- 後續任務：下一個候選是「單字刪除」或「複習流程頁面」。
