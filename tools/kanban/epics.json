@@ -155,6 +155,10 @@
         {
           "name": "德文冠詞填空複習模式",
           "definition": "2026-07-25 Niko 確認要做：複習頁面新增「冠詞複習」模式（德文限定），只顯示名詞本體（不顯示冠詞），3 個按鈕選 der/die/das，系統自動判對錯並更新排程（沿用既有 SRS 演算法），不需要使用者自己評分。串接既有的 GET /reviews/queue?card_type=artikel 與 POST /vocabulary/{id}/review/artikel-quiz。"
+        },
+        {
+          "name": "英文單字自動查詢補上中文翻譯",
+          "definition": "2026-07-25 Niko 回報英文模式點自動查詢後「翻譯」欄位沒有內容（例如 cookie）。根因：POST /vocabulary/{id}/enrich/en-dictionary 從一開始就只回填音標/英文解釋，沒有像德文模式一樣呼叫翻譯服務。Niko 確認修法：比照德文模式，英文也串 MyMemory（langpair=en|zh-TW）補上翻譯，同一顆按鈕、同一個端點內完成。"
         }
       ]
     }

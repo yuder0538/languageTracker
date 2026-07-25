@@ -23,7 +23,11 @@ from app.schemas.vocabulary import (
     validate_language_specific_fields,
 )
 from app.services.anki_export import build_anki_line
-from app.services.de_translation import TranslationApiError, fetch_de_to_zh_translation
+from app.services.de_translation import (
+    TranslationApiError,
+    fetch_de_to_zh_translation,
+    fetch_en_to_zh_translation,
+)
 from app.services.en_dictionary import DictionaryLookupError, fetch_en_dictionary_data
 from app.services.http_client import ExternalApiError
 from app.services.srs import SrsState, schedule_next_review
@@ -208,8 +212,16 @@ def enrich_en_dictionary(vocabulary_id: int, db: Session = Depends(get_db)) -> V
     except ExternalApiError as exc:
         raise HTTPException(status_code=502, detail=f"外部字典服務暫時無法連線：{exc}") from exc
 
+    try:
+        translation = fetch_en_to_zh_translation(vocabulary.headword)
+    except TranslationApiError as exc:
+        raise HTTPException(status_code=502, detail=f"翻譯服務回應異常：{exc}") from exc
+    except ExternalApiError as exc:
+        raise HTTPException(status_code=502, detail=f"外部翻譯服務暫時無法連線：{exc}") from exc
+
     vocabulary.ipa = data.ipa
     vocabulary.en_definition = data.definition
+    vocabulary.translation_zh = translation
     if not vocabulary.part_of_speech and data.part_of_speech:
         vocabulary.part_of_speech = data.part_of_speech
 

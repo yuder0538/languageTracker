@@ -249,7 +249,7 @@ function WordDialog({
               onChange={(e) => setNotes(e.target.value)}
               disabled={submitting}
             />
-            <FieldDescription>可在列表點「自動查詢」圖示，回填音標/解釋（英文）或翻譯（德文），翻錯了也能回來這裡手動修正。</FieldDescription>
+            <FieldDescription>可在列表點「自動查詢」圖示，回填音標與翻譯（英文另附英文解釋），翻錯了也能回來這裡手動修正。</FieldDescription>
           </Field>
         </div>
 

@@ -1,0 +1,59 @@
+{
+  "id": "TASK-039",
+  "title": "修正英文單字自動查詢缺少中文翻譯的問題",
+  "content": "POST /vocabulary/{id}/enrich/en-dictionary 從一開始就只回填音標/英文解釋，沒有像德文模式一樣呼叫翻譯服務，導致英文視角點「自動查詢」後翻譯欄位永遠是空的。比照德文模式串接 MyMemory（langpair=en|zh-TW）補上翻譯。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-039.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "英文單字自動查詢補上中文翻譯",
+  "dependsOn": ["TASK-031"],
+  "order": 39,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": true,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-039.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [
+      "curl \"https://api.dictionaryapi.dev/api/v2/entries/en/cookie\"",
+      "curl \"https://api.mymemory.translated.net/get?q=cookie&langpair=en%7Czh-TW\"",
+      "pytest -q",
+      "ruff check ."
+    ],
+    "findings": [
+      "根因確認：backend/app/api/vocabulary.py 的 enrich_en_dictionary 端點只寫入 ipa/en_definition，從未寫入 translation_zh；英文字典 API（dictionaryapi.dev）本身正常運作（已用真實請求驗證 cookie 查得到資料），問題不在外部服務。",
+      "修法比照 TASK-038 的翻譯服務模式：backend/app/services/de_translation.py 抽出共用的 _fetch_zh_translation(headword, langpair)，新增 fetch_en_to_zh_translation 用 langpair=en|zh-TW；enrich_en_dictionary 端點內同時呼叫字典與翻譯兩個外部服務，皆成功才寫入並提交。",
+      "新增/更新測試：test_en_translation_service.py（新檔，4 個測試比照 test_de_translation_service.py 的結構）、test_vocabulary_enrich_en_api.py（既有測試補上翻譯 stub，新增翻譯失敗回 502 的測試）。190 個 pytest 全數通過，ruff 全數通過。",
+      "已知限制：用真實 MyMemory API 測試 cookie 時發現，MyMemory 回傳的「最佳匹配」翻譯品質不穩定（cookie 曾回傳「Cookie, Cookie」而非「餅乾」），這是 MyMemory 翻譯記憶庫比對機制的既有限制（TASK-031/038 已記錄同類問題），非本卡程式邏輯錯誤；翻錯可用既有編輯功能（TASK-033）手動修正。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做前端實機驗證。Niko 核准前請本機測試：英文視角點單字列表的「自動查詢」，確認翻譯欄位有內容（不再是「—」），翻譯品質不理想時可用編輯功能手動修正。"
+  },
+  "comments": [
+    "2026-07-25: Niko 回報英文模式自動翻譯跑不出來（測試字 cookie），已用真實 API 請求確認根因（前端功能設計缺口，非外部服務故障），Niko 選擇比照德文模式補上翻譯串接，建卡並實作、後端測試皆通過，等待 Niko 本機驗證前端後轉 done。"
+  ]
+}

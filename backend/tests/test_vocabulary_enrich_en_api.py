@@ -1,3 +1,4 @@
+from app.services.de_translation import TranslationApiError
 from app.services.en_dictionary import DictionaryLookupError, EnDictionaryData
 from app.services.http_client import ExternalApiError
 
@@ -8,15 +9,26 @@ def _vocab_payload(**overrides):
     return base
 
 
-def test_enrich_fills_ipa_and_definition(client, monkeypatch):
-    created = client.post("/api/v1/vocabulary", json=_vocab_payload()).json()
-
+def _stub_dictionary(monkeypatch, ipa="/rʌn/", definition="to move fast", part_of_speech="verb"):
     monkeypatch.setattr(
         "app.api.vocabulary.fetch_en_dictionary_data",
         lambda headword: EnDictionaryData(
-            ipa="/rʌn/", definition="to move fast", part_of_speech="verb"
+            ipa=ipa, definition=definition, part_of_speech=part_of_speech
         ),
     )
+
+
+def _stub_translation(monkeypatch, translation="跑步"):
+    monkeypatch.setattr(
+        "app.api.vocabulary.fetch_en_to_zh_translation", lambda headword: translation
+    )
+
+
+def test_enrich_fills_ipa_definition_and_translation(client, monkeypatch):
+    created = client.post("/api/v1/vocabulary", json=_vocab_payload()).json()
+
+    _stub_dictionary(monkeypatch)
+    _stub_translation(monkeypatch, "跑步")
 
     response = client.post(f"/api/v1/vocabulary/{created['id']}/enrich/en-dictionary")
 
@@ -25,6 +37,7 @@ def test_enrich_fills_ipa_and_definition(client, monkeypatch):
     assert body["ipa"] == "/rʌn/"
     assert body["en_definition"] == "to move fast"
     assert body["part_of_speech"] == "verb"
+    assert body["translation_zh"] == "跑步"
 
 
 def test_enrich_does_not_overwrite_existing_part_of_speech(client, monkeypatch):
@@ -32,12 +45,8 @@ def test_enrich_does_not_overwrite_existing_part_of_speech(client, monkeypatch):
         "/api/v1/vocabulary", json=_vocab_payload(part_of_speech="noun")
     ).json()
 
-    monkeypatch.setattr(
-        "app.api.vocabulary.fetch_en_dictionary_data",
-        lambda headword: EnDictionaryData(
-            ipa="/rʌn/", definition="to move fast", part_of_speech="verb"
-        ),
-    )
+    _stub_dictionary(monkeypatch)
+    _stub_translation(monkeypatch)
 
     response = client.post(f"/api/v1/vocabulary/{created['id']}/enrich/en-dictionary")
 
@@ -45,17 +54,13 @@ def test_enrich_does_not_overwrite_existing_part_of_speech(client, monkeypatch):
     assert response.json()["part_of_speech"] == "noun"
 
 
-def test_enrich_overwrites_existing_ipa_and_definition(client, monkeypatch):
+def test_enrich_overwrites_existing_ipa_definition_and_translation(client, monkeypatch):
     created = client.post(
         "/api/v1/vocabulary", json=_vocab_payload(ipa="/old/")
     ).json()
 
-    monkeypatch.setattr(
-        "app.api.vocabulary.fetch_en_dictionary_data",
-        lambda headword: EnDictionaryData(
-            ipa="/new/", definition="fresh definition", part_of_speech=None
-        ),
-    )
+    _stub_dictionary(monkeypatch, ipa="/new/", definition="fresh definition", part_of_speech=None)
+    _stub_translation(monkeypatch, "新翻譯")
 
     response = client.post(f"/api/v1/vocabulary/{created['id']}/enrich/en-dictionary")
 
@@ -63,6 +68,25 @@ def test_enrich_overwrites_existing_ipa_and_definition(client, monkeypatch):
     body = response.json()
     assert body["ipa"] == "/new/"
     assert body["en_definition"] == "fresh definition"
+    assert body["translation_zh"] == "新翻譯"
+
+
+def test_enrich_returns_502_when_translation_service_fails(client, monkeypatch):
+    created = client.post("/api/v1/vocabulary", json=_vocab_payload()).json()
+
+    _stub_dictionary(monkeypatch)
+
+    def raise_translation_error(headword: str):
+        raise TranslationApiError(f"MyMemory translation failed for '{headword}'")
+
+    monkeypatch.setattr(
+        "app.api.vocabulary.fetch_en_to_zh_translation", raise_translation_error
+    )
+
+    response = client.post(f"/api/v1/vocabulary/{created['id']}/enrich/en-dictionary")
+
+    assert response.status_code == 502
+    assert "翻譯服務回應異常" in response.json()["detail"]
 
 
 def test_enrich_rejects_de_language(client):
