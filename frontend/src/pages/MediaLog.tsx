@@ -146,7 +146,7 @@ function MediaLogDialog({
           <div className="grid grid-cols-2 gap-3">
             <Field>
               <FieldLabel htmlFor="media-type">類型</FieldLabel>
-              <Select value={mediaType} onValueChange={setMediaType} disabled={submitting}>
+              <Select value={mediaType} onValueChange={(value) => setMediaType(value ?? MEDIA_TYPE_OPTIONS[0])} disabled={submitting}>
                 <SelectTrigger id="media-type" className="w-full">
                   <SelectValue />
                 </SelectTrigger>

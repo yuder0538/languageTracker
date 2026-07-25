@@ -170,7 +170,7 @@ function WordDialog({
           <div className="grid grid-cols-2 gap-3">
             <Field>
               <FieldLabel htmlFor="pos">詞性</FieldLabel>
-              <Select value={partOfSpeech} onValueChange={setPartOfSpeech} disabled={submitting}>
+              <Select value={partOfSpeech} onValueChange={(value) => setPartOfSpeech(value ?? "")} disabled={submitting}>
                 <SelectTrigger id="pos" className="w-full">
                   <SelectValue placeholder="不指定" />
                 </SelectTrigger>
@@ -185,7 +185,7 @@ function WordDialog({
             {language === "de" && (
               <Field>
                 <FieldLabel htmlFor="artikel">冠詞</FieldLabel>
-                <Select value={deArtikel} onValueChange={setDeArtikel} disabled={submitting}>
+                <Select value={deArtikel} onValueChange={(value) => setDeArtikel(value ?? "")} disabled={submitting}>
                   <SelectTrigger id="artikel" className="w-full">
                     <SelectValue placeholder="不指定" />
                   </SelectTrigger>
@@ -222,7 +222,7 @@ function WordDialog({
             ) : (
               <Select
                 value={mediaLogId}
-                onValueChange={setMediaLogId}
+                onValueChange={(value) => setMediaLogId(value ?? "")}
                 disabled={submitting || mediaLogs.status !== "success"}
               >
                 <SelectTrigger id="media-log" className="w-full">
