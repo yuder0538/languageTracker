@@ -2,7 +2,7 @@
   "id": "TASK-036",
   "title": "追劇紀錄管理頁面",
   "content": "新增追劇紀錄管理頁面（列表/新增/編輯/刪除），版型直接沿用已核准的單字庫模式，串接既有 media-logs API。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-036.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,11 +19,11 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
-    "product": false,
-    "ui": false,
+    "product": true,
+    "ui": true,
     "architecture": false,
     "security": false,
     "test": false,
@@ -46,9 +46,10 @@
       "AppRail 的「追劇紀錄」從 toast 佔位改為真正導覽到 /media-logs。",
       "一次做完整 CRUD（不像單字庫當初分批），因為版型已驗證、需求已知。"
     ],
-    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機測試：從側邊欄導覽到追劇紀錄頁、新增一筆、編輯、刪除，確認四個 CRUD 動作都正常。"
+    "residual": "無。npm run build 第一次執行時發現 4 處 Select onValueChange 型別錯誤（TS2322：base-ui 的 onValueChange 可能傳入 null，但直接把 useState setter 傳進去只接受 string），已改用 inline arrow function 把 null 轉成空字串／預設值修正；修正後 build/lint 皆通過。Niko 本機測試從側邊欄導覽到追劇紀錄頁、新增/編輯/刪除皆成功。"
   },
   "comments": [
-    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。",
+    "2026-07-25: Niko 本機驗證發現 build 有 TS2322 型別錯誤（Select onValueChange），已修正；重新驗證 CRUD 流程成功、build/lint 通過，核准轉 done。"
   ]
 }

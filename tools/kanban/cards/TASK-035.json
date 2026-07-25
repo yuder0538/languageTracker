@@ -2,7 +2,7 @@
   "id": "TASK-035",
   "title": "單字刪除功能",
   "content": "單字庫列表加刪除圖示，點擊彈確認對話框（避免手滑），確認後才呼叫既有 DELETE /vocabulary/{id}。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-035.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,11 +19,11 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
-    "product": false,
-    "ui": false,
+    "product": true,
+    "ui": true,
     "architecture": false,
     "security": false,
     "test": false,
@@ -45,9 +45,10 @@
       "DeleteConfirmDialog：受控 word 決定開關，跟 WordDialog 的 editingWord 同一種模式；確定刪除按鈕用 destructive 樣式。",
       "單字庫的四個 CRUD 動作（新增/列表/編輯/刪除）至此全部補齊。"
     ],
-    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機測試：點刪除圖示確認會先彈確認框、點取消不會誤刪、點確定刪除後該筆從列表消失。"
+    "residual": "無。Niko 本機測試點刪除圖示先彈確認框、確定刪除後該筆從列表消失，npm run build/lint 皆通過（build 過程中發現並修正一個 Select onValueChange 型別錯誤，見 TASK-036 的修正紀錄，同一次修正涵蓋本檔案）。"
   },
   "comments": [
-    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。",
+    "2026-07-25: Niko 本機驗證刪除流程成功、build/lint 通過，核准轉 done。"
   ]
 }

@@ -8,10 +8,10 @@
 - 上層 User Story：（新，「追劇紀錄管理頁面」，與「單字庫管理頁面」平行）
 - 分軌：前端（後端 API 已存在，見情境包）
 - 前置任務（dependsOn）：TASK-035
-- 狀態：verify（等待人工本機驗證）
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待 Niko 本機驗證後追加簽核）
+- 人工核准者：Niko / 2026-07-25（本機測試導覽、新增、編輯、刪除四個動作皆成功，`npm run build`／`npm run lint` 皆通過）
 
 ## 目標
 
@@ -54,10 +54,10 @@
 - 單元測試：不適用（此階段前端無測試框架）。
 - 整合測試：不適用（呼叫的既有後端端點已有 Epic 1 的 pytest 覆蓋）。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint` 確認；此執行環境無 Node.js，未能跑。
-- Build：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- 螢幕截圖：待人工本機驗證後提供；此環境無瀏覽器/螢幕截圖工具，未能產出。
+- 型別檢查：Niko 本機執行 `npm run build`，第一次執行有錯（TS2322，見「已知限制」與完成證據），修正後通過。
+- Lint：Niko 本機執行 `npm run lint` 確認通過，無錯誤。
+- Build：Niko 本機執行 `npm run build` 確認通過（修正後）。
+- 螢幕截圖：未產出圖檔，Niko 目視確認導覽、新增、編輯、刪除四個動作皆正常。
 - 安全性檢查：不適用（呼叫既有後端 API，刪除有二次確認）。
 
 ## 完成證據
@@ -68,10 +68,10 @@
   - `frontend/src/pages/MediaLog.tsx`（新增，完整 CRUD 頁面）
   - `frontend/src/App.tsx`（依路徑渲染 `MediaLog`）
   - `frontend/src/lib/dashboard-api.ts`（新增 `createMediaLog`／`updateMediaLog`／`deleteMediaLog`／`MediaLogCreate`／`MediaLogUpdate`）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約）。
-- 測試輸出：不適用，待人工本機驗證。
+- 執行過的指令：Agent 端無（此環境無 Node.js）；Niko 本機執行 `npm run build`（第一次失敗、修正後通過）、`npm run lint`（通過）；本機手動測試導覽/新增/編輯/刪除。
+- 測試輸出：無自動化測試，以本機建置/lint 通過 + 人工手動操作驗證為準。
 - 螢幕截圖：不適用，待人工本機執行後補上。
 - 已知限制：
-  1. 此執行環境沒有 Node.js，程式碼正確性僅靠審查把關。
+  1. **驗證階段發現並修正**：`npm run build` 第一次執行報 4 處 TS2322 型別錯誤（`Vocabulary.tsx` 三處、`MediaLog.tsx` 一處）——base-ui 的 `Select` `onValueChange` 回呼型別是 `(value: string | null, ...) => void`（清除選取時會傳 `null`），但程式碼直接把 `useState` 的 setter（只接受 `string`）當回呼傳入，型別對不上。改用 inline arrow function（`(value) => setXxx(value ?? "")`）把 `null` 轉成空字串／預設值。這證實了此執行環境缺乏 Node.js 的風險是真實的：純審查沒抓到這個錯誤，靠 Niko 本機建置才抓到。
   2. 不含字幕上傳（`.srt`）、CSV 匯入匯出，這些後端 API 都已存在，屬於後續 User Story 範圍。
-- 後續任務：Niko 本機驗證後回填人工核准。
+- 後續任務：無。
