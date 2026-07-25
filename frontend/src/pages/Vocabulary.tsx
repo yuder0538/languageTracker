@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon, Volume2Icon, PencilIcon } from "lucide-react"
+import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon, Volume2Icon, PencilIcon, TrashIcon } from "lucide-react"
 
 import { AppRail } from "@/components/app-rail"
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,7 @@ import { useLanguage } from "@/lib/language-context"
 import { useApi } from "@/hooks/use-api"
 import {
   createVocabulary,
+  deleteVocabulary,
   enrichDeTranslation,
   enrichEnDictionary,
   fetchMediaLogs,
@@ -263,11 +264,57 @@ function WordDialog({
   )
 }
 
+function DeleteConfirmDialog({
+  word,
+  onOpenChange,
+  onDeleted,
+}: {
+  word: VocabularyRead | null
+  onOpenChange: (open: boolean) => void
+  onDeleted: () => void
+}) {
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleConfirm() {
+    if (!word) return
+    setDeleting(true)
+    try {
+      await deleteVocabulary(word.id)
+      toast.success(`已刪除「${word.headword}」`)
+      onOpenChange(false)
+      onDeleted()
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "刪除失敗，請重試"
+      toast.error(message)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  return (
+    <Dialog open={word !== null} onOpenChange={(next) => { if (!deleting) onOpenChange(next) }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>確定要刪除「{word?.headword}」？</DialogTitle>
+          <DialogDescription>這個動作無法復原，這筆單字的複習排程紀錄也會一併刪除。</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" disabled={deleting}>取消</Button>} />
+          <Button variant="destructive" loading={deleting} onClick={handleConfirm}>
+            確定刪除
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export default function Vocabulary() {
   const { language } = useLanguage()
   const vocabulary = useApi(() => fetchVocabulary(language), [language])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingWord, setEditingWord] = useState<VocabularyRead | null>(null)
+  const [deletingWord, setDeletingWord] = useState<VocabularyRead | null>(null)
   const [enrichingIds, setEnrichingIds] = useState<Set<number>>(new Set())
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
@@ -420,6 +467,14 @@ export default function Vocabulary() {
                             <SearchIcon />
                           )}
                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => setDeletingWord(word)}
+                          aria-label={`刪除「${word.headword}」`}
+                        >
+                          <TrashIcon className="text-destructive" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   )
@@ -435,6 +490,11 @@ export default function Vocabulary() {
         onOpenChange={setDialogOpen}
         onSaved={vocabulary.retry}
         editingWord={editingWord}
+      />
+      <DeleteConfirmDialog
+        word={deletingWord}
+        onOpenChange={(open) => { if (!open) setDeletingWord(null) }}
+        onDeleted={vocabulary.retry}
       />
     </div>
   )

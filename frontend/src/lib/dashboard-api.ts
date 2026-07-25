@@ -1,4 +1,4 @@
-import { apiGet, apiPatch, apiPost } from "@/lib/api"
+import { apiDelete, apiGet, apiPatch, apiPost } from "@/lib/api"
 import type { AppLanguage } from "@/lib/language-context"
 
 export interface VocabularyRead {
@@ -88,6 +88,10 @@ export function createVocabulary(payload: VocabularyCreate) {
 
 export function updateVocabulary(id: number, payload: VocabularyUpdate) {
   return apiPatch<VocabularyRead>(`/vocabulary/${id}`, payload)
+}
+
+export function deleteVocabulary(id: number) {
+  return apiDelete<void>(`/vocabulary/${id}`)
 }
 
 export function enrichEnDictionary(id: number) {
