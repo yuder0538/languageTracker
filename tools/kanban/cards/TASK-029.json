@@ -2,7 +2,7 @@
   "id": "TASK-029",
   "title": "Dashboard 頁面實作（含前後端串接）",
   "content": "把 S5 核准的變體 C（Command Center）版型改寫成真正的 React 元件並串接真實後端資料，取代 mockup 假資料，處理載入中/空狀態/錯誤三態。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-029.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,11 +19,11 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
-    "product": false,
-    "ui": false,
+    "product": true,
+    "ui": true,
     "architecture": false,
     "security": false,
     "test": false,
@@ -48,9 +48,10 @@
       "圖表資料皆動態計算（非寫死座標/數字），資料庫全空時各區塊會顯示對應空狀態文案。",
       "複習佇列不顯示到期/Leech 徽章（VocabularyRead 沒有回傳 SRS 內部欄位），簡化為只顯示單字+詞性，避免顯示不存在的假資料。"
     ],
-    "residual": "此執行環境沒有 Node.js，未能跑 npm install/dev/build/lint 做實機驗證，也沒有瀏覽器可截圖。Niko 核准前請本機同時啟動後端（uvicorn app.main:app --reload）與前端（npm run dev）確認頁面真的能抓到資料、語言切換有效、錯誤/空狀態畫面正常。"
+    "residual": "無。Niko 本機同時啟動後端（uvicorn）與前端（npm run dev）確認 Dashboard 頁面正常渲染（資料庫尚無資料，正確顯示空狀態而非「讀取失敗」），npm run build（修正 TASK-027 記錄的 tsconfig baseUrl 問題後）與 npm run lint 皆無錯誤。有資料時的實際畫面（單字/追劇紀錄非空）尚未截圖驗證，留待後續累積真實資料後再看。"
   },
   "comments": [
-    "2026-07-25: 建卡並實作，等待 Niko 本機同時跑後端+前端驗證後轉 done。"
+    "2026-07-25: 建卡並實作，等待 Niko 本機同時跑後端+前端驗證後轉 done。",
+    "2026-07-25: Niko 本機驗證 Dashboard 正常渲染（空狀態正確顯示）、npm run build/lint 皆通過，核准，轉 done。"
   ]
 }

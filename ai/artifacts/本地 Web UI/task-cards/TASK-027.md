@@ -11,7 +11,7 @@
 - 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（實作階段，非 UI 決策，依 `ai/process/review-gates.md` 不需 UI 關卡；已通過程式碼審查與自我檢查）
+- 人工核准者：Niko / 2026-07-25（本機執行 `npm run dev`／`npm run build`／`npm run lint` 驗證通過）
 
 ## 目標
 
@@ -52,9 +52,9 @@
 - 單元測試：不適用（此階段前端無測試框架，`frontend/README.md` 也未設置）。
 - 整合測試：不適用（由 TASK-029 的 Dashboard 頁面實際串接驗證）。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build`（`tsc -b && vite build`）確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint`確認；此執行環境無 Node.js，未能跑。**已知會有一項 warning**：`react/only-export-components`（`warn` 等級，不影響 lint 結果為 0 exit code）可能對 `language-context.tsx` 同時匯出 `LanguageProvider` 元件與 `useLanguage` hook 提出警告；這是 React context 慣用寫法（`next-themes` 自己的 `ThemeProvider` 也是同檔案export hook），不視為需要修正的問題。
-- Build：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
+- 型別檢查：Niko 本機執行 `npm run build`（`tsc -b && vite build`）確認通過。第一次執行時因 `tsconfig.app.json` 的 `baseUrl` 選項在目前 TypeScript 版本已棄用（TS5101）而失敗，已移除該行（`paths` 不需要 `baseUrl` 也能相對 tsconfig 位置解析，行為不變），修正後通過。
+- Lint：Niko 本機執行 `npm run lint` 確認通過，無錯誤。
+- Build：Niko 本機執行 `npm run build` 確認通過（見上）。
 - 螢幕截圖：不適用（本卡無視覺產出，見 TASK-029）。
 - 安全性檢查：不適用（純本機開發代理設定，無外部網路存取、無金鑰）。
 
@@ -65,8 +65,9 @@
   - `frontend/src/lib/api.ts`（新增，API client）
   - `frontend/src/lib/language-context.tsx`（新增，語言 context）
   - `frontend/src/main.tsx`（掛上 `LanguageProvider`）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約與已知限制）。
-- 測試輸出：不適用，待人工本機驗證（`npm run build`／`npm run lint`）。
-- 螢幕截圖：不適用。
-- 已知限制：此執行環境沒有 Node.js，程式碼正確性僅靠審查把關，尚未經編譯器與 lint 實際驗證；production 部署策略未決定，目前僅支援本機開發雙進程（`npm run dev` + `uvicorn --reload`）。
+  - `frontend/tsconfig.app.json`（移除已棄用的 `baseUrl`，驗證階段發現並修正）
+- 執行過的指令：Agent 端無（此環境無 Node.js）；Niko 本機執行 `npm install`、`npm run dev`、`npm run build`、`npm run lint`，皆通過。
+- 測試輸出：無自動化測試，以本機建置/lint 通過 + 人工目視驗證為準。
+- 螢幕截圖：不適用（本卡無獨立視覺產出，見 TASK-029 的 Dashboard 頁面）。
+- 已知限制：production 部署策略未決定，目前僅支援本機開發雙進程（`npm run dev` + `uvicorn --reload`）。
 - 後續任務：TASK-028（複習歷史聚合 API）、TASK-029（Dashboard 頁面實作，使用本卡的 API client 與語言 context）。

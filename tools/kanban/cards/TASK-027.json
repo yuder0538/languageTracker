@@ -2,7 +2,7 @@
   "id": "TASK-027",
   "title": "本地 Web UI — Epic 架構基礎",
   "content": "API client 封裝、en/de 語言 context 與切換、Vite dev server 代理設定，供本 Epic後續所有頁面共用。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-027.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -25,14 +25,14 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
     "product": false,
     "ui": false,
     "architecture": true,
     "security": false,
-    "test": false,
+    "test": true,
     "code_review": false
   },
   "links": {
@@ -55,9 +55,10 @@
       "main.tsx 掛上 LanguageProvider。",
       "刻意不引入路由器與寫入方法（POST/PATCH/DELETE），因為目前只有 Dashboard 一個唯讀頁面，避免過度設計；等下一個真正頁面動工時再擴充。"
     ],
-    "residual": "此執行環境沒有 Node.js，未能跑 npm install/build/lint 驗證。Niko 核准前請在本機執行 npm run build 與 npm run lint（會有一個可預期的 react/only-export-components warning，屬正常，見任務卡驗證契約說明）。"
+    "residual": "無。Niko 本機執行 npm install/npm run dev 確認 Dashboard 正常渲染（資料庫尚無資料，各區塊正確顯示空狀態文案而非錯誤）。npm run build 第一次執行時因 tsconfig.app.json 的 baseUrl 選項在目前 TypeScript 版本已棄用而失敗（TS5101），已移除該行（paths 不需要 baseUrl 也能相對 tsconfig 位置解析，行為不變）；修正後 npm run build 與 npm run lint 皆無錯誤。"
   },
   "comments": [
-    "2026-07-25: 建卡並實作，等待 Niko 本機驗證 npm run build/lint 後轉 done。"
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證 npm run build/lint 後轉 done。",
+    "2026-07-25: Niko 本機驗證 npm run dev/build/lint 皆通過（build 過程中發現並修正 tsconfig.app.json 的過時 baseUrl 選項），核准，轉 done。"
   ]
 }

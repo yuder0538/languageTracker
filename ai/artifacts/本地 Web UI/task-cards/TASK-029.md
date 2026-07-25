@@ -11,7 +11,7 @@
 - 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待 Niko 本機執行 `npm run dev` 驗證後追加簽核；螢幕截圖尚未取得，見已知限制）
+- 人工核准者：Niko / 2026-07-25（本機同時執行後端 `uvicorn` 與前端 `npm run dev`，Dashboard 正常渲染，資料庫為空時正確顯示空狀態；`npm run build`／`npm run lint` 皆通過）
 
 ## 目標
 
@@ -57,10 +57,10 @@
 - 單元測試：不適用（此階段前端無測試框架）。
 - 整合測試：不適用（純前端無框架；後端串接邏輯已由 TASK-028 的 pytest 覆蓋 API 本身）。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint` 確認；此執行環境無 Node.js，未能跑。
-- Build：待人工在本機執行 `cd backend && uvicorn app.main:app --reload`（另一個終端機）+ `cd frontend && npm install && npm run dev`，兩個服務都起來後在瀏覽器開啟 Dashboard 確認。
-- 螢幕截圖：待人工本機驗證後提供；此環境無瀏覽器/螢幕截圖工具，未能產出。
+- 型別檢查：Niko 本機執行 `npm run build` 確認通過（過程中發現並修正 TASK-027 記錄的 tsconfig `baseUrl` 問題）。
+- Lint：Niko 本機執行 `npm run lint` 確認通過，無錯誤。
+- Build：Niko 本機同時執行 `uvicorn app.main:app --reload`（後端）與 `npm run dev`（前端），開啟瀏覽器確認 Dashboard 正常渲染。
+- 螢幕截圖：Niko 目視確認（未產出圖檔）：資料庫尚無資料，各區塊正確顯示空狀態文案（例如「還沒有任何單字紀錄」），而非先前懷疑的錯誤狀態；有資料時的畫面留待累積真實資料後再補。
 - 安全性檢查：不適用（唯讀頁面，僅呼叫既有後端 API，無新輸入處理）。
 
 ## 完成證據
@@ -72,13 +72,14 @@
   - `frontend/src/lib/dashboard-api.ts`（新增，型別化 API 呼叫）
   - `frontend/src/hooks/use-api.ts`（新增，通用資料狀態 hook）
   - `ai/context/design-system.md`（S4 inventory 檔案位置改指向 `pages/ComponentShowcase.tsx`）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約）。
-- 測試輸出：不適用，待人工本機驗證。
-- 螢幕截圖：不適用，待人工本機執行後補上。
+  - `frontend/tsconfig.app.json`（TASK-027 記錄的 `baseUrl` 修正，驗證本卡時一併需要）
+- 執行過的指令：Agent 端無（此環境無 Node.js）；Niko 本機執行 `npm install`、`npm run dev`（同時搭配後端 `uvicorn`）、`npm run build`、`npm run lint`，皆通過。
+- 測試輸出：無自動化測試，以本機建置/lint 通過 + 人工目視驗證為準。
+- 螢幕截圖：未產出圖檔，Niko 目視確認空狀態畫面正確（見上方驗證契約）。
 - 已知限制：
-  1. 此執行環境沒有 Node.js，`npm install`／`npm run dev`／`npm run build`／`npm run lint` 均未執行，程式碼正確性僅靠審查與比對既有元件慣例把關（後端部分因為此環境有 Python，已用 185 個 pytest 測試 + ruff 實際驗證，見 TASK-028）。
-  2. 複習佇列不顯示「到期／Leech」狀態徽章（`VocabularyRead` 未回傳 SRS 內部欄位），只顯示單字＋詞性；若後續想要精確狀態，需要擴充 `VocabularyRead` 或 `/reviews/queue` 回傳格式，屬於下一張任務卡的範圍。
-  3. 「今日待複習」的進度環比例（已複習／總數）用 `reviewed_today + 複習佇列剩餘張數` 近似總數，非後端直接提供的精確欄位；邊界情況（例如 `AGAIN` 評分的卡片同一天可能重新進入佇列）可能讓進度環數字有些微不準，對個人使用的參考用途影響不大。
-  4. 圖表 hover 目前只有原生 `title` 屬性提供最基本提示，未做完整的 crosshair/tooltip（同 screen-spec 已知限制）。
-  5. 沒有前端路由器，「單字庫」「追劇紀錄」導覽圖示點擊只會跳出「尚未實作」的 toast，非真正導覽。
-- 後續任務：Niko 本機驗證後回填人工核准；下一個 User Story 建議是「單字庫管理頁面」或「複習流程頁面」（讓「開始複習」CTA 真正可用），屆時需要新增路由器與 API client 的寫入方法（POST/PATCH/DELETE）。
+  1. 複習佇列不顯示「到期／Leech」狀態徽章（`VocabularyRead` 未回傳 SRS 內部欄位），只顯示單字＋詞性；若後續想要精確狀態，需要擴充 `VocabularyRead` 或 `/reviews/queue` 回傳格式，屬於下一張任務卡的範圍。
+  2. 「今日待複習」的進度環比例（已複習／總數）用 `reviewed_today + 複習佇列剩餘張數` 近似總數，非後端直接提供的精確欄位；邊界情況（例如 `AGAIN` 評分的卡片同一天可能重新進入佇列）可能讓進度環數字有些微不準，對個人使用的參考用途影響不大。
+  3. 圖表 hover 目前只有原生 `title` 屬性提供最基本提示，未做完整的 crosshair/tooltip（同 screen-spec 已知限制）。
+  4. 沒有前端路由器，「單字庫」「追劇紀錄」導覽圖示點擊只會跳出「尚未實作」的 toast，非真正導覽。
+  5. 尚未用真實（非空）資料截圖驗證圖表/列表的實際排版，只確認過空狀態；建議累積幾筆單字/追劇紀錄後再看一次畫面。
+- 後續任務：下一個 User Story 建議是「單字庫管理頁面」或「複習流程頁面」（讓「開始複習」CTA 真正可用），屆時需要新增路由器與 API client 的寫入方法（POST/PATCH/DELETE）。
