@@ -1,0 +1,51 @@
+{
+  "id": "TASK-026",
+  "title": "UI 設計系統 S5：Dashboard 版面 mockup",
+  "content": "用已定案的 token 與元件庫拼出 2-3 個 Dashboard 整體版面（layout）變體，走 ui-mockup-gate 讓人工選定版型。詳見 ai/artifacts/專案設置/task-cards/TASK-026.md。",
+  "stage": "backlog",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "專案設置",
+  "userStory": "UI 設計系統",
+  "dependsOn": ["TASK-025"],
+  "order": 26,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-026.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [],
+    "residual": ""
+  },
+  "comments": [
+    "2026-07-25: 建卡，等 S4（TASK-025）核准後開工。完成後「本地 Web UI」Epic 自己的 User Story（各 dashboard 功能卡片）才開始拆分。"
+  ]
+}

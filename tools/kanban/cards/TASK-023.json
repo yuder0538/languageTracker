@@ -1,0 +1,57 @@
+{
+  "id": "TASK-023",
+  "title": "UI 設計系統 S2：視覺風格方向",
+  "content": "產出 2-3 個 style tile（色彩情緒、字體個性、圓角/陰影、密度、亮暗模式、參考產品），供人工選定整體氣質。詳見 ai/artifacts/專案設置/task-cards/TASK-023.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "專案設置",
+  "userStory": "UI 設計系統",
+  "dependsOn": ["TASK-022"],
+  "order": 23,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-023.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "產出三個 style tile（卡片抽屜/字幕夜場/學習儀表板），以 Artifact 頁面用真實專案資料（der Tisch、Friends 追劇紀錄、複習統計）呈現供視覺比較",
+      "Artifact 比較頁：https://claude.ai/code/artifact/807a7b73-6256-4e01-98d4-92468d58d0dc",
+      "人工於對話中選定：方向二「字幕夜場 Subtitle Room」（暗色電影字幕感）",
+      "design-system.md S2 章節已填寫並記錄核准人／日期"
+    ],
+    "residual": "暗色為主要模式，亮色對應值留到 S3 定義 token 時一併給出。"
+  },
+  "comments": [
+    "2026-07-25: 建卡，等 S1（TASK-022）核准後開工。",
+    "2026-07-25: 產出三個 style tile 比較頁，人工選定「字幕夜場 Subtitle Room」（暗色）。核准轉 done。"
+  ]
+}

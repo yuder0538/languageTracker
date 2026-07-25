@@ -1,0 +1,205 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Design tokens — 「字幕夜場 Subtitle Room」（S2/S3 核准，見 ai/context/design-system.md）。
+  Raw scale 命名刻意跟 shadcn 內建的語意 slot 分開：
+  - Tailwind 色彩家族：grey-* / brand-*（字幕黃）/ info-*（次強調藍，兼語意 info）
+  - shadcn 語意 slot：background/foreground/card/popover/primary/secondary/muted/accent/destructive/border/input/ring
+    （shadcn 的 "accent" 是一般 hover 底色 slot，跟我們的品牌強調色 "brand" 是兩件事，不要混用）
+*/
+:root {
+  /* raw scale — 兩種模式共用同一套色票，只有 semantic 對應不同 */
+  --grey-50: #f7f7f8;
+  --grey-100: #ededed;
+  --grey-200: #d4d4d6;
+  --grey-300: #b0b0b3;
+  --grey-400: #8c8c90;
+  --grey-500: #6e6e72;
+  --grey-600: #525256;
+  --grey-700: #38383b;
+  --grey-800: #26262a;
+  --grey-900: #1b1b1e;
+  --grey-950: #121214;
+
+  --brand-100: #f6e7c4;
+  --brand-300: #e8be66;
+  --brand-500: #e8b944;
+  --brand-600: #c89b2f;
+  --brand-700: #a17d26;
+  --brand-900: #524014;
+
+  --info-300: #7fc7df;
+  --info-500: #4fa3c7;
+  --info-700: #2e6580;
+}
+
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-heading: var(--font-sans);
+  --font-mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  --color-grey-50: var(--grey-50);
+  --color-grey-100: var(--grey-100);
+  --color-grey-200: var(--grey-200);
+  --color-grey-300: var(--grey-300);
+  --color-grey-400: var(--grey-400);
+  --color-grey-500: var(--grey-500);
+  --color-grey-600: var(--grey-600);
+  --color-grey-700: var(--grey-700);
+  --color-grey-800: var(--grey-800);
+  --color-grey-900: var(--grey-900);
+  --color-grey-950: var(--grey-950);
+
+  --color-brand-100: var(--brand-100);
+  --color-brand-300: var(--brand-300);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-900: var(--brand-900);
+
+  --color-info-300: var(--info-300);
+  --color-info-500: var(--info-500);
+  --color-info-700: var(--info-700);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive: var(--destructive);
+  --color-success-foreground: var(--success-foreground);
+  --color-success: var(--success);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning: var(--warning);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* 亮模式（次要，供系統跟隨） */
+:root {
+  --background: var(--grey-50);
+  --foreground: var(--grey-950);
+  --card: #ffffff;
+  --card-foreground: var(--grey-950);
+  --popover: #ffffff;
+  --popover-foreground: var(--grey-950);
+  --primary: var(--brand-700);
+  --primary-foreground: #fffbef;
+  --secondary: var(--grey-100);
+  --secondary-foreground: var(--grey-950);
+  --muted: var(--grey-100);
+  --muted-foreground: var(--grey-500);
+  --accent: var(--grey-100);
+  --accent-foreground: var(--grey-950);
+  --destructive: #c93a3e;
+  --destructive-foreground: #fff5f5;
+  --success: #2e8059;
+  --success-foreground: #f0faf5;
+  --warning: #b8631e;
+  --warning-foreground: #fff7ed;
+  --border: var(--grey-200);
+  --input: var(--grey-200);
+  --ring: var(--info-700);
+  --radius: 0.1875rem;
+  --chart-1: var(--brand-700);
+  --chart-2: var(--info-700);
+  --chart-3: #2e8059;
+  --chart-4: #b8631e;
+  --chart-5: #c93a3e;
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--grey-950);
+  --sidebar-primary: var(--brand-700);
+  --sidebar-primary-foreground: #fffbef;
+  --sidebar-accent: var(--grey-100);
+  --sidebar-accent-foreground: var(--grey-950);
+  --sidebar-border: var(--grey-200);
+  --sidebar-ring: var(--info-700);
+}
+
+/* 暗模式（主要，字幕夜場） */
+.dark {
+  --background: var(--grey-950);
+  --foreground: var(--grey-100);
+  --card: var(--grey-900);
+  --card-foreground: var(--grey-100);
+  --popover: var(--grey-900);
+  --popover-foreground: var(--grey-100);
+  --primary: var(--brand-500);
+  --primary-foreground: var(--grey-950);
+  --secondary: var(--grey-800);
+  --secondary-foreground: var(--grey-100);
+  --muted: var(--grey-800);
+  --muted-foreground: #9a9a9a;
+  --accent: var(--grey-800);
+  --accent-foreground: var(--grey-100);
+  --destructive: #e5484d;
+  --destructive-foreground: #fff5f5;
+  --success: #3ea574;
+  --success-foreground: #f0faf5;
+  --warning: #d97b29;
+  --warning-foreground: #fff7ed;
+  --border: #2b2b2e;
+  --input: #2b2b2e;
+  --ring: var(--info-500);
+  --chart-1: var(--brand-500);
+  --chart-2: var(--info-500);
+  --chart-3: #3ea574;
+  --chart-4: #d97b29;
+  --chart-5: #e5484d;
+  --sidebar: var(--grey-900);
+  --sidebar-foreground: var(--grey-100);
+  --sidebar-primary: var(--brand-500);
+  --sidebar-primary-foreground: var(--grey-950);
+  --sidebar-accent: var(--grey-800);
+  --sidebar-accent-foreground: var(--grey-100);
+  --sidebar-border: #2b2b2e;
+  --sidebar-ring: var(--info-500);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "tnum" 1;
+  }
+  html {
+    @apply font-sans;
+  }
+}

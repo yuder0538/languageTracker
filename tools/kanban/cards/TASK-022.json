@@ -1,0 +1,56 @@
+{
+  "id": "TASK-022",
+  "title": "UI 設計系統 S1：底層框架與元件庫策略",
+  "content": "決定前端建置工具、元件庫策略、樣式方案，寫進 ai/context/design-system.md。詳見 ai/artifacts/專案設置/task-cards/TASK-022.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "專案設置",
+  "userStory": "UI 設計系統",
+  "dependsOn": [],
+  "order": 22,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-022.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "ai/context/design-system.md",
+    "tools/kanban/epics.json"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "列出建置工具（Vite+React / Next.js）、元件庫策略（shadcn/ui / MUI / Ant Design / 自建）、樣式方案（Tailwind / CSS Modules / CSS-in-JS）各 2-3 個選項附優劣與建議",
+      "人工於對話中選定：Vite + React、shadcn/ui、Tailwind CSS",
+      "design-system.md S1 章節已填寫並記錄核准人／日期"
+    ],
+    "residual": "前後端串接方式（dev server proxy 或 CORS）留給後續架構基礎任務卡決定。"
+  },
+  "comments": [
+    "2026-07-25: 首次展開「本地 Web UI」Epic，補上 Epic 0「UI 設計系統」User Story，依 project-kickoff 步驟 2a 的五階段流程開工。S1 人工核准完成。"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "TASK-024",
+  "title": "UI 設計系統 S3：Design Token",
+  "content": "從選定的風格方向定義 primitive/semantic design token（色彩、字級、間距、圓角、陰影、z-index、動效），寫進 design-system.md 並產出真實 token 檔。詳見 ai/artifacts/專案設置/task-cards/TASK-024.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "專案設置",
+  "userStory": "UI 設計系統",
+  "dependsOn": ["TASK-023"],
+  "order": 24,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/專案設置/task-cards/TASK-024.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "從「字幕夜場 Subtitle Room」展開完整 primitive token（grey/accent/secondary/語意色 scale、字級、字重/行高、間距、圓角、陰影、z-index、動效）與 semantic token（暗模式主要、亮模式對應）",
+      "間距/字級/圓角皆落在 design-craft 規定 scale 內；語意色（success/warning/danger）與 accent 黃刻意分開色相",
+      "design-system.md S3 章節已填寫完整表格，草稿已產出，等待人工確認"
+    ],
+    "residual": "尚無真實 tailwind.config.ts／tokens.css，token 目前只存在於 design-system.md 表格中，S4 建骨架時轉換為實際設定檔。"
+  },
+  "comments": [
+    "2026-07-25: 建卡，等 S2（TASK-023）核准後開工。",
+    "2026-07-25: token 草稿已產出並寫入 design-system.md，等待 Niko 確認後轉 done。",
+    "2026-07-25: 產出 token 套用預覽 Artifact（按鈕/輸入框/單字卡/標籤/表格，暗亮模式皆可切換），Niko 核准「這顏色很棒」。轉 done。"
+  ]
+}

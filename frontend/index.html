@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>多語言沉浸式追蹤器</title>
+    <script>
+      // 在 React 掛載前就決定 .dark class，避免暗色為主模式下的閃爍（FOUC）。
+      // 與 next-themes 的 storageKey 預設值（"theme"）保持一致。
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var mode =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light" // 系統明確偏好亮色時才跟隨（S2 決議：亮色供系統跟隨）
+                : "dark"; // 其餘情況（含無偏好資訊）預設為主要模式：暗色
+          if (mode === "dark") document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -15,6 +15,10 @@
         {
           "name": "核心資料模型基礎",
           "definition": "支援 en/de 雙語隔離與德文特化欄位的 Media Log 與 Vocabulary SQLite 資料表，供後續所有 Epic 共用。"
+        },
+        {
+          "name": "UI 設計系統",
+          "definition": "2026-07-25 補上：專案首次展開「本地 Web UI」Epic 前，先由下而上分五階段（框架 → 風格 → design token → 元件庫 → 版面）建立設計系統，產出寫進 ai/context/design-system.md，供後續所有 UI 任務重用。"
         }
       ]
     },
