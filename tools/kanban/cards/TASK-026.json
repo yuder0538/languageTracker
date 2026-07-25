@@ -2,7 +2,7 @@
   "id": "TASK-026",
   "title": "UI 設計系統 S5：Dashboard 版面 mockup",
   "content": "用已定案的 token 與元件庫拼出 2-3 個 Dashboard 整體版面（layout）變體，走 ui-mockup-gate 讓人工選定版型。詳見 ai/artifacts/專案設置/task-cards/TASK-026.md。",
-  "stage": "backlog",
+  "stage": "verify",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -31,21 +31,27 @@
   },
   "links": {
     "featureSpec": "",
-    "screenSpec": "",
-    "mockupDecision": "",
+    "screenSpec": "ai/artifacts/專案設置/screen-spec-dashboard.md",
+    "mockupDecision": "ai/artifacts/專案設置/mockup-decision-dashboard.md",
     "taskCard": "ai/artifacts/專案設置/task-cards/TASK-026.md",
     "verificationReport": "",
-    "pr": ""
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
   },
   "refs": [
     "ai/context/design-system.md"
   ],
   "evidence": {
     "commands": [],
-    "findings": [],
-    "residual": ""
+    "findings": [
+      "讀了 design-system.md 盤點可用 token／元件，走 ui-mockup-gate 流程；圖表（單字成長趨勢線、複習日曆熱力圖）先過 dataviz skill 判斷形式與色彩（單數列不用圖例、熱力圖用單一 accent 色相的 sequential ramp、暗色模式 anchor 反轉），因為都不是多數列 categorical 色票，不在 validate_palette.js 的檢查範圍內，未執行 validator（見 screen-spec-dashboard.md「設計系統對照」）。",
+      "產出 3 個 Dashboard layout 變體（HTML，皆用真實資料：12 天連續複習、18 張今日待複習、87% 正確率、342 個單字、Friends/Dark 追劇紀錄），存在 ai/artifacts/專案設置/mockups/dashboard-variant-{a,b,c}.html：A 為經典 sidebar admin 版型、B 為單欄 Focus 版型、C 為三欄 Command Center（含進度環）。",
+      "寫了 screen-spec-dashboard.md（畫面規格：狀態、互動、設計系統對照、視覺驗收標準）與 mockup-decision-dashboard.md（三變體比較表，選定變體待 Niko 填寫）。",
+      "未新做任何需要登記回 S4 inventory 的核心元件；圖表視覺化屬本畫面特有，暫不登記，理由見 mockup-decision-dashboard.md。"
+    ],
+    "residual": "尚未選定版型，未進行任何 React 實作（依 ui-mockup-gate 規則，人工選擇變體之前停止實作）。三個 mockup 檔案為純靜態 HTML（自成一體，無外部依賴），可直接用瀏覽器開啟比較，也已發布為 Artifact 方便線上比較。"
   },
   "comments": [
-    "2026-07-25: 建卡，等 S4（TASK-025）核准後開工。完成後「本地 Web UI」Epic 自己的 User Story（各 dashboard 功能卡片）才開始拆分。"
+    "2026-07-25: 建卡，等 S4（TASK-025）核准後開工。完成後「本地 Web UI」Epic 自己的 User Story（各 dashboard 功能卡片）才開始拆分。",
+    "2026-07-25: 3 個 Dashboard 版面變體已產出（A Sidebar Admin／B 單欄 Focus／C Command Center），screen-spec 與 mockup-decision 文件已寫好，轉 verify 等待 Niko 選定版型。"
   ]
 }

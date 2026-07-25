@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard 版面 — 變體 C：Command Center</title>
+<style>
+  :root {
+    --grey-50:#f7f7f8; --grey-100:#ededed; --grey-200:#d4d4d6; --grey-300:#b0b0b3;
+    --grey-400:#8c8c90; --grey-500:#6e6e72; --grey-600:#525256; --grey-700:#38383b;
+    --grey-800:#26262a; --grey-900:#1b1b1e; --grey-950:#121214;
+    --brand-100:#f6e7c4; --brand-300:#e8be66; --brand-500:#e8b944; --brand-600:#c89b2f;
+    --brand-700:#a17d26; --brand-900:#524014;
+    --info-300:#7fc7df; --info-500:#4fa3c7; --info-700:#2e6580;
+    --success:#3ea574; --warning:#d97b29; --danger:#e5484d;
+    --bg-page:var(--grey-950); --bg-surface:var(--grey-900); --bg-surface-hover:var(--grey-800);
+    --border:#2b2b2e; --fg:var(--grey-100); --fg-muted:#9a9a9a;
+    --radius-card:3px; --radius-control:4px; --radius-pill:999px;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg-page); color:var(--fg); font-family:var(--font-sans); font-size:14px; line-height:1.6; }
+  h1,h2,h3 { margin:0; font-weight:600; }
+  .layout { display:grid; grid-template-columns:64px 1fr 280px; min-height:100vh; }
+  .rail { background:var(--bg-surface); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:20px; }
+  .rail-logo { width:28px; height:28px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  .rail-nav { display:flex; flex-direction:column; gap:8px; flex:1; }
+  .rail-item { width:36px; height:36px; border-radius:var(--radius-control); display:flex; align-items:center; justify-content:center; color:var(--fg-muted); }
+  .rail-item svg { width:18px; height:18px; }
+  .rail-item.active { background:var(--bg-surface-hover); color:var(--brand-500); }
+  .rail-lang { display:flex; flex-direction:column; gap:4px; }
+  .rail-lang button { width:32px; height:24px; border-radius:var(--radius-control); border:none; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .rail-lang button.active { background:var(--brand-500); color:var(--grey-950); }
+
+  .center { padding:32px; display:flex; flex-direction:column; gap:24px; }
+  .card { background:var(--bg-surface); border-radius:var(--radius-card); }
+  .focus-card { padding:32px; display:flex; align-items:center; gap:32px; border:1px solid var(--border); }
+  .ring-wrap { position:relative; width:160px; height:160px; flex-shrink:0; }
+  .ring-wrap svg { transform:rotate(-90deg); }
+  .ring-track { fill:none; stroke:var(--bg-surface-hover); stroke-width:12; }
+  .ring-fill { fill:none; stroke:var(--brand-500); stroke-width:12; stroke-linecap:round; }
+  .ring-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .ring-center .n { font-size:30px; font-weight:600; }
+  .ring-center .l { font-size:12px; color:var(--fg-muted); }
+  .focus-right { display:flex; flex-direction:column; gap:8px; }
+  .focus-flame { font-size:13px; color:var(--brand-500); font-weight:500; }
+  .focus-title { font-size:20px; font-weight:600; }
+  .focus-sub { font-size:13px; color:var(--fg-muted); }
+  .btn { display:inline-flex; align-items:center; gap:6px; height:40px; padding:0 20px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); font-weight:600; font-size:14px; border:none; cursor:pointer; margin-top:8px; align-self:flex-start; }
+
+  .section-title { font-size:14px; font-weight:600; padding:16px 16px 0; }
+  .section-sub { font-size:12px; color:var(--fg-muted); padding:2px 16px 12px; }
+  .chart-body { padding:0 16px 16px; }
+  svg text { fill:var(--fg-muted); font-size:11px; font-family:var(--font-sans); }
+  .grid-line { stroke:var(--border); stroke-width:1; }
+  .trend-line { fill:none; stroke:var(--info-500); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .trend-area { fill:var(--info-500); opacity:.10; }
+  .trend-end { fill:var(--brand-500); stroke:var(--bg-surface); stroke-width:2; }
+  .trend-label { fill:var(--fg); font-size:12px; font-weight:600; }
+  details.table-toggle { margin-top:4px; }
+  details.table-toggle summary { font-size:12px; color:var(--info-500); cursor:pointer; user-select:none; }
+  details.table-toggle table { width:100%; border-collapse:collapse; margin-top:8px; font-size:12px; }
+  details.table-toggle th, details.table-toggle td { text-align:left; padding:4px 8px; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; }
+
+  .bottom-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .heatmap-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; max-width:280px; }
+  .heatmap-cell { aspect-ratio:1; border-radius:2px; }
+  .lv0{ background:var(--bg-surface-hover); } .lv1{ background:var(--brand-900); } .lv2{ background:var(--brand-700); }
+  .lv3{ background:var(--brand-600); } .lv4{ background:var(--brand-500); } .lv5{ background:var(--brand-300); }
+  .heatmap-legend { display:flex; align-items:center; gap:4px; font-size:11px; color:var(--fg-muted); margin-top:8px; }
+  .heatmap-legend .heatmap-cell { width:10px; height:10px; }
+  .heatmap-wrap { padding:0 16px 16px; }
+
+  .right-panel { border-left:1px solid var(--border); padding:24px 16px; display:flex; flex-direction:column; gap:16px; }
+  .stat-tile { padding:12px 0; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:4px; }
+  .stat-tile:last-of-type { border-bottom:none; }
+  .stat-tile .label { font-size:12px; color:var(--fg-muted); }
+  .stat-tile .value { font-size:22px; font-weight:600; }
+  .stat-tile .value .unit { font-size:13px; font-weight:400; color:var(--fg-muted); margin-left:2px; }
+  .stat-tile .delta { font-size:11px; color:var(--success); }
+  .queue-list { display:flex; flex-direction:column; }
+  .queue-item { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; border-top:1px solid var(--border); }
+  .queue-item:first-child { border-top:none; }
+  .queue-word { font-weight:500; font-size:13px; }
+  .queue-meta { font-size:11px; color:var(--fg-muted); }
+  .badge { display:inline-flex; align-items:center; height:18px; padding:0 7px; border-radius:var(--radius-pill); font-size:11px; font-weight:500; }
+  .badge-warning { background:color-mix(in srgb, var(--warning) 18%, transparent); color:var(--warning); }
+  .badge-danger { background:color-mix(in srgb, var(--danger) 18%, transparent); color:var(--danger); }
+  .media-item { display:flex; gap:12px; padding:12px 16px; border-top:1px solid var(--border); align-items:center; }
+  .media-item:first-child { border-top:none; }
+  .media-thumb { width:36px; height:36px; border-radius:var(--radius-control); background:var(--bg-surface-hover); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .media-title { font-weight:500; font-size:13px; }
+  .media-meta { font-size:11px; color:var(--fg-muted); }
+  .variant-banner { position:fixed; top:0; left:0; right:0; z-index:10; background:var(--info-700); color:#eaf6fb; font-size:12px; padding:8px 16px; text-align:center; }
+  .layout { margin-top:32px; }
+</style>
+</head>
+<body>
+<div class="variant-banner">Mockup 變體 C — Command Center（僅供版型比較，非最終實作）</div>
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-logo">IT</div>
+    <div class="rail-nav">
+      <div class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
+      <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+      <div class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+    </div>
+    <div class="rail-lang"><button class="active">DE</button><button>EN</button></div>
+  </aside>
+
+  <main class="center">
+    <div class="card focus-card">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 160 160" width="160" height="160">
+          <circle class="ring-track" cx="80" cy="80" r="70"/>
+          <circle class="ring-fill" cx="80" cy="80" r="70" stroke-dasharray="123 440"/>
+        </svg>
+        <div class="ring-center"><span class="n">5/18</span><span class="l">已複習</span></div>
+      </div>
+      <div class="focus-right">
+        <span class="focus-flame">🔥 連續複習 12 天</span>
+        <span class="focus-title">還有 13 張待複習</span>
+        <span class="focus-sub">12 張到期 · 6 張新卡 · 預估剩 10 分鐘</span>
+        <button class="btn">繼續複習 →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">單字成長</h2>
+      <p class="section-sub">過去 14 天新增單字數 · 目前共 342 個單字</p>
+      <div class="chart-body">
+        <svg viewBox="0 0 700 170" width="100%" height="170" role="img" aria-label="過去14天每日新增單字折線圖">
+          <line class="grid-line" x1="40" y1="20" x2="680" y2="20"/>
+          <line class="grid-line" x1="40" y1="85" x2="680" y2="85"/>
+          <line class="grid-line" x1="40" y1="150" x2="680" y2="150"/>
+          <text x="30" y="24" text-anchor="end">7</text>
+          <text x="30" y="89" text-anchor="end">4</text>
+          <text x="30" y="154" text-anchor="end">1</text>
+          <polygon class="trend-area" points="40,128.3 89.2,106.7 138.5,150 187.7,85 236.9,128.3 286.2,63.3 335.4,106.7 384.6,41.7 433.8,128.3 483.1,85 532.3,20 581.5,106.7 630.8,63.3 680,85 680,150 40,150"/>
+          <polyline class="trend-line" points="40,128.3 89.2,106.7 138.5,150 187.7,85 236.9,128.3 286.2,63.3 335.4,106.7 384.6,41.7 433.8,128.3 483.1,85 532.3,20 581.5,106.7 630.8,63.3 680,85"/>
+          <circle class="trend-end" cx="680" cy="85" r="4"/>
+          <text class="trend-label" x="655" y="72" text-anchor="end">今天 +4</text>
+          <text x="40" y="166">7/12</text>
+          <text x="355" y="166" text-anchor="middle">7/19</text>
+          <text x="680" y="166" text-anchor="end">7/25</text>
+        </svg>
+        <details class="table-toggle">
+          <summary>顯示資料表格</summary>
+          <table>
+            <thead><tr><th>日期</th><th>新增單字</th></tr></thead>
+            <tbody>
+              <tr><td>7/12</td><td>2</td></tr><tr><td>7/13</td><td>3</td></tr><tr><td>7/14</td><td>1</td></tr>
+              <tr><td>7/15</td><td>4</td></tr><tr><td>7/16</td><td>2</td></tr><tr><td>7/17</td><td>5</td></tr>
+              <tr><td>7/18</td><td>3</td></tr><tr><td>7/19</td><td>6</td></tr><tr><td>7/20</td><td>2</td></tr>
+              <tr><td>7/21</td><td>4</td></tr><tr><td>7/22</td><td>7</td></tr><tr><td>7/23</td><td>3</td></tr>
+              <tr><td>7/24</td><td>5</td></tr><tr><td>7/25</td><td>4</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+
+    <div class="bottom-row">
+      <div class="card">
+        <h2 class="section-title">複習日曆</h2>
+        <p class="section-sub">過去 5 週每日複習張數</p>
+        <div class="heatmap-wrap">
+          <div class="heatmap-grid">
+            <div class="heatmap-cell lv1" title="第1週 週一 · 3 張"></div><div class="heatmap-cell lv2" title="第1週 週二 · 5 張"></div><div class="heatmap-cell lv0" title="第1週 週三 · 0 張"></div><div class="heatmap-cell lv3" title="第1週 週四 · 8 張"></div><div class="heatmap-cell lv3" title="第1週 週五 · 12 張"></div><div class="heatmap-cell lv0" title="第1週 週六 · 0 張"></div><div class="heatmap-cell lv2" title="第1週 週日 · 6 張"></div>
+            <div class="heatmap-cell lv3" title="第2週 週一 · 9 張"></div><div class="heatmap-cell lv2" title="第2週 週二 · 4 張"></div><div class="heatmap-cell lv2" title="第2週 週三 · 7 張"></div><div class="heatmap-cell lv0" title="第2週 週四 · 0 張"></div><div class="heatmap-cell lv3" title="第2週 週五 · 10 張"></div><div class="heatmap-cell lv2" title="第2週 週六 · 6 張"></div><div class="heatmap-cell lv1" title="第2週 週日 · 3 張"></div>
+            <div class="heatmap-cell lv2" title="第3週 週一 · 5 張"></div><div class="heatmap-cell lv3" title="第3週 週二 · 8 張"></div><div class="heatmap-cell lv3" title="第3週 週三 · 12 張"></div><div class="heatmap-cell lv2" title="第3週 週四 · 6 張"></div><div class="heatmap-cell lv3" title="第3週 週五 · 9 張"></div><div class="heatmap-cell lv2" title="第3週 週六 · 4 張"></div><div class="heatmap-cell lv0" title="第3週 週日 · 0 張"></div>
+            <div class="heatmap-cell lv2" title="第4週 週一 · 7 張"></div><div class="heatmap-cell lv3" title="第4週 週二 · 10 張"></div><div class="heatmap-cell lv2" title="第4週 週三 · 6 張"></div><div class="heatmap-cell lv3" title="第4週 週四 · 9 張"></div><div class="heatmap-cell lv3" title="第4週 週五 · 12 張"></div><div class="heatmap-cell lv3" title="第4週 週六 · 8 張"></div><div class="heatmap-cell lv2" title="第4週 週日 · 5 張"></div>
+            <div class="heatmap-cell lv3" title="第5週 週一 · 9 張"></div><div class="heatmap-cell lv4" title="第5週 週二 · 14 張"></div><div class="heatmap-cell lv2" title="第5週 週三 · 7 張"></div><div class="heatmap-cell lv3" title="第5週 週四 · 11 張"></div><div class="heatmap-cell lv4" title="第5週 週五 · 16 張"></div><div class="heatmap-cell lv3" title="第5週 週六 · 10 張"></div><div class="heatmap-cell lv5" title="第5週 週日(今天) · 18 張"></div>
+          </div>
+          <div class="heatmap-legend">少 <div class="heatmap-cell lv0"></div><div class="heatmap-cell lv1"></div><div class="heatmap-cell lv2"></div><div class="heatmap-cell lv3"></div><div class="heatmap-cell lv4"></div><div class="heatmap-cell lv5"></div> 多</div>
+          <details class="table-toggle">
+            <summary>顯示資料表格</summary>
+            <table>
+              <thead><tr><th>週次</th><th>週一</th><th>週二</th><th>週三</th><th>週四</th><th>週五</th><th>週六</th><th>週日</th></tr></thead>
+              <tbody>
+                <tr><td>第1週</td><td>3</td><td>5</td><td>0</td><td>8</td><td>12</td><td>0</td><td>6</td></tr>
+                <tr><td>第2週</td><td>9</td><td>4</td><td>7</td><td>0</td><td>10</td><td>6</td><td>3</td></tr>
+                <tr><td>第3週</td><td>5</td><td>8</td><td>12</td><td>6</td><td>9</td><td>4</td><td>0</td></tr>
+                <tr><td>第4週</td><td>7</td><td>10</td><td>6</td><td>9</td><td>12</td><td>8</td><td>5</td></tr>
+                <tr><td>第5週</td><td>9</td><td>14</td><td>7</td><td>11</td><td>16</td><td>10</td><td>18</td></tr>
+              </tbody>
+            </table>
+          </details>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">最近追劇</h2>
+        <div class="queue-list">
+          <div class="media-item"><div class="media-thumb">🎬</div><div><div class="media-title">Friends · S3E12</div><div class="media-meta">2026-07-24 · 22 分鐘</div></div></div>
+          <div class="media-item"><div class="media-thumb">🎬</div><div><div class="media-title">Dark · S1E3</div><div class="media-meta">2026-07-22 · 51 分鐘</div></div></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="right-panel">
+    <div class="stat-tile"><span class="label">7 日正確率</span><span class="value">87<span class="unit">%</span></span><span class="delta">↑ 較上週 +3%</span></div>
+    <div class="stat-tile"><span class="label">本週觀看時數</span><span class="value">3<span class="unit">h 40m</span></span></div>
+    <div class="stat-tile"><span class="label">總單字量</span><span class="value">342<span class="unit">個</span></span><span class="delta">本週 +23</span></div>
+
+    <div class="card">
+      <h2 class="section-title">複習佇列</h2>
+      <p class="section-sub">今日到期</p>
+      <div class="queue-list">
+        <div class="queue-item"><div><div class="queue-word">der Tisch</div><div class="queue-meta">逾期 1 天</div></div><span class="badge badge-warning">到期</span></div>
+        <div class="queue-item"><div><div class="queue-word">die Freiheit</div><div class="queue-meta">Leech</div></div><span class="badge badge-danger">Leech</span></div>
+        <div class="queue-item"><div><div class="queue-word">das Fenster</div></div><span class="badge badge-warning">到期</span></div>
+        <div class="queue-item"><div><div class="queue-word">schnell</div></div><span class="badge badge-warning">到期</span></div>
+        <div class="queue-item"><div><div class="queue-word">die Uhr</div></div><span class="badge badge-warning">到期</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+</body>
+</html>
