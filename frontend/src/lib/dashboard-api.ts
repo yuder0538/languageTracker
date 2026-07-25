@@ -76,3 +76,11 @@ export function fetchReviewHistory(language: AppLanguage, days = 35) {
 export function createVocabulary(payload: VocabularyCreate) {
   return apiPost<VocabularyRead>("/vocabulary", payload)
 }
+
+export function enrichEnDictionary(id: number) {
+  return apiPost<VocabularyRead>(`/vocabulary/${id}/enrich/en-dictionary`, {})
+}
+
+export function enrichDeTranslation(id: number) {
+  return apiPost<VocabularyRead>(`/vocabulary/${id}/enrich/de-translation`, {})
+}

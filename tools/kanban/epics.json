@@ -143,6 +143,10 @@
         {
           "name": "單字庫管理頁面",
           "definition": "2026-07-25 依 Niko 確認的範圍：只做「單字列表（唯讀）＋新增單字表單」，讓 Dashboard 不再是空狀態。後端 API 已完整（CRUD／CSV 匯入匯出／字典自動查詢），但本輪刻意不做編輯、刪除、自動查字典/翻譯、CSV 匯入匯出，留給後續 User Story。"
+        },
+        {
+          "name": "單字自動查字典/翻譯",
+          "definition": "2026-07-25 Niko 確認要做：單字庫列表每列加一個「自動查詢」動作，英文單字呼叫既有的 POST /vocabulary/{id}/enrich/en-dictionary（回填音標/英文解釋），德文單字呼叫既有的 POST /vocabulary/{id}/enrich/de-translation（回填中文翻譯）。純前端串接既有後端能力，不含 CSV 匯入匯出、例句對齊（SRT 字幕）。"
         }
       ]
     }

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, RotateCcwIcon } from "lucide-react"
+import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon } from "lucide-react"
 
 import { AppRail } from "@/components/app-rail"
 import { Button } from "@/components/ui/button"
@@ -36,6 +36,8 @@ import { useLanguage } from "@/lib/language-context"
 import { useApi } from "@/hooks/use-api"
 import {
   createVocabulary,
+  enrichDeTranslation,
+  enrichEnDictionary,
   fetchMediaLogs,
   fetchVocabulary,
   type VocabularyRead,
@@ -218,7 +220,7 @@ function AddWordDialog({
               onChange={(e) => setNotes(e.target.value)}
               disabled={submitting}
             />
-            <FieldDescription>例句與音標之後可用「自動查字典」功能補上（尚未實作）。</FieldDescription>
+            <FieldDescription>新增後可在列表點「自動查詢」圖示，回填音標/解釋（英文）或翻譯（德文）。</FieldDescription>
           </Field>
         </div>
 
@@ -237,8 +239,27 @@ export default function Vocabulary() {
   const { language } = useLanguage()
   const vocabulary = useApi(() => fetchVocabulary(language), [language])
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [enrichingIds, setEnrichingIds] = useState<Set<number>>(new Set())
 
   const list: VocabularyRead[] = vocabulary.status === "success" ? vocabulary.data : []
+
+  async function handleEnrich(word: VocabularyRead) {
+    setEnrichingIds((prev) => new Set(prev).add(word.id))
+    try {
+      await (language === "de" ? enrichDeTranslation(word.id) : enrichEnDictionary(word.id))
+      toast.success(`已更新「${word.headword}」`)
+      vocabulary.retry()
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "自動查詢失敗，請重試"
+      toast.error(message)
+    } finally {
+      setEnrichingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(word.id)
+        return next
+      })
+    }
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -292,23 +313,52 @@ export default function Vocabulary() {
                   <TableHead>詞性</TableHead>
                   <TableHead>翻譯</TableHead>
                   <TableHead>冠詞</TableHead>
-                  <TableHead className="text-right">建立時間</TableHead>
+                  <TableHead>建立時間</TableHead>
+                  <TableHead className="text-right">自動查詢</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {list.map((word) => (
-                  <TableRow key={word.id}>
-                    <TableCell className="font-medium">{word.headword}</TableCell>
-                    <TableCell className="text-muted-foreground">{word.part_of_speech ?? "—"}</TableCell>
-                    <TableCell className="text-muted-foreground">{word.translation_zh ?? "—"}</TableCell>
-                    <TableCell>
-                      {word.de_artikel ? <Badge variant="secondary">{word.de_artikel}</Badge> : "—"}
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-muted-foreground">
-                      {formatDateTime(word.created_at)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {list.map((word) => {
+                  const isEnriching = enrichingIds.has(word.id)
+                  return (
+                    <TableRow key={word.id}>
+                      <TableCell className="font-medium">
+                        {word.headword}
+                        {word.ipa && (
+                          <span className="ml-2 font-mono text-xs text-muted-foreground">/{word.ipa}/</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{word.part_of_speech ?? "—"}</TableCell>
+                      <TableCell
+                        className="max-w-[256px] truncate text-muted-foreground"
+                        title={word.translation_zh ?? word.en_definition ?? undefined}
+                      >
+                        {word.translation_zh ?? "—"}
+                      </TableCell>
+                      <TableCell>
+                        {word.de_artikel ? <Badge variant="secondary">{word.de_artikel}</Badge> : "—"}
+                      </TableCell>
+                      <TableCell className="font-mono text-muted-foreground">
+                        {formatDateTime(word.created_at)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          disabled={isEnriching}
+                          onClick={() => handleEnrich(word)}
+                          aria-label={`自動查詢「${word.headword}」`}
+                        >
+                          {isEnriching ? (
+                            <Loader2Icon className="animate-spin" />
+                          ) : (
+                            <SearchIcon />
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           </div>
