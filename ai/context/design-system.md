@@ -2,7 +2,7 @@
 
 由 Epic 0「專案設置」的「UI 設計系統」User Story 分五階段（框架 → 風格 → design token → 元件庫 → 版面）逐步填寫。**這份文件是後續所有功能 Epic 做 UI 時的單一事實來源**：任何前端任務開工前都要先讀它，能用既有 token／元件就必須用；缺的元件要照既有風格補做並登記回這裡（見 `ai/skills/project-kickoff.md` 步驟 6 與 `ai/skills/ui-mockup-gate.md`）。
 
-狀態：S1、S2、S3、S4 已核准；S5 待展開。
+狀態：S1-S5 已核准，UI 設計系統五階段流程完成。後續功能 Epic 的 UI 任務開工前仍須先讀本文件；新畫面缺元件時依既有規則補做並登記回本文件。
 
 ## S1 底層框架
 
@@ -180,7 +180,8 @@
 
 ## S5 各介面版面
 
+本產品只有一種使用者端（本機單人工具，無管理員／顧客之分）。
+
 | 介面／使用者端 | 選定版型 | Mockup 決策紀錄 | 人工核准 |
 |---|---|---|---|
-| 待補（例如 管理員後台） | 待補 | 連結到 `ai/artifacts/<Epic>/mockup-decision-<畫面>.md` | 待補 |
-| 待補（例如 顧客前台） | 待補 | 待補 | 待補 |
+| Dashboard（唯一使用者端首頁） | 變體 C — Command Center（左側 icon rail＋中央進度環主視覺＋右側 KPI／佇列欄，下方橫跨全寬放熱力圖與追劇紀錄） | `ai/artifacts/專案設置/mockup-decision-dashboard.md` | Niko / 2026-07-25 |

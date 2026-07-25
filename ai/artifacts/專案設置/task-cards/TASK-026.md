@@ -8,10 +8,10 @@
 - 上層 User Story：UI 設計系統
 - 分軌：不適用
 - 前置任務（dependsOn）：TASK-025（S4 已核准：核心元件庫）
-- 狀態：verify（等待人工選定版型）
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：Niko（待選）
+- 人工核准者：Niko / 2026-07-25（選定變體 C — Command Center）
 
 ## 目標
 
@@ -75,9 +75,10 @@
   - `tools/kanban/cards/TASK-026.json`（stage 轉 verify，links 補上 screenSpec／mockupDecision）
 - 執行過的指令：無（純文件與靜態 HTML 產出）。
 - 測試輸出：不適用。
-- 螢幕截圖：Artifact 連結見完成證據（比較頁）。
+- 螢幕截圖：三變體比較頁（Artifact）：https://claude.ai/code/artifact/521c4993-e344-46d3-8052-85b565e4790f
 - 已知限制：
   1. 三個變體皆為桌面版優先，行動裝置版斷點細節留待選定版型後在 `screen-spec-dashboard.md` 補完整規格。
   2. 圖表的 hover 互動目前只用原生 `title` 屬性做最基本的提示，正式 React 實作時應依 `dataviz` skill 的 `interaction.md` 補上完整的 crosshair/tooltip。
   3. 三個變體都還沒有「載入中」「空狀態」「錯誤」的實際畫面（僅在 screen-spec 用文字描述必要行為），待選定版型、進入實作階段時依 screen-spec 補上對應截圖。
-- 後續任務：Niko 選定版型後，回填本卡與 `mockup-decision-dashboard.md` 的核准紀錄並轉 `done`；之後「本地 Web UI」Epic 開始拆 Dashboard 實際實作的任務卡（含 React 版面、API 串接、載入/空/錯誤狀態的真正實作）。
+- 人工核准紀錄：Niko 在比較頁（見完成證據 Artifact 連結）看過三個變體後選定「變體 C — Command Center」，理由與備註見 `mockup-decision-dashboard.md`。`design-system.md` 的 S5 章節已回填。
+- 後續任務：「本地 Web UI」Epic 開始拆 Dashboard 實際實作的任務卡（含 React 版面、API 串接、載入/空/錯誤狀態的真正實作），需依 `screen-spec-dashboard.md` 的已知限制（行動裝置版斷點、圖表 hover 互動、三態畫面）補齊規格細節。

@@ -2,7 +2,7 @@
   "id": "TASK-026",
   "title": "UI 設計系統 S5：Dashboard 版面 mockup",
   "content": "用已定案的 token 與元件庫拼出 2-3 個 Dashboard 整體版面（layout）變體，走 ui-mockup-gate 讓人工選定版型。詳見 ai/artifacts/專案設置/task-cards/TASK-026.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,11 +19,11 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
-    "product": false,
-    "ui": false,
+    "product": true,
+    "ui": true,
     "architecture": false,
     "security": false,
     "test": false,
@@ -48,10 +48,11 @@
       "寫了 screen-spec-dashboard.md（畫面規格：狀態、互動、設計系統對照、視覺驗收標準）與 mockup-decision-dashboard.md（三變體比較表，選定變體待 Niko 填寫）。",
       "未新做任何需要登記回 S4 inventory 的核心元件；圖表視覺化屬本畫面特有，暫不登記，理由見 mockup-decision-dashboard.md。"
     ],
-    "residual": "尚未選定版型，未進行任何 React 實作（依 ui-mockup-gate 規則，人工選擇變體之前停止實作）。三個 mockup 檔案為純靜態 HTML（自成一體，無外部依賴），可直接用瀏覽器開啟比較，也已發布為 Artifact 方便線上比較。"
+    "residual": "選定版型後尚未進行任何 React 實作（依 ui-mockup-gate 規則，mockup 階段止於版型比較與決策）。實際 Dashboard 頁面（React 版面、API 串接、載入/空/錯誤狀態）留給「本地 Web UI」Epic 底下的後續任務卡；`screen-spec-dashboard.md` 的已知限制（行動裝置版斷點、圖表 hover 互動細節）也留待實作階段補齊。"
   },
   "comments": [
     "2026-07-25: 建卡，等 S4（TASK-025）核准後開工。完成後「本地 Web UI」Epic 自己的 User Story（各 dashboard 功能卡片）才開始拆分。",
-    "2026-07-25: 3 個 Dashboard 版面變體已產出（A Sidebar Admin／B 單欄 Focus／C Command Center），screen-spec 與 mockup-decision 文件已寫好，轉 verify 等待 Niko 選定版型。"
+    "2026-07-25: 3 個 Dashboard 版面變體已產出（A Sidebar Admin／B 單欄 Focus／C Command Center），screen-spec 與 mockup-decision 文件已寫好，轉 verify 等待 Niko 選定版型。",
+    "2026-07-25: Niko 看過三變體比較頁後選定「變體 C — Command Center」，理由：進度環比純數字更有動態感、最符合字幕夜場沉浸式氣質、桌面空間利用率最高。mockup-decision-dashboard.md 與 design-system.md S5 章節皆已回填核准紀錄，UI 設計系統五階段流程（S1-S5）全部完成，轉 done。"
   ]
 }
