@@ -1,6 +1,6 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon, Volume2Icon } from "lucide-react"
+import { PlusIcon, RotateCcwIcon, SearchIcon, Loader2Icon, Volume2Icon, PencilIcon } from "lucide-react"
 
 import { AppRail } from "@/components/app-rail"
 import { Button } from "@/components/ui/button"
@@ -40,6 +40,7 @@ import {
   enrichEnDictionary,
   fetchMediaLogs,
   fetchVocabulary,
+  updateVocabulary,
   type VocabularyRead,
 } from "@/lib/dashboard-api"
 
@@ -68,17 +69,20 @@ function speak(text: string, language: "en" | "de", onEnd: () => void) {
   window.speechSynthesis.speak(utterance)
 }
 
-function AddWordDialog({
+function WordDialog({
   open,
   onOpenChange,
-  onCreated,
+  onSaved,
+  editingWord,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onCreated: () => void
+  onSaved: () => void
+  editingWord: VocabularyRead | null
 }) {
   const { language } = useLanguage()
   const mediaLogs = useApi(() => fetchMediaLogs(language), [language])
+  const isEditing = editingWord !== null
 
   const [headword, setHeadword] = useState("")
   const [headwordTouched, setHeadwordTouched] = useState(false)
@@ -91,15 +95,17 @@ function AddWordDialog({
 
   const headwordError = headwordTouched && headword.trim() === "" ? "單字為必填欄位" : ""
 
-  function reset() {
-    setHeadword("")
+  // Reset (create) or prefill (edit) the form every time the dialog opens.
+  useEffect(() => {
+    if (!open) return
+    setHeadword(editingWord?.headword ?? "")
     setHeadwordTouched(false)
-    setPartOfSpeech("")
-    setDeArtikel("")
-    setTranslationZh("")
-    setMediaLogId("")
-    setNotes("")
-  }
+    setPartOfSpeech(editingWord?.part_of_speech ?? "")
+    setDeArtikel(editingWord?.de_artikel ?? "")
+    setTranslationZh(editingWord?.translation_zh ?? "")
+    setMediaLogId(editingWord?.media_log_id ? String(editingWord.media_log_id) : "")
+    setNotes(editingWord?.notes ?? "")
+  }, [open, editingWord])
 
   async function handleSubmit() {
     setHeadwordTouched(true)
@@ -107,21 +113,25 @@ function AddWordDialog({
 
     setSubmitting(true)
     try {
-      await createVocabulary({
-        language,
+      const fields = {
         headword: headword.trim(),
         part_of_speech: partOfSpeech || null,
         de_artikel: language === "de" && deArtikel ? (deArtikel as "der" | "die" | "das") : null,
         translation_zh: translationZh.trim() || null,
         media_log_id: mediaLogId ? Number(mediaLogId) : null,
         notes: notes.trim() || null,
-      })
-      toast.success(`已新增「${headword.trim()}」`)
-      reset()
+      }
+      if (isEditing) {
+        await updateVocabulary(editingWord.id, fields)
+        toast.success(`已更新「${headword.trim()}」`)
+      } else {
+        await createVocabulary({ language, ...fields })
+        toast.success(`已新增「${headword.trim()}」`)
+      }
       onOpenChange(false)
-      onCreated()
+      onSaved()
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "新增失敗，請重試"
+      const message = err instanceof ApiError ? err.message : isEditing ? "更新失敗，請重試" : "新增失敗，請重試"
       toast.error(message)
     } finally {
       setSubmitting(false)
@@ -137,7 +147,7 @@ function AddWordDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>新增單字</DialogTitle>
+          <DialogTitle>{isEditing ? "編輯單字" : "新增單字"}</DialogTitle>
           <DialogDescription>目前語言視角：{language === "de" ? "Deutsch" : "English"}</DialogDescription>
         </DialogHeader>
 
@@ -238,14 +248,14 @@ function AddWordDialog({
               onChange={(e) => setNotes(e.target.value)}
               disabled={submitting}
             />
-            <FieldDescription>新增後可在列表點「自動查詢」圖示，回填音標/解釋（英文）或翻譯（德文）。</FieldDescription>
+            <FieldDescription>可在列表點「自動查詢」圖示，回填音標/解釋（英文）或翻譯（德文），翻錯了也能回來這裡手動修正。</FieldDescription>
           </Field>
         </div>
 
         <DialogFooter>
           <DialogClose render={<Button variant="outline" disabled={submitting}>取消</Button>} />
           <Button loading={submitting} onClick={handleSubmit}>
-            新增
+            {isEditing ? "儲存" : "新增"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -257,10 +267,21 @@ export default function Vocabulary() {
   const { language } = useLanguage()
   const vocabulary = useApi(() => fetchVocabulary(language), [language])
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingWord, setEditingWord] = useState<VocabularyRead | null>(null)
   const [enrichingIds, setEnrichingIds] = useState<Set<number>>(new Set())
   const [speakingId, setSpeakingId] = useState<number | null>(null)
 
   const list: VocabularyRead[] = vocabulary.status === "success" ? vocabulary.data : []
+
+  function openCreateDialog() {
+    setEditingWord(null)
+    setDialogOpen(true)
+  }
+
+  function openEditDialog(word: VocabularyRead) {
+    setEditingWord(word)
+    setDialogOpen(true)
+  }
 
   function handleSpeak(word: VocabularyRead) {
     setSpeakingId(word.id)
@@ -297,7 +318,7 @@ export default function Vocabulary() {
               {vocabulary.status === "success" && ` · 共 ${list.length} 個單字`}
             </p>
           </div>
-          <Button onClick={() => setDialogOpen(true)}>
+          <Button onClick={openCreateDialog}>
             <PlusIcon /> 新增單字
           </Button>
         </div>
@@ -322,7 +343,7 @@ export default function Vocabulary() {
         {vocabulary.status === "success" && list.length === 0 && (
           <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-8 text-sm text-muted-foreground">
             還沒有任何單字，新增第一個吧。
-            <Button onClick={() => setDialogOpen(true)}>
+            <Button onClick={openCreateDialog}>
               <PlusIcon /> 新增單字
             </Button>
           </div>
@@ -338,7 +359,7 @@ export default function Vocabulary() {
                   <TableHead>翻譯</TableHead>
                   <TableHead>冠詞</TableHead>
                   <TableHead>建立時間</TableHead>
-                  <TableHead className="text-right">自動查詢</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -381,6 +402,14 @@ export default function Vocabulary() {
                         <Button
                           variant="ghost"
                           size="icon-sm"
+                          onClick={() => openEditDialog(word)}
+                          aria-label={`編輯「${word.headword}」`}
+                        >
+                          <PencilIcon />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
                           disabled={isEnriching}
                           onClick={() => handleEnrich(word)}
                           aria-label={`自動查詢「${word.headword}」`}
@@ -401,7 +430,12 @@ export default function Vocabulary() {
         )}
       </main>
 
-      <AddWordDialog open={dialogOpen} onOpenChange={setDialogOpen} onCreated={vocabulary.retry} />
+      <WordDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSaved={vocabulary.retry}
+        editingWord={editingWord}
+      />
     </div>
   )
 }

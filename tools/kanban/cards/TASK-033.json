@@ -1,0 +1,54 @@
+{
+  "id": "TASK-033",
+  "title": "單字編輯功能",
+  "content": "單字庫列表加編輯圖示，重用新增表單改成通用 Dialog（新增/編輯共用），串接既有 PATCH /vocabulary/{id}。讓自動翻譯翻錯的資料可以手動修正。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-033.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "單字庫管理頁面",
+  "dependsOn": ["TASK-030"],
+  "order": 33,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/本地 Web UI/screen-spec-vocabulary.md",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-033.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "新增 apiPatch（api.ts）與 updateVocabulary/VocabularyUpdate（dashboard-api.ts），呼叫既有、Epic 1 已測試過的 PATCH /vocabulary/{id}，未動 backend/。",
+      "AddWordDialog 重構為 WordDialog，用 editingWord prop 判斷新增/編輯模式，避免維護兩份重複表單程式碼；useEffect 依 [open, editingWord] 開啟時自動重設/預填表單。",
+      "動機：Niko 實測發現自動翻譯把 das Fenster 翻成「此」（MyMemory 翻譯 API 品質問題），有編輯功能才能手動修正錯誤資料。",
+      "編輯範圍與新增表單一致（單字/詞性/冠詞/翻譯/來源劇集/備註），不含 ipa/en_definition/example_sentence/刪除。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機測試：編輯一個單字（例如把「das Fenster」的翻譯從「此」改成「窗戶」），確認表格立即更新；也測一下取消不會誤改資料。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+  ]
+}
