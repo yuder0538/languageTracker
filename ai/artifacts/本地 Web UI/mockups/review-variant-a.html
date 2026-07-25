@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>複習 — 變體 A：翻牌式</title>
+<style>
+  :root {
+    --grey-100:#ededed; --grey-500:#6e6e72; --grey-800:#26262a; --grey-900:#1b1b1e; --grey-950:#121214;
+    --brand-500:#e8b944; --info-500:#4fa3c7; --danger:#e5484d; --success:#3ea574; --warning:#d97b29;
+    --border:#2b2b2e; --fg:#ededed; --fg-muted:#9a9a9a;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--grey-950); color:var(--fg); font-family:var(--font-sans); font-size:14px; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; }
+  .variant-banner { background:var(--info-500); color:var(--grey-950); font-size:12px; padding:8px 16px; text-align:center; font-weight:500; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; }
+  .exit-btn { width:32px; height:32px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--fg-muted); cursor:pointer; }
+  .progress-wrap { flex:1; margin:0 24px; }
+  .progress-track { height:6px; border-radius:999px; background:var(--grey-800); overflow:hidden; }
+  .progress-fill { height:100%; width:16%; background:var(--brand-500); border-radius:999px; }
+  .progress-label { font-size:12px; color:var(--fg-muted); margin-top:6px; text-align:center; }
+  .streak { font-size:12px; color:var(--brand-500); font-weight:500; white-space:nowrap; }
+
+  .stage { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; gap:24px; }
+  .card {
+    width:100%; max-width:480px; min-height:280px; border-radius:8px; background:var(--grey-900);
+    ring:1px solid var(--border); box-shadow:0 1px 2px rgba(0,0,0,.24), 0 1px 1px rgba(0,0,0,.16);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; padding:32px;
+    position:relative; text-align:center;
+  }
+  .card-label { position:absolute; top:16px; left:16px; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--fg-muted); }
+  .card-word { font-size:36px; font-weight:600; }
+  .card-pos { font-size:13px; color:var(--fg-muted); }
+  .divider { width:48px; height:1px; background:var(--border); margin:12px 0; }
+  .card-answer { font-size:24px; font-weight:500; color:var(--brand-500); }
+  .card-hint { font-size:12px; color:var(--fg-muted); margin-top:4px; }
+
+  .grade-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; width:100%; max-width:480px; }
+  .grade-btn { height:56px; border-radius:8px; border:1px solid var(--border); background:var(--grey-900); color:var(--fg); cursor:pointer; font-family:inherit; font-size:13px; font-weight:600; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
+  .grade-btn .key { font-size:11px; font-weight:400; color:var(--fg-muted); }
+  .grade-again { color:var(--danger); }
+  .grade-hard { color:var(--warning); }
+  .grade-good { color:var(--info-500); }
+  .grade-easy { color:var(--success); }
+</style>
+</head>
+<body>
+<div class="variant-banner">Mockup 變體 A — 翻牌式（已顯示翻面後的狀態；僅供版型比較，非最終實作）</div>
+<div class="topbar">
+  <button class="exit-btn">✕</button>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill"></div></div>
+    <div class="progress-label">3 / 18</div>
+  </div>
+  <span class="streak">🔥 12</span>
+</div>
+
+<div class="stage">
+  <div class="card">
+    <span class="card-label">已翻面</span>
+    <div class="card-word" style="font-size:20px; color:var(--fg-muted); text-decoration:line-through; opacity:.5;">die Freiheit</div>
+    <div class="divider"></div>
+    <div class="card-answer">自由</div>
+    <div class="card-hint">名詞 · die</div>
+  </div>
+
+  <div class="grade-row">
+    <button class="grade-btn grade-again">忘記<span class="key">1</span></button>
+    <button class="grade-btn grade-hard">困難<span class="key">2</span></button>
+    <button class="grade-btn grade-good">一般<span class="key">3</span></button>
+    <button class="grade-btn grade-easy">容易<span class="key">4</span></button>
+  </div>
+</div>
+</body>
+</html>
