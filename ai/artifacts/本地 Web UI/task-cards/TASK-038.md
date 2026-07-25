@@ -65,7 +65,7 @@ Niko 實測發現「自動查詢」翻出來的中文是簡體字（例如 laufe
   - `curl "https://api.mymemory.translated.net/get?q=laufen&langpair=de%7Czh"` → 確認修正前回傳簡體「运行」，`target: zh-CN`
   - `pytest -q` → 185 passed（含本卡修改的測試）
   - `ruff check .` → All checks passed
-- 測試輸出：見上，全數通過。
+- 測試輸出：見上，全數通過。Niko 亦於重啟後端後在實際 App 重新查詢單字，確認顯示正確繁體中文（「中文也沒問題」）。
 - 螢幕截圖：不適用。
 - 已知限制：MyMemory 是翻譯記憶庫比對服務，即使語言代碼修正為繁體，個別詞語的翻譯品質仍可能不準確（見 TASK-031 已記錄的已知限制），本卡只解決「簡體 vs 繁體」這個字集問題，不解決翻譯準確度問題；準確度問題已有 TASK-033 的編輯功能作為手動修正管道。
 - 後續任務：無。

@@ -8,10 +8,10 @@
 - 上層 User Story：德文冠詞填空複習模式
 - 分軌：前端（後端 API 已存在，見情境包）
 - 前置任務（dependsOn）：TASK-034
-- 狀態：verify（等待人工本機驗證）
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待 Niko 本機驗證後追加簽核）
+- 人工核准者：Niko（2026-07-25，本機驗證通過）
 
 ## 目標
 
@@ -54,10 +54,10 @@
 - 單元測試：不適用（此階段前端無測試框架）。
 - 整合測試：不適用（呼叫的既有後端端點已有 Epic 3 的 pytest 覆蓋）。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint` 確認；此執行環境無 Node.js，未能跑。
-- Build：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- 螢幕截圖：待人工本機驗證後提供；此環境無瀏覽器/螢幕截圖工具，未能產出。
+- 型別檢查：Niko 本機執行 `npm run build` 通過，無型別錯誤。
+- Lint：Niko 本機執行 `npm run lint` 通過。
+- Build：Niko 本機執行 `npm run build` 通過。
+- 螢幕截圖：不適用，Niko 以實機操作（點擊/鍵盤操作）驗證功能，未另外提供截圖。
 - 安全性檢查：不適用（呼叫既有後端 API，無新輸入處理邏輯）。
 
 ## 完成證據
@@ -71,11 +71,10 @@
   - `frontend/src/App.tsx`（依路徑渲染 `ReviewArtikel`）
   - `frontend/src/lib/dashboard-api.ts`（`fetchReviewQueue` 新增 `cardType` 參數、新增 `submitArtikelQuiz`／`ArtikelQuizResult`／`ReviewCardType`）
   - `ai/artifacts/本地 Web UI/screen-spec-review.md`（新增「冠詞複習模式」章節）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約）。
-- 測試輸出：不適用，待人工本機驗證。
-- 螢幕截圖：不適用，待人工本機執行後補上。
+- 執行過的指令：Niko 本機執行 `npm run build`、`npm run lint`（皆通過），並實機操作冠詞複習流程（含答對/答錯回饋、模式切換）。
+- 測試輸出：Niko 回報「冠詞練習都成功順利」「build lint 都沒問題」。
+- 螢幕截圖：不適用，Niko 以實機操作驗證。
 - 已知限制：
-  1. 此執行環境沒有 Node.js，程式碼正確性僅靠審查把關；上一輪（TASK-035/036）驗證時發現過 `Select` 元件的型別錯誤，這次雖然沒有用到 `Select`，但仍需要 Niko 本機建置把關。
-  2. `stripArtikel` 依賴 headword 命名慣例（見實作備註），非結構化解析。
-  3. 送出中沒有針對「選了答案但網路很慢」做額外的 loading 骨架，只是按鈕本身停用（`submitting` 狀態），跟標準模式的評分按鈕一致。
-- 後續任務：Niko 本機驗證後回填人工核准。
+  1. `stripArtikel` 依賴 headword 命名慣例（見實作備註），非結構化解析。
+  2. 送出中沒有針對「選了答案但網路很慢」做額外的 loading 骨架，只是按鈕本身停用（`submitting` 狀態），跟標準模式的評分按鈕一致。
+- 後續任務：無。
