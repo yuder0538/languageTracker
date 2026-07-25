@@ -1,0 +1,57 @@
+{
+  "id": "TASK-030",
+  "title": "單字庫頁面實作（含前端路由器導入）",
+  "content": "唯讀單字列表 + Dialog 彈窗新增單字，並導入最小前端路由器讓導覽真正可切換頁面。範圍不含編輯/刪除/自動查字典/CSV 匯入匯出。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-030.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "單字庫管理頁面",
+  "dependsOn": ["TASK-027", "TASK-029"],
+  "order": 30,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/本地 Web UI/screen-spec-vocabulary.md",
+    "mockupDecision": "ai/artifacts/本地 Web UI/mockup-decision-vocabulary.md",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-030.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "新增最小手刻路由器（router.tsx，History API pushState/popstate，不引入路由函式庫，因此環境無 Node.js 無法驗證新套件安裝/建置）。",
+      "把 Dashboard 的 icon rail 抽成共用 AppRail 元件，單字庫項目改為真正導覽，追劇紀錄維持 toast 佔位。",
+      "新增 Vocabulary.tsx：唯讀表格 + Dialog 新增表單，涵蓋 loading/error/empty/送出中四態；新增成功後表格自動重新整理。",
+      "api.ts 新增 apiPost；dashboard-api.ts 新增 createVocabulary，皆呼叫既有、已有測試覆蓋的後端 API，未新增或修改任何後端程式碼。",
+      "冠詞欄位只在德文語言視角顯示並送出，避免違反後端的語言特化欄位驗證規則。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機同時啟動後端與前端，實際新增一筆單字確認流程正常（成功/失敗兩種情況都測一下）。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+  ]
+}

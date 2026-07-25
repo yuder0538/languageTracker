@@ -1,4 +1,4 @@
-import { apiGet } from "@/lib/api"
+import { apiGet, apiPost } from "@/lib/api"
 import type { AppLanguage } from "@/lib/language-context"
 
 export interface VocabularyRead {
@@ -43,6 +43,16 @@ export interface ReviewHistoryDay {
   correct_count: number
 }
 
+export interface VocabularyCreate {
+  language: AppLanguage
+  headword: string
+  part_of_speech?: string | null
+  translation_zh?: string | null
+  media_log_id?: number | null
+  de_artikel?: "der" | "die" | "das" | null
+  notes?: string | null
+}
+
 export function fetchVocabulary(language: AppLanguage) {
   return apiGet<VocabularyRead[]>("/vocabulary", { language })
 }
@@ -61,4 +71,8 @@ export function fetchReviewStats(language: AppLanguage) {
 
 export function fetchReviewHistory(language: AppLanguage, days = 35) {
   return apiGet<ReviewHistoryDay[]>("/reviews/history", { language, days })
+}
+
+export function createVocabulary(payload: VocabularyCreate) {
+  return apiPost<VocabularyRead>("/vocabulary", payload)
 }

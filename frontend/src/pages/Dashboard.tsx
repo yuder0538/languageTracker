@@ -1,14 +1,10 @@
 import { toast } from "sonner"
-import {
-  LayoutDashboardIcon,
-  BookOpenIcon,
-  ClapperboardIcon,
-  RotateCcwIcon,
-} from "lucide-react"
+import { RotateCcwIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import { useLanguage, type AppLanguage } from "@/lib/language-context"
+import { AppRail } from "@/components/app-rail"
+import { useLanguage } from "@/lib/language-context"
 import { useApi } from "@/hooks/use-api"
 import {
   fetchMediaLogs,
@@ -264,7 +260,7 @@ function ReviewHeatmap({ history }: { history: ReviewHistoryDay[] }) {
 // ---- 頁面主體 ----
 
 export default function Dashboard() {
-  const { language, setLanguage } = useLanguage()
+  const { language } = useLanguage()
 
   const stats = useApi(() => fetchReviewStats(language), [language])
   const queue = useApi(() => fetchReviewQueue(language), [language])
@@ -299,59 +295,9 @@ export default function Dashboard() {
         })()
       : null
 
-  function goToComingSoon(page: string) {
-    toast.info(`${page}尚未實作，敬請期待`)
-  }
-
   return (
     <div className="flex min-h-screen">
-      <aside className="flex w-16 flex-col items-center gap-5 border-r border-border bg-card py-4">
-        <div className="flex size-7 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-          IT
-        </div>
-        <nav className="flex flex-1 flex-col gap-2">
-          <button
-            type="button"
-            aria-label="Dashboard"
-            aria-current="page"
-            className="flex size-9 items-center justify-center rounded-md bg-muted text-primary"
-          >
-            <LayoutDashboardIcon className="size-[18px]" />
-          </button>
-          <button
-            type="button"
-            aria-label="單字庫"
-            onClick={() => goToComingSoon("單字庫")}
-            className="flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <BookOpenIcon className="size-[18px]" />
-          </button>
-          <button
-            type="button"
-            aria-label="追劇紀錄"
-            onClick={() => goToComingSoon("追劇紀錄")}
-            className="flex size-9 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-          >
-            <ClapperboardIcon className="size-[18px]" />
-          </button>
-        </nav>
-        <div className="flex flex-col gap-1">
-          {(["de", "en"] as AppLanguage[]).map((lang) => (
-            <button
-              key={lang}
-              type="button"
-              onClick={() => setLanguage(lang)}
-              className={`h-6 w-8 rounded-md text-[11px] font-semibold ${
-                language === lang
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {lang.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </aside>
+      <AppRail />
 
       <main className="flex flex-1 flex-col gap-6 p-8">
         <FocusCard
