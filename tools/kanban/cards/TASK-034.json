@@ -2,7 +2,7 @@
   "id": "TASK-034",
   "title": "複習流程頁面",
   "content": "讓 Dashboard 的「開始複習」CTA 真正可用：一次一張卡片，顯示答案後 4 個評分按鈕，評完自動下一張，全部完成回 Dashboard。變體 B（上下展開式）。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-034.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,11 +19,11 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
-    "product": false,
-    "ui": false,
+    "product": true,
+    "ui": true,
     "architecture": false,
     "security": false,
     "test": false,
@@ -48,9 +48,10 @@
       "Review.tsx：Niko 選定的變體 B（上下展開式）— 單字保留原位、答案在下方展開，不做翻牌動畫；支援鍵盤操作（空白鍵顯示答案、1-4 評分）。",
       "複習佇列在頁面載入時抓一次，session 內用本地 index 前進，不重新排入答錯的卡片（刻意範圍限縮，見任務卡）。"
     ],
-    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機測試：從 Dashboard 點開始複習、走完整個複習流程（含顯示答案、評分、自動換下一張、複習完成畫面），並確認鍵盤快捷鍵可用。"
+    "residual": "無。Niko 本機測試從 Dashboard 點開始複習、走完整個複習流程（顯示答案、評分、自動換下一張、複習完成畫面）成功，npm run build/lint 皆通過。"
   },
   "comments": [
-    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。",
+    "2026-07-25: Niko 本機測試完整複習流程成功、build/lint 通過，核准轉 done。"
   ]
 }
