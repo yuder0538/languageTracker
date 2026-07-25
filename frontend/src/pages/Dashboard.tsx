@@ -56,6 +56,8 @@ function FocusCard({
   queueError,
   retryQueue,
   onStartReview,
+  showArtikelLink,
+  onStartArtikelReview,
 }: {
   stats: ReviewStats | null
   statsError: string | null
@@ -64,6 +66,8 @@ function FocusCard({
   queueError: string | null
   retryQueue: () => void
   onStartReview: () => void
+  showArtikelLink: boolean
+  onStartArtikelReview: () => void
 }) {
   const loading = stats === null && !statsError
   const remaining = queueCount ?? 0
@@ -115,13 +119,20 @@ function FocusCard({
                 : "今天的複習都完成了"}
           </span>
         )}
-        <Button
-          className="mt-1 self-start"
-          disabled={remaining === 0}
-          onClick={onStartReview}
-        >
-          {remaining > 0 ? "繼續複習 →" : "今天沒有待複習"}
-        </Button>
+        <div className="mt-1 flex items-center gap-3">
+          <Button disabled={remaining === 0} onClick={onStartReview}>
+            {remaining > 0 ? "繼續複習 →" : "今天沒有待複習"}
+          </Button>
+          {showArtikelLink && (
+            <button
+              type="button"
+              onClick={onStartArtikelReview}
+              className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              或練習德文冠詞 der／die／das →
+            </button>
+          )}
+        </div>
       </div>
     </Card>
   )
@@ -311,6 +322,8 @@ export default function Dashboard() {
           queueError={queue.status === "error" ? queue.message : null}
           retryQueue={queue.retry}
           onStartReview={() => navigate("/review")}
+          showArtikelLink={language === "de"}
+          onStartArtikelReview={() => navigate("/review/artikel")}
         />
 
         <Card>

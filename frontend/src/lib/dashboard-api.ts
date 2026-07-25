@@ -87,8 +87,10 @@ export function fetchMediaLogs(language: AppLanguage) {
   return apiGet<MediaLogRead[]>("/media-logs", { language })
 }
 
-export function fetchReviewQueue(language: AppLanguage) {
-  return apiGet<VocabularyRead[]>("/reviews/queue", { language })
+export type ReviewCardType = "standard" | "artikel"
+
+export function fetchReviewQueue(language: AppLanguage, cardType: ReviewCardType = "standard") {
+  return apiGet<VocabularyRead[]>("/reviews/queue", { language, card_type: cardType })
 }
 
 export function fetchReviewStats(language: AppLanguage) {
@@ -123,6 +125,15 @@ export type ReviewGrade = "again" | "hard" | "good" | "easy"
 
 export function submitReview(id: number, grade: ReviewGrade) {
   return apiPost<VocabularyRead>(`/vocabulary/${id}/review`, { grade })
+}
+
+export interface ArtikelQuizResult {
+  correct: boolean
+  correct_answer: "der" | "die" | "das"
+}
+
+export function submitArtikelQuiz(id: number, answer: "der" | "die" | "das") {
+  return apiPost<ArtikelQuizResult>(`/vocabulary/${id}/review/artikel-quiz`, { answer })
 }
 
 export function createMediaLog(payload: MediaLogCreate) {

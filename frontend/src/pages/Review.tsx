@@ -4,6 +4,7 @@ import { XIcon, RotateCcwIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { ReviewModeSwitch } from "@/components/review-mode-switch"
 import { ApiError } from "@/lib/api"
 import { useLanguage } from "@/lib/language-context"
 import { useRouter } from "@/lib/router"
@@ -95,6 +96,12 @@ export default function Review() {
           {stats.status === "success" ? `🔥 ${stats.data.streak_days}` : ""}
         </span>
       </div>
+
+      {language === "de" && (
+        <div className="flex justify-center pb-2">
+          <ReviewModeSwitch mode="standard" />
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
         {queue.status === "loading" && (

@@ -1,0 +1,54 @@
+{
+  "id": "TASK-037",
+  "title": "德文冠詞填空複習模式",
+  "content": "複習頁面新增冠詞複習模式（德文限定），3 個按鈕猜 der/die/das，系統自動判對錯，串接既有 reviews/queue?card_type=artikel 與 review/artikel-quiz API。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-037.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-25",
+  "epic": "本地 Web UI",
+  "userStory": "德文冠詞填空複習模式",
+  "dependsOn": ["TASK-034"],
+  "order": 37,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/本地 Web UI/screen-spec-review.md",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-037.md",
+    "verificationReport": "",
+    "pr": "https://github.com/yuder0538/languageTracker/pull/1"
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [],
+    "findings": [
+      "新增 submitArtikelQuiz/ArtikelQuizResult（dashboard-api.ts），fetchReviewQueue 加上可選 cardType 參數，皆呼叫既有、Epic 3 已測試過的後端 API，未動 backend/。",
+      "ReviewArtikel.tsx：卡片只顯示名詞（去掉冠詞），3 按鈕選 der/die/das，選完立即送出並顯示對錯回饋，「下一張」按鈕才前進。",
+      "新增共用元件 ReviewModeSwitch，讓標準複習/冠詞複習兩個頁面可以互相切換，只在德文視角顯示。",
+      "Dashboard 的複習 CTA 卡片德文視角下新增次要入口連結；語言防呆確保直接網址進入英文視角時自動切回德文，不會卡在死路。"
+    ],
+    "residual": "此執行環境沒有 Node.js，未能跑 npm run build/lint/dev 做實機驗證。Niko 核准前請本機測試：從 Dashboard 德文視角點「或練習德文冠詞」進入、答對答錯都測一次看回饋是否正確、兩個複習模式切換是否正常、確認英文視角看不到這個入口。"
+  },
+  "comments": [
+    "2026-07-25: 建卡並實作，等待 Niko 本機驗證後轉 done。"
+  ]
+}
