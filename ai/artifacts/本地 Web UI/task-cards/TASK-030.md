@@ -8,10 +8,10 @@
 - 上層 User Story：單字庫管理頁面
 - 分軌：前端（後端 API 已存在，不需要後端/串接分卡，見下方情境包）
 - 前置任務（dependsOn）：TASK-027, TASK-029
-- 狀態：verify（等待人工本機驗證）
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待 Niko 本機執行 `npm run dev` 驗證後追加簽核）
+- 人工核准者：Niko / 2026-07-25（本機驗證單字庫頁面導覽、新增單字流程正常，`npm run build`／`npm run lint` 皆通過）
 
 ## 目標
 
@@ -60,10 +60,10 @@
 - 單元測試：不適用（此階段前端無測試框架）。
 - 整合測試：不適用（呼叫的既有後端端點已有 Epic 1 的 pytest 覆蓋）。
 - E2E 測試：不適用。
-- 型別檢查：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- Lint：待人工在本機執行 `npm run lint` 確認；此執行環境無 Node.js，未能跑。
-- Build：待人工在本機執行 `npm run build` 確認；此執行環境無 Node.js，未能跑。
-- 螢幕截圖：待人工本機執行 `npm run dev`（需同時起後端）驗證後提供；此環境無瀏覽器/螢幕截圖工具，未能產出。
+- 型別檢查：Niko 本機執行 `npm run build` 確認通過，無錯誤。
+- Lint：Niko 本機執行 `npm run lint` 確認通過，無錯誤。
+- Build：Niko 本機執行 `npm run build` 確認通過。
+- 螢幕截圖：未產出圖檔，Niko 目視確認：切換到 `/vocabulary` 正常顯示列表，新增單字（`der Tisch`）成功後 Dialog 關閉、表格即時出現新資料、成功 toast 顯示。
 - 安全性檢查：不適用（呼叫既有後端 API，無新輸入處理邏輯；表單資料只送往本機後端）。
 
 ## 完成證據
@@ -77,11 +77,11 @@
   - `frontend/src/main.tsx`（掛上 `RouterProvider`）
   - `frontend/src/lib/api.ts`（新增 `apiPost`）
   - `frontend/src/lib/dashboard-api.ts`（新增 `createVocabulary`／`VocabularyCreate`）
-- 執行過的指令：無（此環境無 Node.js，見上方驗證契約）。
-- 測試輸出：不適用，待人工本機驗證。
-- 螢幕截圖：不適用，待人工本機執行後補上。
+  - `backend/README.md`（補上「建立資料庫」章節：第一次設定環境要跑 `alembic upgrade head`，驗證階段發現遺漏並修正）
+- 執行過的指令：Agent 端無（此環境無 Node.js）；Niko 本機執行 `npm run build`、`npm run lint`，皆通過；本機同時起後端與前端手動測試新增單字流程。
+- 測試輸出：無自動化測試，以本機建置/lint 通過 + 人工手動操作驗證為準。
+- 螢幕截圖：未產出圖檔，見上方驗證契約的目視確認紀錄。
 - 已知限制：
-  1. 此執行環境沒有 Node.js，程式碼正確性僅靠審查與比對既有元件慣例把關。
-  2. 路由器是手刻最小實作，不支援巢狀路由、路由參數、程式碼分割等進階功能；等頁面數量或複雜度成長再評估換成 React Router 之類的函式庫。
-  3. 不含編輯／刪除／自動查字典翻譯／CSV 匯入匯出，這些後端 API 都已存在，純粹是本輪範圍刻意排除。
-- 後續任務：Niko 本機驗證後回填人工核准；下一個候選 User Story 是「單字庫編輯/刪除」或「複習流程頁面」。
+  1. 路由器是手刻最小實作，不支援巢狀路由、路由參數、程式碼分割等進階功能；等頁面數量或複雜度成長再評估換成 React Router 之類的函式庫。
+  2. 不含編輯／刪除／自動查字典翻譯／CSV 匯入匯出，這些後端 API 都已存在，純粹是本輪範圍刻意排除。Niko 已表示下一輪想做自動翻譯（後端 `POST /vocabulary/{id}/enrich/de-translation` 與 `enrich/en-dictionary` 已存在，純前端串接即可）。
+- 後續任務：下一個候選 User Story 是「單字自動查字典/翻譯」（Niko 已表態想做）或「單字庫編輯/刪除」。
