@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>單字庫 — 變體 A：Dialog 彈窗新增</title>
+<style>
+  :root {
+    --grey-100:#ededed; --grey-500:#6e6e72; --grey-800:#26262a; --grey-900:#1b1b1e; --grey-950:#121214;
+    --brand-500:#e8b944; --info-500:#4fa3c7; --danger:#e5484d; --success:#3ea574;
+    --bg-page:var(--grey-950); --bg-surface:var(--grey-900); --bg-surface-hover:var(--grey-800);
+    --border:#2b2b2e; --fg:var(--grey-100); --fg-muted:#9a9a9a;
+    --radius-card:3px; --radius-control:4px; --radius-pill:999px;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg-page); color:var(--fg); font-family:var(--font-sans); font-size:14px; line-height:1.6; }
+  h1,h2 { margin:0; font-weight:600; }
+  .layout { display:grid; grid-template-columns:64px 1fr; min-height:100vh; }
+  .rail { background:var(--bg-surface); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:20px; }
+  .rail-logo { width:28px; height:28px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  .rail-nav { display:flex; flex-direction:column; gap:8px; flex:1; }
+  .rail-item { width:36px; height:36px; border-radius:var(--radius-control); display:flex; align-items:center; justify-content:center; color:var(--fg-muted); font-size:16px; }
+  .rail-item.active { background:var(--bg-surface-hover); color:var(--brand-500); }
+  .rail-lang { display:flex; flex-direction:column; gap:4px; }
+  .rail-lang button { width:32px; height:24px; border-radius:var(--radius-control); border:none; font-size:11px; font-weight:600; cursor:pointer; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .rail-lang button.active { background:var(--brand-500); color:var(--grey-950); }
+
+  .main { padding:32px; display:flex; flex-direction:column; gap:20px; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; }
+  .topbar-sub { font-size:13px; color:var(--fg-muted); margin-top:2px; }
+  .btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 16px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); font-weight:600; font-size:14px; border:none; cursor:pointer; }
+  .btn-outline { background:transparent; border:1px solid var(--border); color:var(--fg); }
+
+  table { width:100%; border-collapse:collapse; background:var(--bg-surface); border-radius:var(--radius-card); overflow:hidden; }
+  th, td { text-align:left; padding:10px 16px; font-size:13px; }
+  th { color:var(--fg-muted); font-weight:500; border-bottom:1px solid var(--border); }
+  td { border-top:1px solid var(--border); }
+  tr:first-child td { border-top:none; }
+  .badge { display:inline-flex; align-items:center; height:20px; padding:0 8px; border-radius:var(--radius-pill); font-size:12px; font-weight:500; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .mono { font-family:var(--font-mono); color:var(--fg-muted); font-size:12px; }
+
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; z-index:20; }
+  .dialog { width:420px; max-width:calc(100% - 32px); background:var(--bg-surface); border-radius:6px; padding:20px; display:flex; flex-direction:column; gap:16px; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+  .dialog h2 { font-size:16px; }
+  .dialog-sub { font-size:12px; color:var(--fg-muted); margin-top:2px; }
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field label { font-size:13px; font-weight:500; }
+  .field input, .field select, .field textarea {
+    height:34px; border-radius:var(--radius-control); border:1px solid var(--border); background:transparent;
+    color:var(--fg); padding:0 10px; font-family:inherit; font-size:13px;
+  }
+  .field textarea { height:60px; padding:8px 10px; resize:vertical; }
+  .field-error { font-size:12px; color:var(--danger); }
+  .field-hint { font-size:12px; color:var(--fg-muted); }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .dialog-footer { display:flex; justify-content:flex-end; gap:8px; padding-top:8px; border-top:1px solid var(--border); }
+  .variant-banner { position:fixed; top:0; left:0; right:0; z-index:30; background:var(--info-500); color:var(--grey-950); font-size:12px; padding:8px 16px; text-align:center; font-weight:500; }
+  .layout { margin-top:34px; }
+</style>
+</head>
+<body>
+<div class="variant-banner">Mockup 變體 A — Dialog 彈窗新增（僅供版型比較，非最終實作；圖中已展開新增表單供檢視）</div>
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-logo">IT</div>
+    <div class="rail-nav">
+      <div class="rail-item">▦</div>
+      <div class="rail-item active">📖</div>
+      <div class="rail-item">🎬</div>
+    </div>
+    <div class="rail-lang"><button class="active">DE</button><button>EN</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>單字庫</h1>
+        <div class="topbar-sub">Deutsch · 共 5 個單字</div>
+      </div>
+      <button class="btn">＋ 新增單字</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>單字</th><th>詞性</th><th>翻譯</th><th>冠詞</th><th>建立時間</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>der Tisch</td><td>名詞</td><td>桌子</td><td><span class="badge">der</span></td><td class="mono">2026-07-10</td></tr>
+        <tr><td>laufen</td><td>動詞</td><td>跑、走</td><td>—</td><td class="mono">2026-07-12</td></tr>
+        <tr><td>die Freiheit</td><td>名詞</td><td>自由</td><td><span class="badge">die</span></td><td class="mono">2026-07-15</td></tr>
+        <tr><td>schnell</td><td>形容詞</td><td>快的</td><td>—</td><td class="mono">2026-07-18</td></tr>
+        <tr><td>die Uhr</td><td>名詞</td><td>時鐘</td><td><span class="badge">die</span></td><td class="mono">2026-07-24</td></tr>
+      </tbody>
+    </table>
+  </main>
+</div>
+
+<div class="overlay">
+  <div class="dialog">
+    <div>
+      <h2>新增單字</h2>
+      <div class="dialog-sub">目前語言視角：Deutsch</div>
+    </div>
+    <div class="field">
+      <label>單字 *</label>
+      <input placeholder="例如：das Fenster" />
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>詞性</label>
+        <select><option>名詞</option><option>動詞</option><option>形容詞</option></select>
+      </div>
+      <div class="field">
+        <label>冠詞（名詞適用）</label>
+        <select><option>—</option><option>der</option><option>die</option><option>das</option></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>翻譯</label>
+      <input placeholder="中文翻譯（選填，之後可用自動翻譯補上）" />
+    </div>
+    <div class="field">
+      <label>來源劇集（選填）</label>
+      <select><option>不指定</option><option>Dark · S1E3</option></select>
+    </div>
+    <div class="field">
+      <label>備註</label>
+      <textarea placeholder="選填"></textarea>
+    </div>
+    <div class="dialog-footer">
+      <button class="btn btn-outline">取消</button>
+      <button class="btn">新增</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
