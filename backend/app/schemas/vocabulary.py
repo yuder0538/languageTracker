@@ -67,6 +67,17 @@ class VocabularyUpdate(BaseModel):
     notes: str | None = None
 
 
+class VocabularyImportRowError(BaseModel):
+    row: int
+    message: str
+
+
+class VocabularyImportResult(BaseModel):
+    created: int
+    skipped: int
+    errors: list[VocabularyImportRowError]
+
+
 class VocabularyRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

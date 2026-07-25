@@ -1,21 +1,28 @@
+import csv
 import datetime as dt
+import io
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from fastapi.responses import Response
+from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.models.enums import Language
+from app.models.enums import Language, ReviewGrade
 from app.models.media_log import MediaLog
 from app.models.review_log import ReviewLog
 from app.models.subtitle_line import SubtitleLine
 from app.models.vocabulary import Vocabulary
-from app.schemas.review import ReviewSubmit
+from app.schemas.review import ArtikelQuizResult, ArtikelQuizSubmit, ReviewSubmit
 from app.schemas.vocabulary import (
     VocabularyCreate,
+    VocabularyImportResult,
+    VocabularyImportRowError,
     VocabularyRead,
     VocabularyUpdate,
     validate_language_specific_fields,
 )
+from app.services.anki_export import build_anki_line
 from app.services.de_translation import TranslationApiError, fetch_de_to_zh_translation
 from app.services.en_dictionary import DictionaryLookupError, fetch_en_dictionary_data
 from app.services.http_client import ExternalApiError
@@ -56,6 +63,66 @@ def create_vocabulary(payload: VocabularyCreate, db: Session = Depends(get_db)) 
     return vocabulary
 
 
+MAX_CSV_FILE_SIZE = 5 * 1024 * 1024
+
+
+def _format_import_row_error(exc: ValidationError | HTTPException | TypeError) -> str:
+    if isinstance(exc, HTTPException):
+        return str(exc.detail)
+    if isinstance(exc, TypeError):
+        return f"格式錯誤：{exc}"
+    first = exc.errors()[0]
+    field = ".".join(str(part) for part in first["loc"])
+    return f"{field}: {first['msg']}"
+
+
+@router.post("/import-csv", response_model=VocabularyImportResult)
+async def import_vocabulary_csv(
+    file: UploadFile = File(...), db: Session = Depends(get_db)
+) -> VocabularyImportResult:
+    if not file.filename or not file.filename.lower().endswith(".csv"):
+        raise HTTPException(status_code=422, detail="僅接受 .csv 檔案")
+
+    raw = await file.read(MAX_CSV_FILE_SIZE + 1)
+    if len(raw) > MAX_CSV_FILE_SIZE:
+        raise HTTPException(status_code=422, detail="檔案過大（上限 5MB）")
+
+    try:
+        content = raw.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise HTTPException(status_code=422, detail="檔案編碼需為 UTF-8") from exc
+
+    reader = csv.DictReader(io.StringIO(content))
+
+    errors: list[VocabularyImportRowError] = []
+    pending: list[Vocabulary] = []
+    for row_number, row in enumerate(reader, start=2):  # header occupies row 1
+        if row.pop(None, None) is not None:  # DictReader's restkey: extra columns present
+            errors.append(
+                VocabularyImportRowError(
+                    row=row_number, message="欄位數與表頭不符（該列欄位數過多）"
+                )
+            )
+            continue
+        cleaned = {key: (value if value not in (None, "") else None) for key, value in row.items()}
+        try:
+            payload = VocabularyCreate(**cleaned)
+            if payload.media_log_id is not None:
+                _validate_media_log_language(db, payload.media_log_id, payload.language)
+        except (ValidationError, HTTPException, TypeError) as exc:
+            errors.append(
+                VocabularyImportRowError(row=row_number, message=_format_import_row_error(exc))
+            )
+            continue
+
+        pending.append(Vocabulary(**payload.model_dump()))
+
+    db.add_all(pending)
+    db.commit()
+
+    return VocabularyImportResult(created=len(pending), skipped=len(errors), errors=errors)
+
+
 @router.get("", response_model=list[VocabularyRead])
 def list_vocabulary(
     language: Language,
@@ -69,6 +136,25 @@ def list_vocabulary(
     if media_log_id is not None:
         query = query.filter(Vocabulary.media_log_id == media_log_id)
     return query.order_by(Vocabulary.headword.asc()).all()
+
+
+@router.get("/export/anki", response_class=Response)
+def export_vocabulary_anki(language: Language, db: Session = Depends(get_db)) -> Response:
+    words = (
+        db.query(Vocabulary)
+        .filter(Vocabulary.language == language)
+        .order_by(Vocabulary.headword.asc())
+        .all()
+    )
+    content = "\n".join(build_anki_line(word) for word in words)
+
+    return Response(
+        content=content,
+        media_type="text/tab-separated-values",
+        headers={
+            "Content-Disposition": f'attachment; filename="anki_export_{language.value}.txt"'
+        },
+    )
 
 
 @router.get("/{vocabulary_id}", response_model=VocabularyRead)
@@ -191,19 +277,14 @@ MAX_SRS_INTERVAL_DAYS = 365 * 100  # 100 years; well beyond any real review need
 # below can never raise OverflowError even after many uncapped ease-factor reviews.
 
 
-@router.post("/{vocabulary_id}/review", response_model=VocabularyRead)
-def submit_review(
-    vocabulary_id: int, payload: ReviewSubmit, db: Session = Depends(get_db)
-) -> Vocabulary:
-    vocabulary = _get_or_404(db, vocabulary_id)
-
+def _apply_review_grade(db: Session, vocabulary: Vocabulary, grade: ReviewGrade) -> Vocabulary:
     current_state = SrsState(
         interval_days=vocabulary.srs_interval_days,
         ease_factor=vocabulary.srs_ease_factor,
         repetitions=vocabulary.srs_repetitions,
         lapses=vocabulary.srs_lapses,
     )
-    new_state = schedule_next_review(current_state, payload.grade)
+    new_state = schedule_next_review(current_state, grade)
     interval_days = min(new_state.interval_days, MAX_SRS_INTERVAL_DAYS)
 
     now = dt.datetime.utcnow()
@@ -218,13 +299,39 @@ def submit_review(
         ReviewLog(
             vocabulary_id=vocabulary.id,
             reviewed_at=now,
-            grade=payload.grade,
+            grade=grade,
             interval_days_after=interval_days,
         )
     )
     db.commit()
     db.refresh(vocabulary)
     return vocabulary
+
+
+@router.post("/{vocabulary_id}/review", response_model=VocabularyRead)
+def submit_review(
+    vocabulary_id: int, payload: ReviewSubmit, db: Session = Depends(get_db)
+) -> Vocabulary:
+    vocabulary = _get_or_404(db, vocabulary_id)
+    return _apply_review_grade(db, vocabulary, payload.grade)
+
+
+@router.post("/{vocabulary_id}/review/artikel-quiz", response_model=ArtikelQuizResult)
+def submit_artikel_quiz(
+    vocabulary_id: int, payload: ArtikelQuizSubmit, db: Session = Depends(get_db)
+) -> ArtikelQuizResult:
+    vocabulary = _get_or_404(db, vocabulary_id)
+    if vocabulary.language != Language.DE or vocabulary.de_artikel is None:
+        raise HTTPException(
+            status_code=422, detail="此單字不適用冠詞填空（非德文名詞或未標註冠詞）"
+        )
+
+    correct_answer = vocabulary.de_artikel
+    correct = payload.answer == correct_answer
+    grade = ReviewGrade.GOOD if correct else ReviewGrade.AGAIN
+    _apply_review_grade(db, vocabulary, grade)
+
+    return ArtikelQuizResult(correct=correct, correct_answer=correct_answer)
 
 
 @router.delete("/{vocabulary_id}", status_code=204)

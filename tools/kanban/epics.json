@@ -81,14 +81,38 @@
         {
           "name": "複習統計與進度追蹤",
           "definition": "今日已複習張數、正確率、連續複習天數（streak）等統計資料，供之後 Phase 4 Dashboard 使用。"
+        },
+        {
+          "name": "德文冠詞（der/die/das）填空卡片",
+          "definition": "客觀評分的特化複習模式：對已標註 de_artikel 的德文名詞猜冠詞，答對/答錯由系統自動判定並更新排程，複用既有 SRS 演算法。2026-07-24 補上（原於 TASK-012~015 那輪延後）。"
         }
-      ],
-      "backlogNotes": "德文冠詞（der/die/das）填空卡片：Epic 定義原本就包含此項，2026-07-24 與 Niko 確認本輪先不拆任務卡，保留待後續補上，非遺漏。"
+      ]
     },
     {
       "name": "資料匯出入與備份",
       "definition": "本地 SQLite 資料的匯出入（CSV/Anki 格式）與備份還原，避免單機資料遺失後求助無門。",
-      "stories": []
+      "stories": [
+        {
+          "name": "單字資料匯入（CSV）",
+          "definition": "上傳 CSV 檔批次新增單字，不需一筆一筆手動輸入。"
+        },
+        {
+          "name": "Anki 匯出格式",
+          "definition": "把單字庫匯出成 Anki 可直接匯入的格式，供想用 Anki 複習的使用者使用。"
+        },
+        {
+          "name": "全資料庫備份",
+          "definition": "下載整個 SQLite 資料庫的備份檔，單機資料遺失時有得救。"
+        },
+        {
+          "name": "全資料庫還原",
+          "definition": "上傳先前的備份檔，還原（取代）目前的資料庫內容。"
+        },
+        {
+          "name": "影集/追劇紀錄匯出入（CSV）",
+          "definition": "media_log（追劇紀錄）的 CSV 匯出與匯入，不只單字資料。"
+        }
+      ]
     },
     {
       "name": "搜尋與篩選",

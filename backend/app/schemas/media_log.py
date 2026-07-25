@@ -26,6 +26,17 @@ class MediaLogUpdate(BaseModel):
     notes: str | None = None
 
 
+class MediaLogImportRowError(BaseModel):
+    row: int
+    message: str
+
+
+class MediaLogImportResult(BaseModel):
+    created: int
+    skipped: int
+    errors: list[MediaLogImportRowError]
+
+
 class MediaLogRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

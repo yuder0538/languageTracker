@@ -1,0 +1,63 @@
+{
+  "id": "TASK-019",
+  "title": "全資料庫備份",
+  "content": "GET /backup/export，用 sqlite3.backup() 熱拷貝下載完整資料庫備份檔。詳見 ai/artifacts/資料匯出入與備份/task-cards/TASK-019.md。",
+  "stage": "done",
+  "risk": "medium",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "資料匯出入與備份",
+  "userStory": "全資料庫備份",
+  "dependsOn": ["TASK-001", "TASK-002"],
+  "order": 19,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/資料匯出入與備份/task-cards/TASK-019.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/api/backup.py",
+    "backend/app/api/router.py",
+    "backend/tests/test_backup_export_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "160 passed, 58 warnings（審查後補測試，原始 158 passed）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 GET /api/v1/backup/export 已掛載",
+      "備份檔案內容一致性、Content-Type/Disposition、併發寫入下仍結構完整（真的 fetch integrity_check 結果）、暫存檔清除、失敗時暫存檔也清除、來源不存在回 404，皆有測試覆蓋",
+      "architect+security-reviewer agents 各自獨立發現同一 bug：備份失敗時暫存檔洩漏 — 已修正（try/except 清除）並補測試",
+      "architect agent 額外發現：來源檔不存在會安靜產生空備份 — 已加 404 檢查",
+      "security-reviewer agent CONCERNS（記錄不修）：無身分驗證即可下載整個資料庫，已記錄為未來對外開放前的已知風險",
+      "test-engineer agent: CONCERNS→已修 — PRAGMA integrity_check 沒 fetch 結果等於沒在檢查，已修正"
+    ],
+    "residual": "本地單人工具、全站無身分驗證，本端點曝露面較大但符合既定模型；已記錄為未來風險。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，158 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡發現的問題（暫存檔洩漏 x2 處、測試斷言沒 fetch 結果）皆已修正（160 passed）。核准轉 done。"
+  ]
+}

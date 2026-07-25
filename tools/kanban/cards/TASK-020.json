@@ -1,0 +1,63 @@
+{
+  "id": "TASK-020",
+  "title": "全資料庫還原",
+  "content": "POST /backup/restore?confirm=true，驗證上傳檔案+還原前自動安全備份+原子換檔。詳見 ai/artifacts/資料匯出入與備份/task-cards/TASK-020.md。",
+  "stage": "done",
+  "risk": "high",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "資料匯出入與備份",
+  "userStory": "全資料庫還原",
+  "dependsOn": ["TASK-001", "TASK-002", "TASK-019"],
+  "order": 20,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/資料匯出入與備份/task-cards/TASK-020.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/schemas/backup.py",
+    "backend/app/api/backup.py",
+    "backend/tests/test_backup_restore_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "168 passed, 58 warnings（審查後補測試，原始 166 passed）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/backup/restore 已掛載",
+      "還原成功換檔+安全備份（含 integrity_check）、422 情境皆用 SHA-256 雜湊確認現有資料庫逐位元組未變、confirm 未過時 UploadFile.read() 從未被呼叫，皆有測試覆蓋",
+      "architect agent: APPROVE — 逐步追蹤確認不可逆點精準落在 os.replace()；建議加 schema 版本檢查已採納（alembic_version）",
+      "security-reviewer agent: PASS — 確認無任意路徑寫入風險；安全備份檔權限 0644→已改 0600",
+      "test-engineer agent: CONCERNS→已修（本卡唯一阻擋等級發現）— 完全沒測「安全備份失敗時是否安全中止」這個最關鍵性質，已補上"
+    ],
+    "residual": "engine.dispose() 到 os.replace() 之間有極短併發時間窗，Windows 上可能因檔案占用失敗但會安全中止（不會資料損毀），本地單人工具下可接受。"
+  },
+  "comments": [
+    "2026-07-24: 高風險（不可逆覆蓋資料）。還原前自動安全備份 + confirm=true 兩項安全設計已於對話中與 Niko 核准。",
+    "2026-07-24: 實作完成，166 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡（架構/安全性/測試）皆完成，發現的問題全數修正（168 passed），包含測試關卡抓到的一個阻擋等級缺口。核准轉 done。"
+  ]
+}

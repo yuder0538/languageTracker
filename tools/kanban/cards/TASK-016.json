@@ -1,0 +1,66 @@
+{
+  "id": "TASK-016",
+  "title": "德文冠詞（der/die/das）填空卡片",
+  "content": "GET /reviews/queue 新增 card_type=artikel 篩選 + POST /vocabulary/{id}/review/artikel-quiz 客觀評分端點。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-016.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "雙語 SRS 與 Flashcard 測驗",
+  "userStory": "德文冠詞（der/die/das）填空卡片",
+  "dependsOn": ["TASK-012", "TASK-013", "TASK-014"],
+  "order": 16,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-016.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/api/vocabulary.py",
+    "backend/app/api/reviews.py",
+    "backend/app/schemas/review.py",
+    "backend/tests/test_reviews_artikel_queue_api.py",
+    "backend/tests/test_vocabulary_artikel_quiz_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "136 passed, 56 warnings（既有 datetime.utcnow() deprecation，非阻塞）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/vocabulary/{vocabulary_id}/review/artikel-quiz 已掛載",
+      "card_type=artikel 篩選、card_type=standard 不受影響（TASK-013 既有測試全綠）、答對/答錯自動評分、422/404 皆有測試覆蓋",
+      "重構抽出 _apply_review_grade() 共用函式，TASK-014 既有測試全數通過，確認外部行為未變",
+      "architect agent: APPROVE — 逐行比對確認重構零行為改變",
+      "security-reviewer agent: PASS — 確認 OverflowError 防護重構後仍完整",
+      "test-engineer agent: CONCERNS→已補 — 到期卡分支的 artikel 篩選缺測試，已補上（137 passed）"
+    ],
+    "residual": "無新增已知限制，沿用 TASK-013/014 的簡化假設。"
+  },
+  "comments": [
+    "2026-07-24: 補上先前延後的 User Story，Niko 確認範圍後開工。",
+    "2026-07-24: 實作完成，136 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡皆通過，測試缺口已補（137 passed）。核准轉 done。「雙語 SRS 與 Flashcard 測驗」Epic 全數完成（TASK-012~016）。"
+  ]
+}

@@ -1,6 +1,7 @@
 from datetime import date, datetime, timedelta
+from typing import Literal
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -47,19 +48,26 @@ def _count_new_cards_introduced_today(db: Session, language: Language) -> int:
 
 
 @router.get("/queue", response_model=list[VocabularyRead])
-def get_review_queue(language: Language, db: Session = Depends(get_db)) -> list[Vocabulary]:
+def get_review_queue(
+    language: Language,
+    card_type: Literal["standard", "artikel"] = "standard",
+    db: Session = Depends(get_db),
+) -> list[Vocabulary]:
+    if card_type == "artikel" and language == Language.EN:
+        raise HTTPException(
+            status_code=422, detail="英文沒有冠詞，不適用冠詞填空模式"
+        )
+
     now = datetime.utcnow()
 
-    due_cards = (
-        db.query(Vocabulary)
-        .filter(
-            Vocabulary.language == language,
-            Vocabulary.srs_last_reviewed_at.is_not(None),
-            Vocabulary.srs_next_review_at <= now,
-        )
-        .order_by(Vocabulary.srs_next_review_at.asc())
-        .all()
+    due_query = db.query(Vocabulary).filter(
+        Vocabulary.language == language,
+        Vocabulary.srs_last_reviewed_at.is_not(None),
+        Vocabulary.srs_next_review_at <= now,
     )
+    if card_type == "artikel":
+        due_query = due_query.filter(Vocabulary.de_artikel.is_not(None))
+    due_cards = due_query.order_by(Vocabulary.srs_next_review_at.asc()).all()
 
     settings = get_settings()
     new_cards_introduced_today = _count_new_cards_introduced_today(db, language)
@@ -69,16 +77,15 @@ def get_review_queue(language: Language, db: Session = Depends(get_db)) -> list[
 
     new_cards: list[Vocabulary] = []
     if remaining_new_card_slots > 0:
-        new_cards = (
-            db.query(Vocabulary)
-            .filter(
-                Vocabulary.language == language,
-                Vocabulary.srs_last_reviewed_at.is_(None),
-            )
-            .order_by(Vocabulary.id.asc())
-            .limit(remaining_new_card_slots)
-            .all()
+        new_query = db.query(Vocabulary).filter(
+            Vocabulary.language == language,
+            Vocabulary.srs_last_reviewed_at.is_(None),
         )
+        if card_type == "artikel":
+            new_query = new_query.filter(Vocabulary.de_artikel.is_not(None))
+        new_cards = new_query.order_by(Vocabulary.id.asc()).limit(
+            remaining_new_card_slots
+        ).all()
 
     return due_cards + new_cards
 

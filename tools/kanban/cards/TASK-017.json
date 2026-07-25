@@ -1,0 +1,63 @@
+{
+  "id": "TASK-017",
+  "title": "單字資料匯入（CSV）",
+  "content": "POST /vocabulary/import-csv，批次新增單字，部分成功策略。詳見 ai/artifacts/資料匯出入與備份/task-cards/TASK-017.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "資料匯出入與備份",
+  "userStory": "單字資料匯入（CSV）",
+  "dependsOn": ["TASK-001", "TASK-002", "TASK-003", "TASK-006"],
+  "order": 17,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/資料匯出入與備份/task-cards/TASK-017.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/schemas/vocabulary.py",
+    "backend/app/api/vocabulary.py",
+    "backend/tests/test_vocabulary_import_csv_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "143 passed, 58 warnings（審查後補測試，原始 142 passed）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 POST /api/v1/vocabulary/import-csv 已掛載",
+      "全部合法列成功、部分成功含列號、media_log_id 無效跳過、非 csv/超過 5MB 皆 422，皆有測試覆蓋，且都改為實際查 DB 驗證",
+      "architect+security-reviewer agents 各自獨立發現同一 bug：CSV 列欄位數多於表頭會讓整批 500（DictReader restkey 導致 TypeError）— 已修正並補測試",
+      "architect agent 額外提醒：未來 /vocabulary 底下新增同深度靜態路徑要注意路由註冊順序",
+      "test-engineer agent: CONCERNS→已補 — 多個測試只信任回應數字未查 DB，已補強"
+    ],
+    "residual": "驗證在 db.add() 前完成，避免單列失敗需要 rollback 波及同批次已驗證通過的列。"
+  },
+  "comments": [
+    "2026-07-24: 新 Epic「資料匯出入與備份」第一張卡，dependsOn 已依規則列上「專案設置」Epic 全部卡片。",
+    "2026-07-24: 實作完成，142 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡發現的問題（restkey bug + 測試查 DB 不足）皆已修正（143 passed）。核准轉 done。"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "TASK-018",
+  "title": "Anki 匯出格式",
+  "content": "GET /vocabulary/export/anki?language=en|de，匯出 TSV 純文字供 Anki 匯入。詳見 ai/artifacts/資料匯出入與備份/task-cards/TASK-018.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "資料匯出入與備份",
+  "userStory": "Anki 匯出格式",
+  "dependsOn": ["TASK-006"],
+  "order": 18,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/資料匯出入與備份/task-cards/TASK-018.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/services/anki_export.py",
+    "backend/app/api/vocabulary.py",
+    "backend/tests/test_anki_export_service.py",
+    "backend/tests/test_vocabulary_export_anki_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "155 passed, 58 warnings（審查後補測試，原始 152 passed）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認 GET /api/v1/vocabulary/export/anki 已掛載，且未遮蔽既有路由",
+      "英文/德文格式（德文含 API 層級驗證）、換行/Tab 轉義（各自獨立測試）、空語言、語言隔離、422 缺參數，皆有測試覆蓋",
+      "architect agent: APPROVE — 確認 2 段路徑不受註冊順序影響；已補單獨 \\r 處理與 response_class 宣告",
+      "security-reviewer agent: PASS — 唯讀重新匯出自己的資料，無新增攻擊面",
+      "test-engineer agent: CONCERNS→已補 — 測試名不符實（沒測到 Tab）與德文冠詞缺 API 層級驗證，皆已補上"
+    ],
+    "residual": "只產生純文字 TSV，不產生 .apkg。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，152 passed，等待審查關卡。",
+    "2026-07-24: 三個審查關卡發現的問題皆已修正並補測試（155 passed）。核准轉 done。"
+  ]
+}

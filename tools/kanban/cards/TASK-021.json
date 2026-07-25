@@ -1,0 +1,62 @@
+{
+  "id": "TASK-021",
+  "title": "影集/追劇紀錄匯出入（CSV）",
+  "content": "POST /media-logs/import-csv + GET /media-logs/export-csv。詳見 ai/artifacts/資料匯出入與備份/task-cards/TASK-021.md。",
+  "stage": "done",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-24",
+  "epic": "資料匯出入與備份",
+  "userStory": "影集/追劇紀錄匯出入（CSV）",
+  "dependsOn": ["TASK-005"],
+  "order": 21,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": false,
+    "ui": false,
+    "architecture": true,
+    "security": true,
+    "test": true,
+    "code_review": true
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/資料匯出入與備份/task-cards/TASK-021.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "backend/app/schemas/media_log.py",
+    "backend/app/api/media_log.py",
+    "backend/tests/test_media_log_csv_api.py"
+  ],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "178 passed, 58 warnings（審查後補測試，原始 175 passed；既有 datetime.utcnow() deprecation，非阻塞）",
+      "ruff check: All checks passed!",
+      "openapi.json 確認兩端點已掛載且 export-csv 未被 /{media_log_id} 遮蔽（依 TASK-017 審查建議把靜態路徑放在路徑參數路由之前）",
+      "全部合法列成功、部分成功含列號與錯誤原因、非 csv/超過 5MB 皆 422、超大檔案確認未寫入 DB、空檔案、restkey（欄位數多於表頭）、匯出格式正確、往返一致性測試改為逐欄比對內容，皆有測試覆蓋",
+      "architect agent: APPROVE，附一項要求修正 — _format_import_row_error 漏了 TypeError 分支，觸發時會讓整批 500，已比照 vocabulary.py 修正",
+      "security-reviewer agent: CONCERNS→已修 — 匯出端點對 title/media_type/notes 未過濾公式前綴，屬 CSV 公式注入風險（本任務新增攻擊面），已加 _csv_safe() 前置單引號防護並補測試",
+      "test-engineer agent: 要求修改→已修 — 補上錯誤訊息內容斷言、round-trip 改逐欄比對、restkey 專屬測試、空檔案與超大檔案未寫入 DB 的邊界測試"
+    ],
+    "residual": "CSV 匯出的公式注入防護若欄位原始內容本身以單引號開頭的觸發字元開頭，往返匯入後會多一個字元，屬已知、可接受的權衡。沿用 TASK-017 修正過的 restkey 防護，現已補上專屬測試。"
+  },
+  "comments": [
+    "2026-07-24: 實作完成，175 passed，等待審查關卡。",
+    "2026-07-25: 三個審查關卡（架構/安全性/測試）皆完成，發現的問題全數修正（178 passed），包含安全性關卡抓到的 CSV 公式注入風險。核准轉 done。「資料匯出入與備份」Epic 全數完成（TASK-017~021）。"
+  ]
+}
