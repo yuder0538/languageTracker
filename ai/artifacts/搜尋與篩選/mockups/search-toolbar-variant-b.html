@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>搜尋／篩選 — 變體 B：獨立工具列（搜尋＋完整篩選下拉）</title>
+<style>
+  :root {
+    --grey-100:#ededed; --grey-500:#6e6e72; --grey-800:#26262a; --grey-900:#1b1b1e; --grey-950:#121214;
+    --brand-500:#e8b944; --info-500:#4fa3c7; --danger:#e5484d; --success:#3ea574;
+    --bg-page:var(--grey-950); --bg-surface:var(--grey-900); --bg-surface-hover:var(--grey-800);
+    --border:#2b2b2e; --fg:var(--grey-100); --fg-muted:#9a9a9a;
+    --radius-card:3px; --radius-control:4px; --radius-pill:999px;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg-page); color:var(--fg); font-family:var(--font-sans); font-size:14px; line-height:1.6; }
+  h1,h2 { margin:0; font-weight:600; }
+  .layout { display:grid; grid-template-columns:64px 1fr; min-height:100vh; margin-top:34px; }
+  .rail { background:var(--bg-surface); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:20px; }
+  .rail-logo { width:28px; height:28px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  .rail-nav { display:flex; flex-direction:column; gap:8px; flex:1; }
+  .rail-item { width:36px; height:36px; border-radius:var(--radius-control); display:flex; align-items:center; justify-content:center; color:var(--fg-muted); font-size:16px; }
+  .rail-item.active { background:var(--bg-surface-hover); color:var(--brand-500); }
+  .rail-lang { display:flex; flex-direction:column; gap:4px; }
+  .rail-lang button { width:32px; height:24px; border-radius:var(--radius-control); border:none; font-size:11px; font-weight:600; cursor:pointer; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .rail-lang button.active { background:var(--brand-500); color:var(--grey-950); }
+
+  .main { padding:32px; display:flex; flex-direction:column; gap:16px; }
+  .topbar { display:flex; align-items:center; justify-content:space-between; }
+  .topbar-sub { font-size:13px; color:var(--fg-muted); margin-top:2px; }
+  .btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 16px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); font-weight:600; font-size:14px; border:none; cursor:pointer; white-space:nowrap; }
+  .btn-outline { background:transparent; border:1px solid var(--border); color:var(--fg); }
+  .btn-ghost { background:transparent; border:none; color:var(--fg-muted); padding:0 8px; height:36px; font-size:13px; }
+
+  .toolbar { display:flex; align-items:center; gap:8px; padding:12px; background:var(--bg-surface); border-radius:var(--radius-card); flex-wrap:wrap; }
+  .search-input-wrap { position:relative; flex:1; min-width:200px; max-width:320px; }
+  .search-input-wrap svg { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--fg-muted); }
+  .search-input { width:100%; height:36px; border-radius:var(--radius-control); border:1px solid var(--border); background:var(--grey-950); color:var(--fg); padding:0 10px 0 32px; font-family:inherit; font-size:13px; }
+  .search-input::placeholder { color:var(--fg-muted); }
+  .select { height:36px; border-radius:var(--radius-control); border:1px solid var(--border); background:var(--grey-950); color:var(--fg); padding:0 10px; font-family:inherit; font-size:13px; min-width:120px; }
+
+  table { width:100%; border-collapse:collapse; background:var(--bg-surface); border-radius:var(--radius-card); overflow:hidden; }
+  th, td { text-align:left; padding:10px 16px; font-size:13px; }
+  th { color:var(--fg-muted); font-weight:500; border-bottom:1px solid var(--border); }
+  td { border-top:1px solid var(--border); }
+  tr:first-child td { border-top:none; }
+  .badge { display:inline-flex; align-items:center; height:20px; padding:0 8px; border-radius:var(--radius-pill); font-size:12px; font-weight:500; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .mono { font-family:var(--font-mono); color:var(--fg-muted); font-size:12px; }
+  .variant-banner { position:fixed; top:0; left:0; right:0; z-index:30; background:var(--info-500); color:var(--grey-950); font-size:12px; padding:8px 16px; text-align:center; font-weight:500; }
+  .note { font-size:12px; color:var(--fg-muted); padding:10px 12px; border:1px dashed var(--border); border-radius:var(--radius-control); }
+</style>
+</head>
+<body>
+<div class="variant-banner">Mockup 變體 B — 獨立工具列，搜尋＋完整篩選下拉（僅供版型比較，非最終實作）</div>
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-logo">IT</div>
+    <div class="rail-nav">
+      <div class="rail-item">▦</div>
+      <div class="rail-item active">📖</div>
+      <div class="rail-item">🎬</div>
+    </div>
+    <div class="rail-lang"><button class="active">DE</button><button>EN</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1>單字庫</h1>
+        <div class="topbar-sub">Deutsch · 共 5 個單字（篩選後顯示 2 筆）</div>
+      </div>
+      <button class="btn">＋ 新增單字</button>
+    </div>
+
+    <div class="toolbar">
+      <div class="search-input-wrap">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input class="search-input" placeholder="搜尋單字…" value="die" />
+      </div>
+      <select class="select"><option>詞性：全部</option><option>名詞</option><option>動詞</option></select>
+      <select class="select"><option>來源劇集：全部</option><option>Dark · S1E3</option></select>
+      <button class="btn-ghost">清除篩選</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>單字</th><th>詞性</th><th>翻譯</th><th>冠詞</th><th>建立時間</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>die Freiheit</td><td>名詞</td><td>自由</td><td><span class="badge">die</span></td><td class="mono">2026-07-15</td></tr>
+        <tr><td>die Uhr</td><td>名詞</td><td>時鐘</td><td><span class="badge">die</span></td><td class="mono">2026-07-24</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      範圍說明：本變體一次做完搜尋＋完整篩選（詞性、來源劇集下拉，皆常駐顯示）。追劇紀錄頁比照：搜尋框依劇名，篩選改為「類型」下拉＋「觀看日期區間」兩個 date input。實作量最大，但功能最完整。
+    </div>
+  </main>
+</div>
+</body>
+</html>

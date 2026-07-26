@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, RotateCcwIcon, PencilIcon, TrashIcon } from "lucide-react"
+import { PlusIcon, RotateCcwIcon, PencilIcon, TrashIcon, SearchIcon } from "lucide-react"
 
 import { AppRail } from "@/components/app-rail"
 import { Button } from "@/components/ui/button"
@@ -256,10 +256,22 @@ function DeleteConfirmDialog({
 
 export default function MediaLog() {
   const { language } = useLanguage()
-  const mediaLogs = useApi(() => fetchMediaLogs(language), [language])
+  const [searchInput, setSearchInput] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  const mediaLogs = useApi(() => fetchMediaLogs(language, debouncedSearch), [language, debouncedSearch])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingLog, setEditingLog] = useState<MediaLogRead | null>(null)
   const [deletingLog, setDeletingLog] = useState<MediaLogRead | null>(null)
+
+  useEffect(() => {
+    setSearchInput("")
+    setDebouncedSearch("")
+  }, [language])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchInput.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   const list: MediaLogRead[] = mediaLogs.status === "success" ? mediaLogs.data : []
 
@@ -277,7 +289,7 @@ export default function MediaLog() {
     <div className="flex min-h-screen">
       <AppRail />
       <main className="flex flex-1 flex-col gap-5 p-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="font-heading text-2xl font-semibold">追劇紀錄</h1>
             <p className="text-sm text-muted-foreground">
@@ -285,9 +297,21 @@ export default function MediaLog() {
               {mediaLogs.status === "success" && ` · 共 ${list.length} 筆紀錄`}
             </p>
           </div>
-          <Button onClick={openCreateDialog}>
-            <PlusIcon /> 新增追劇紀錄
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="relative w-60">
+              <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="搜尋劇名…"
+                aria-label="搜尋劇名"
+                className="pl-8"
+              />
+            </div>
+            <Button onClick={openCreateDialog}>
+              <PlusIcon /> 新增追劇紀錄
+            </Button>
+          </div>
         </div>
 
         {mediaLogs.status === "loading" && (
@@ -307,7 +331,16 @@ export default function MediaLog() {
           </div>
         )}
 
-        {mediaLogs.status === "success" && list.length === 0 && (
+        {mediaLogs.status === "success" && list.length === 0 && debouncedSearch !== "" && (
+          <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-8 text-sm text-muted-foreground">
+            找不到符合「{debouncedSearch}」的追劇紀錄。
+            <Button variant="outline" onClick={() => setSearchInput("")}>
+              <RotateCcwIcon /> 清除搜尋
+            </Button>
+          </div>
+        )}
+
+        {mediaLogs.status === "success" && list.length === 0 && debouncedSearch === "" && (
           <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-8 text-sm text-muted-foreground">
             還沒有追劇紀錄，新增第一筆吧。
             <Button onClick={openCreateDialog}>

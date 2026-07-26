@@ -79,12 +79,12 @@ export interface MediaLogUpdate {
   notes?: string | null
 }
 
-export function fetchVocabulary(language: AppLanguage) {
-  return apiGet<VocabularyRead[]>("/vocabulary", { language })
+export function fetchVocabulary(language: AppLanguage, headword?: string) {
+  return apiGet<VocabularyRead[]>("/vocabulary", { language, headword: headword || undefined })
 }
 
-export function fetchMediaLogs(language: AppLanguage) {
-  return apiGet<MediaLogRead[]>("/media-logs", { language })
+export function fetchMediaLogs(language: AppLanguage, title?: string) {
+  return apiGet<MediaLogRead[]>("/media-logs", { language, title: title || undefined })
 }
 
 export type ReviewCardType = "standard" | "artikel"

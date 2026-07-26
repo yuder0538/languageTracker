@@ -36,6 +36,23 @@ def test_list_filters_by_language(client):
     assert [row["title"] for row in de_response.json()] == ["DE show"]
 
 
+def test_list_filters_by_title_partial_match_case_insensitive(client):
+    client.post("/api/v1/media-logs", json=_payload(title="Dark"))
+    client.post("/api/v1/media-logs", json=_payload(title="Friends"))
+
+    response = client.get("/api/v1/media-logs", params={"language": "en", "title": "dar"})
+
+    assert [row["title"] for row in response.json()] == ["Dark"]
+
+
+def test_list_title_filter_no_match_returns_empty_list(client):
+    client.post("/api/v1/media-logs", json=_payload(title="Dark"))
+
+    response = client.get("/api/v1/media-logs", params={"language": "en", "title": "nonexistent"})
+
+    assert response.json() == []
+
+
 def test_get_missing_media_log_returns_404(client):
     response = client.get("/api/v1/media-logs/9999")
     assert response.status_code == 404

@@ -311,12 +311,24 @@ function DeleteConfirmDialog({
 
 export default function Vocabulary() {
   const { language } = useLanguage()
-  const vocabulary = useApi(() => fetchVocabulary(language), [language])
+  const [searchInput, setSearchInput] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  const vocabulary = useApi(() => fetchVocabulary(language, debouncedSearch), [language, debouncedSearch])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingWord, setEditingWord] = useState<VocabularyRead | null>(null)
   const [deletingWord, setDeletingWord] = useState<VocabularyRead | null>(null)
   const [enrichingIds, setEnrichingIds] = useState<Set<number>>(new Set())
   const [speakingId, setSpeakingId] = useState<number | null>(null)
+
+  useEffect(() => {
+    setSearchInput("")
+    setDebouncedSearch("")
+  }, [language])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchInput.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [searchInput])
 
   const list: VocabularyRead[] = vocabulary.status === "success" ? vocabulary.data : []
 
@@ -357,7 +369,7 @@ export default function Vocabulary() {
     <div className="flex min-h-screen">
       <AppRail />
       <main className="flex flex-1 flex-col gap-5 p-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="font-heading text-2xl font-semibold">單字庫</h1>
             <p className="text-sm text-muted-foreground">
@@ -365,9 +377,21 @@ export default function Vocabulary() {
               {vocabulary.status === "success" && ` · 共 ${list.length} 個單字`}
             </p>
           </div>
-          <Button onClick={openCreateDialog}>
-            <PlusIcon /> 新增單字
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="relative w-60">
+              <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="搜尋單字…"
+                aria-label="搜尋單字"
+                className="pl-8"
+              />
+            </div>
+            <Button onClick={openCreateDialog}>
+              <PlusIcon /> 新增單字
+            </Button>
+          </div>
         </div>
 
         {vocabulary.status === "loading" && (
@@ -387,7 +411,16 @@ export default function Vocabulary() {
           </div>
         )}
 
-        {vocabulary.status === "success" && list.length === 0 && (
+        {vocabulary.status === "success" && list.length === 0 && debouncedSearch !== "" && (
+          <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-8 text-sm text-muted-foreground">
+            找不到符合「{debouncedSearch}」的單字。
+            <Button variant="outline" onClick={() => setSearchInput("")}>
+              <RotateCcwIcon /> 清除搜尋
+            </Button>
+          </div>
+        )}
+
+        {vocabulary.status === "success" && list.length === 0 && debouncedSearch === "" && (
           <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-border p-8 text-sm text-muted-foreground">
             還沒有任何單字，新增第一個吧。
             <Button onClick={openCreateDialog}>

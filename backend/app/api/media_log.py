@@ -54,12 +54,15 @@ def create_media_log(payload: MediaLogCreate, db: Session = Depends(get_db)) -> 
 @router.get("", response_model=list[MediaLogRead])
 def list_media_logs(
     language: Language,
+    title: str | None = None,
     media_type: str | None = None,
     watched_date_from: dt.date | None = None,
     watched_date_to: dt.date | None = None,
     db: Session = Depends(get_db),
 ) -> list[MediaLog]:
     query = db.query(MediaLog).filter(MediaLog.language == language)
+    if title is not None:
+        query = query.filter(MediaLog.title.ilike(f"%{title}%"))
     if media_type is not None:
         query = query.filter(MediaLog.media_type == media_type)
     if watched_date_from is not None:
