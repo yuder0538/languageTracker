@@ -299,7 +299,7 @@ def _apply_review_grade(db: Session, vocabulary: Vocabulary, grade: ReviewGrade)
     new_state = schedule_next_review(current_state, grade)
     interval_days = min(new_state.interval_days, MAX_SRS_INTERVAL_DAYS)
 
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now()
     vocabulary.srs_interval_days = interval_days
     vocabulary.srs_ease_factor = new_state.ease_factor
     vocabulary.srs_repetitions = new_state.repetitions

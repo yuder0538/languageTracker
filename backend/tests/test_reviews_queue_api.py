@@ -23,7 +23,7 @@ def _add_vocabulary(db_session, **overrides):
 
 
 def test_queue_returns_overdue_card(client, db_session):
-    past = dt.datetime.utcnow() - dt.timedelta(days=1)
+    past = dt.datetime.now() - dt.timedelta(days=1)
     vocab = _add_vocabulary(
         db_session, headword="run", srs_last_reviewed_at=past, srs_next_review_at=past
     )
@@ -35,11 +35,11 @@ def test_queue_returns_overdue_card(client, db_session):
 
 
 def test_queue_excludes_card_not_yet_due(client, db_session):
-    future = dt.datetime.utcnow() + dt.timedelta(days=5)
+    future = dt.datetime.now() + dt.timedelta(days=5)
     _add_vocabulary(
         db_session,
         headword="run",
-        srs_last_reviewed_at=dt.datetime.utcnow(),
+        srs_last_reviewed_at=dt.datetime.now(),
         srs_next_review_at=future,
     )
 
@@ -58,7 +58,7 @@ def test_queue_returns_new_cards_ordered_by_id(client, db_session):
 
 
 def test_queue_due_cards_ordered_most_overdue_first(client, db_session):
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now()
     less_overdue = _add_vocabulary(
         db_session,
         headword="a",
@@ -93,12 +93,12 @@ def test_new_cards_already_introduced_today_count_against_limit(
     monkeypatch.setattr("app.api.reviews.get_settings", lambda: _make_settings(2))
 
     already_seen = _add_vocabulary(
-        db_session, headword="seen", srs_last_reviewed_at=dt.datetime.utcnow()
+        db_session, headword="seen", srs_last_reviewed_at=dt.datetime.now()
     )
     db_session.add(
         ReviewLog(
             vocabulary_id=already_seen.id,
-            reviewed_at=dt.datetime.utcnow(),
+            reviewed_at=dt.datetime.now(),
             grade=ReviewGrade.GOOD,
             interval_days_after=1,
         )

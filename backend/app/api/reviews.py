@@ -19,6 +19,9 @@ router = APIRouter(prefix="/reviews", tags=["reviews"])
 
 
 def _today_bounds() -> tuple[datetime, datetime]:
+    # Uses server local time, matching the `datetime.now()` timestamps written
+    # in vocabulary.py/_apply_review_grade and the `now` below — mixing this
+    # with UTC caused "today" to be wrong for hours around local midnight.
     today_start = datetime.combine(date.today(), datetime.min.time())
     return today_start, today_start + timedelta(days=1)
 
@@ -60,7 +63,7 @@ def get_review_queue(
             status_code=422, detail="英文沒有冠詞，不適用冠詞填空模式"
         )
 
-    now = datetime.utcnow()
+    now = datetime.now()
 
     due_query = db.query(Vocabulary).filter(
         Vocabulary.language == language,

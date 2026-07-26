@@ -27,7 +27,7 @@ def test_artikel_queue_only_returns_nouns_with_de_artikel(client, db_session):
 
 
 def test_artikel_queue_filters_due_cards_too(client, db_session):
-    past = dt.datetime.utcnow() - dt.timedelta(days=1)
+    past = dt.datetime.now() - dt.timedelta(days=1)
     noun = _add_vocabulary(
         db_session,
         headword="Haus",

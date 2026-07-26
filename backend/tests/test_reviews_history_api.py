@@ -29,7 +29,7 @@ def _add_review_log(db_session, vocabulary_id, reviewed_at, grade):
 
 def test_history_default_35_days_includes_zero_count_days(client, db_session):
     vocab = _add_vocabulary(db_session)
-    _add_review_log(db_session, vocab.id, dt.datetime.utcnow(), ReviewGrade.GOOD)
+    _add_review_log(db_session, vocab.id, dt.datetime.now(), ReviewGrade.GOOD)
 
     response = client.get("/api/v1/reviews/history", params={"language": "en"})
 
@@ -63,7 +63,7 @@ def test_history_oldest_first_ending_today(client, db_session):
 
 def test_history_counts_and_correct_count_per_day(client, db_session):
     vocab = _add_vocabulary(db_session)
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now()
     _add_review_log(db_session, vocab.id, now, ReviewGrade.GOOD)
     _add_review_log(db_session, vocab.id, now, ReviewGrade.EASY)
     _add_review_log(db_session, vocab.id, now, ReviewGrade.AGAIN)
@@ -80,7 +80,7 @@ def test_history_counts_and_correct_count_per_day(client, db_session):
 def test_history_isolated_per_language(client, db_session):
     en_vocab = _add_vocabulary(db_session, language="en")
     de_vocab = _add_vocabulary(db_session, language="de")
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now()
     _add_review_log(db_session, en_vocab.id, now, ReviewGrade.GOOD)
     _add_review_log(db_session, de_vocab.id, now, ReviewGrade.AGAIN)
     _add_review_log(db_session, de_vocab.id, now, ReviewGrade.AGAIN)

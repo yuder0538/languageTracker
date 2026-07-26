@@ -29,7 +29,7 @@ def _add_review_log(db_session, vocabulary_id, reviewed_at, grade):
 
 def test_stats_reviewed_today_and_accuracy(client, db_session):
     vocab = _add_vocabulary(db_session)
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now()
     _add_review_log(db_session, vocab.id, now, ReviewGrade.GOOD)
     _add_review_log(db_session, vocab.id, now, ReviewGrade.EASY)
     _add_review_log(db_session, vocab.id, now, ReviewGrade.AGAIN)
@@ -53,7 +53,7 @@ def test_stats_no_reviews_today_returns_null_accuracy(client, db_session):
 
 def test_stats_streak_counts_consecutive_days_with_gap(client, db_session):
     vocab = _add_vocabulary(db_session)
-    today = dt.datetime.utcnow()
+    today = dt.datetime.now()
     _add_review_log(db_session, vocab.id, today, ReviewGrade.GOOD)
     _add_review_log(db_session, vocab.id, today - dt.timedelta(days=1), ReviewGrade.GOOD)
     _add_review_log(db_session, vocab.id, today - dt.timedelta(days=2), ReviewGrade.GOOD)
@@ -67,7 +67,7 @@ def test_stats_streak_counts_consecutive_days_with_gap(client, db_session):
 
 def test_stats_streak_not_reset_when_today_has_no_review_yet(client, db_session):
     vocab = _add_vocabulary(db_session)
-    yesterday = dt.datetime.utcnow() - dt.timedelta(days=1)
+    yesterday = dt.datetime.now() - dt.timedelta(days=1)
     _add_review_log(db_session, vocab.id, yesterday, ReviewGrade.GOOD)
     _add_review_log(
         db_session, vocab.id, yesterday - dt.timedelta(days=1), ReviewGrade.GOOD
@@ -81,7 +81,7 @@ def test_stats_streak_not_reset_when_today_has_no_review_yet(client, db_session)
 def test_stats_isolated_per_language(client, db_session):
     en_vocab = _add_vocabulary(db_session, language="en")
     de_vocab = _add_vocabulary(db_session, language="de")
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now()
     _add_review_log(db_session, en_vocab.id, now, ReviewGrade.GOOD)
     _add_review_log(db_session, de_vocab.id, now, ReviewGrade.AGAIN)
     _add_review_log(db_session, de_vocab.id, now, ReviewGrade.AGAIN)

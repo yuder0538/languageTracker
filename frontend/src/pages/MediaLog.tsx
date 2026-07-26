@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/table"
 import { ApiError } from "@/lib/api"
 import { useLanguage } from "@/lib/language-context"
+import { toLocalIsoDate } from "@/lib/utils"
 import { useApi } from "@/hooks/use-api"
 import {
   createMediaLog,
@@ -44,7 +45,7 @@ import {
 const MEDIA_TYPE_OPTIONS = ["影集", "電影", "紀錄片", "其他"]
 
 function todayIso() {
-  return new Date().toISOString().slice(0, 10)
+  return toLocalIsoDate(new Date())
 }
 
 function MediaLogDialog({

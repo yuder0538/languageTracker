@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { AppRail } from "@/components/app-rail"
 import { useLanguage } from "@/lib/language-context"
+import { toLocalIsoDate } from "@/lib/utils"
 import { useRouter } from "@/lib/router"
 import { useApi } from "@/hooks/use-api"
 import {
@@ -82,16 +83,18 @@ function FocusCard({
       <div className="relative size-40 shrink-0">
         <svg viewBox="0 0 160 160" width="160" height="160" className="-rotate-90">
           <circle cx="80" cy="80" r="70" fill="none" style={{ stroke: "var(--muted)" }} strokeWidth="12" />
-          <circle
-            cx="80"
-            cy="80"
-            r="70"
-            fill="none"
-            style={{ stroke: "var(--primary)" }}
-            strokeWidth="12"
-            strokeLinecap="round"
-            strokeDasharray={`${dash} ${circumference}`}
-          />
+          {dash > 0 && (
+            <circle
+              cx="80"
+              cy="80"
+              r="70"
+              fill="none"
+              style={{ stroke: "var(--primary)" }}
+              strokeWidth="12"
+              strokeLinecap="round"
+              strokeDasharray={`${dash} ${circumference}`}
+            />
+          )}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-3xl font-semibold">
@@ -164,7 +167,7 @@ function VocabGrowthChart({ vocabulary }: { vocabulary: VocabularyRead[] }) {
   for (let i = VOCAB_GROWTH_DAYS - 1; i >= 0; i--) {
     const d = new Date(today)
     d.setDate(d.getDate() - i)
-    buckets.set(d.toISOString().slice(0, 10), 0)
+    buckets.set(toLocalIsoDate(d), 0)
   }
   for (const word of vocabulary) {
     const day = word.created_at.slice(0, 10)
