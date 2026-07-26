@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { XIcon, RotateCcwIcon } from "lucide-react"
+import { XIcon, RotateCcwIcon, Volume2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ReviewModeSwitch } from "@/components/review-mode-switch"
 import { ApiError } from "@/lib/api"
 import { useLanguage } from "@/lib/language-context"
+import { speak } from "@/lib/speech"
 import { useRouter } from "@/lib/router"
 import { useApi } from "@/hooks/use-api"
 import {
@@ -32,6 +33,7 @@ export default function Review() {
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
 
   useEffect(() => {
     setIndex(0)
@@ -41,6 +43,19 @@ export default function Review() {
   const cards = queue.status === "success" ? queue.data : []
   const total = cards.length
   const current = cards[index]
+
+  function handleSpeak() {
+    if (!current) return
+    setSpeaking(true)
+    speak(current.headword, current.language, () => setSpeaking(false))
+  }
+
+  // Pronounce the word once as soon as its card appears (both EN and DE).
+  useEffect(() => {
+    if (!current) return
+    handleSpeak()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.id])
 
   async function handleGrade(grade: ReviewGrade) {
     if (!current || submitting) return
@@ -136,7 +151,17 @@ export default function Review() {
           <>
             <Card className="flex w-full max-w-md flex-col items-center gap-2 p-8 text-center">
               <div className="pb-5">
-                <div className="text-4xl font-semibold">{current.headword}</div>
+                <div className="flex items-center justify-center gap-2 text-4xl font-semibold">
+                  {current.headword}
+                  <button
+                    type="button"
+                    onClick={handleSpeak}
+                    aria-label={`朗讀「${current.headword}」`}
+                    className={`text-muted-foreground hover:text-foreground ${speaking ? "text-primary" : ""}`}
+                  >
+                    <Volume2Icon className="size-5" />
+                  </button>
+                </div>
                 {(current.part_of_speech || current.de_artikel) && (
                   <div className="mt-1 text-sm text-muted-foreground">
                     {current.part_of_speech}

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
-import { XIcon, RotateCcwIcon, CheckIcon } from "lucide-react"
+import { XIcon, RotateCcwIcon, CheckIcon, Volume2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ReviewModeSwitch } from "@/components/review-mode-switch"
 import { ApiError } from "@/lib/api"
 import { useLanguage } from "@/lib/language-context"
+import { speak } from "@/lib/speech"
 import { useRouter } from "@/lib/router"
 import { useApi } from "@/hooks/use-api"
 import { fetchReviewQueue, submitArtikelQuiz } from "@/lib/dashboard-api"
@@ -33,6 +34,7 @@ export default function ReviewArtikel() {
   const [index, setIndex] = useState(0)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
 
   useEffect(() => {
     setIndex(0)
@@ -49,6 +51,20 @@ export default function ReviewArtikel() {
   const cards = queue.status === "success" ? queue.data : []
   const total = cards.length
   const current = cards[index]
+
+  function handleSpeak() {
+    if (!current) return
+    setSpeaking(true)
+    // Only the bare noun is spoken — the artikel answer is never leaked.
+    speak(stripArtikel(current.headword), "de", () => setSpeaking(false))
+  }
+
+  // Pronounce the noun once as soon as its card appears.
+  useEffect(() => {
+    if (!current) return
+    handleSpeak()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current?.id])
 
   async function handleAnswer(answer: Artikel) {
     if (!current || submitting || feedback) return
@@ -148,7 +164,17 @@ export default function ReviewArtikel() {
         {queue.status === "success" && current && (
           <>
             <Card className="flex w-full max-w-md flex-col items-center gap-2 p-8 text-center">
-              <div className="text-4xl font-semibold">{stripArtikel(current.headword)}</div>
+              <div className="flex items-center justify-center gap-2 text-4xl font-semibold">
+                {stripArtikel(current.headword)}
+                <button
+                  type="button"
+                  onClick={handleSpeak}
+                  aria-label={`朗讀「${stripArtikel(current.headword)}」`}
+                  className={`text-muted-foreground hover:text-foreground ${speaking ? "text-primary" : ""}`}
+                >
+                  <Volume2Icon className="size-5" />
+                </button>
+              </div>
               {current.part_of_speech && (
                 <div className="mt-1 text-sm text-muted-foreground">{current.part_of_speech}</div>
               )}
