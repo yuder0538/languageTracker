@@ -8,7 +8,7 @@
 - 上層 User Story：單字庫與追劇紀錄搜尋列
 - 分軌：前後端串接
 - 前置任務（dependsOn）：無
-- 狀態：就緒
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
 - 人工核准者：Niko / 2026-07-26（mockup 變體 A 已選定，見 mockup-decision）

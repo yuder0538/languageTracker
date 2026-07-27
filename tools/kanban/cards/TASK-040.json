@@ -2,7 +2,7 @@
   "id": "TASK-040",
   "title": "單字庫與追劇紀錄搜尋列",
   "content": "單字庫列表頁依單字（headword）搜尋、追劇紀錄列表頁依劇名（title）搜尋，搜尋框內嵌標題列（mockup 變體 A），即時 debounce 套用，不含進階篩選下拉。詳見 ai/artifacts/搜尋與篩選/task-cards/TASK-040.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -45,10 +45,11 @@
       "前端兩頁各自加 searchInput／debouncedSearch（300ms debounce）與 useApi deps 串接；語言切換時搜尋框重置；搜尋無結果與「真的沒有資料」兩種空狀態文案區分。",
       "pytest 192 passed（含新增 2 個 title 篩選測試）、ruff 全數通過、npm run build 成功、npm run lint 無新增錯誤。以 claude-in-chrome 實際啟動 uvicorn＋vite dev server 操作瀏覽器驗證單字庫／追劇紀錄兩頁搜尋、清除搜尋、語言切換重置皆正常，驗證用暫時資料已清除。"
     ],
-    "residual": "無進階篩選（詞性／來源劇集／類型／日期區間），依選定的變體 A 範圍刻意留給後續 User Story。等待 Niko 本機核准後轉 done。"
+    "residual": "無進階篩選（詞性／來源劇集／類型／日期區間），依選定的變體 A 範圍刻意留給後續 User Story。"
   },
   "comments": [
     "2026-07-26: 走完 project-search 情境盤點與 ui-mockup-gate（2 個變體 A/B），Niko 以文字預覽比較後選定變體 A（標題列內嵌搜尋框，無進階篩選）。建卡開始實作。",
-    "2026-07-26: 實作完成，後端新增 media-logs title 篩選、前端兩頁加搜尋框。pytest/ruff/build/lint 皆通過，並以 claude-in-chrome 實際瀏覽器操作驗證。等待 Niko 本機核准轉 done。"
+    "2026-07-26: 實作完成，後端新增 media-logs title 篩選、前端兩頁加搜尋框。pytest/ruff/build/lint 皆通過，並以 claude-in-chrome 實際瀏覽器操作驗證。等待 Niko 本機核准轉 done。",
+    "2026-07-27: Niko 核准轉 done。"
   ]
 }
