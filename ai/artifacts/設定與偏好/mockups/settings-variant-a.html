@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>設定頁 — 變體 A：主導覽入口＋置中單卡表單</title>
+<style>
+  :root {
+    --grey-100:#ededed; --grey-500:#6e6e72; --grey-800:#26262a; --grey-900:#1b1b1e; --grey-950:#121214;
+    --brand-500:#e8b944; --brand-600:#c89b2f; --info-500:#4fa3c7; --danger:#e5484d; --success:#3ea574;
+    --bg-page:var(--grey-950); --bg-surface:var(--grey-900); --bg-surface-hover:var(--grey-800);
+    --border:#2b2b2e; --fg:var(--grey-100); --fg-muted:#9a9a9a;
+    --radius-card:3px; --radius-control:4px; --radius-pill:999px;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg-page); color:var(--fg); font-family:var(--font-sans); font-size:14px; line-height:1.6; }
+  h1,h2 { margin:0; font-weight:600; }
+  .layout { display:grid; grid-template-columns:64px 1fr; min-height:100vh; margin-top:34px; }
+  .rail { background:var(--bg-surface); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:20px; }
+  .rail-logo { width:28px; height:28px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  .rail-nav { display:flex; flex-direction:column; gap:8px; flex:1; }
+  .rail-item { width:36px; height:36px; border-radius:var(--radius-control); display:flex; align-items:center; justify-content:center; color:var(--fg-muted); font-size:16px; }
+  .rail-item.active { background:var(--bg-surface-hover); color:var(--brand-500); }
+  .rail-lang { display:flex; flex-direction:column; gap:4px; }
+  .rail-lang button { width:32px; height:24px; border-radius:var(--radius-control); border:none; font-size:11px; font-weight:600; cursor:pointer; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .rail-lang button.active { background:var(--brand-500); color:var(--grey-950); }
+
+  .main { padding:32px; display:flex; flex-direction:column; align-items:center; }
+  .page-head { width:100%; max-width:480px; margin-bottom:24px; }
+  .page-head .eyebrow { font-size:12px; color:var(--fg-muted); letter-spacing:0.04em; text-transform:uppercase; margin-bottom:4px; }
+  .page-head h1 { font-size:24px; }
+  .page-head p { margin:8px 0 0; color:var(--fg-muted); font-size:13px; }
+
+  .card { width:100%; max-width:480px; background:var(--bg-surface); border-radius:var(--radius-card); padding:24px; display:flex; flex-direction:column; gap:20px; }
+  .field { display:flex; flex-direction:column; gap:8px; }
+  .field label { font-size:14px; font-weight:500; }
+  .field .hint { font-size:12px; color:var(--fg-muted); }
+  .field input { height:40px; border-radius:var(--radius-control); border:1px solid var(--border); background:transparent; color:var(--fg); padding:0 12px; font-family:var(--font-mono); font-size:16px; width:120px; }
+  .field input:focus { outline:2px solid var(--info-500); outline-offset:1px; }
+  .field.error input { border-color:var(--danger); }
+  .field .error-text { font-size:12px; color:var(--danger); display:none; }
+  .field.error .error-text { display:block; }
+  .field .error-text::before { content:"⚠ "; }
+
+  .actions { display:flex; align-items:center; gap:12px; }
+  .btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 16px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); font-weight:600; font-size:14px; border:none; cursor:pointer; white-space:nowrap; }
+  .btn:hover { background:var(--brand-600); }
+  .saved-text { font-size:12px; color:var(--success); display:flex; align-items:center; gap:4px; }
+
+  .variant-banner { position:fixed; top:0; left:0; right:0; z-index:30; background:var(--info-500); color:var(--grey-950); font-size:12px; padding:8px 16px; text-align:center; font-weight:500; }
+  .example-row { display:flex; gap:32px; }
+  .example-col { flex:1; min-width:0; }
+  .example-col h3 { font-size:13px; color:var(--fg-muted); font-weight:500; margin:0 0 12px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="variant-banner">Mockup 變體 A — 設定入口在主導覽群組內（Dashboard／單字庫／追劇紀錄／設定 並列）＋置中單卡表單（僅供版型比較，非最終實作）</div>
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-logo">IT</div>
+    <div class="rail-nav">
+      <div class="rail-item">▦</div>
+      <div class="rail-item">📖</div>
+      <div class="rail-item">🎬</div>
+      <div class="rail-item active">⚙️</div>
+    </div>
+    <div class="rail-lang"><button class="active">DE</button><button>EN</button></div>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <div class="eyebrow">設定</div>
+      <h1>設定與偏好</h1>
+      <p>調整複習與系統行為，目前只有一個項目，之後會陸續加入更多設定。</p>
+    </div>
+
+    <div class="example-row" style="width:100%; max-width:1000px; justify-content:center; gap:48px;">
+      <div class="example-col" style="max-width:480px;">
+        <h3>預設狀態</h3>
+        <div class="card">
+          <div class="field">
+            <label for="a-limit-1">每日新卡引入上限</label>
+            <div class="hint">複習佇列每天最多引入幾張全新單字（不影響已到期需複習的舊卡，舊卡不受此上限限制）。</div>
+            <input id="a-limit-1" type="number" value="15" min="1" max="500" />
+          </div>
+          <div class="actions">
+            <button class="btn">儲存</button>
+          </div>
+        </div>
+      </div>
+      <div class="example-col" style="max-width:480px;">
+        <h3>驗證錯誤狀態</h3>
+        <div class="card">
+          <div class="field error">
+            <label for="a-limit-2">每日新卡引入上限</label>
+            <div class="hint">複習佇列每天最多引入幾張全新單字（不影響已到期需複習的舊卡，舊卡不受此上限限制）。</div>
+            <input id="a-limit-2" type="number" value="0" min="1" max="500" />
+            <div class="error-text">請輸入 1～500 之間的整數</div>
+          </div>
+          <div class="actions">
+            <button class="btn">儲存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

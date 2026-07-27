@@ -1,3 +1,4 @@
+import random
 from datetime import date, datetime, timedelta
 from typing import Literal
 
@@ -6,12 +7,12 @@ from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.core.config import get_settings
 from app.models.enums import Language, ReviewGrade
 from app.models.review_log import ReviewLog
 from app.models.vocabulary import Vocabulary
 from app.schemas.review import ReviewHistoryDay, ReviewStats
 from app.schemas.vocabulary import VocabularyRead
+from app.services.app_settings import get_app_settings
 
 MAX_HISTORY_DAYS = 90
 
@@ -72,12 +73,13 @@ def get_review_queue(
     )
     if card_type == "artikel":
         due_query = due_query.filter(Vocabulary.de_artikel.is_not(None))
-    due_cards = due_query.order_by(Vocabulary.srs_next_review_at.asc()).all()
+    due_cards = due_query.all()
+    random.shuffle(due_cards)
 
-    settings = get_settings()
+    app_settings = get_app_settings(db)
     new_cards_introduced_today = _count_new_cards_introduced_today(db, language)
     remaining_new_card_slots = max(
-        0, settings.daily_new_card_limit - new_cards_introduced_today
+        0, app_settings.daily_new_card_limit - new_cards_introduced_today
     )
 
     new_cards: list[Vocabulary] = []

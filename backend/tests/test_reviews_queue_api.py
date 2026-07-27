@@ -3,13 +3,13 @@ import datetime as dt
 from app.models.enums import ReviewGrade
 from app.models.review_log import ReviewLog
 from app.models.vocabulary import Vocabulary
+from app.services.app_settings import get_app_settings
 
 
-def _make_settings(limit: int):
-    class _Settings:
-        daily_new_card_limit = limit
-
-    return _Settings()
+def _set_daily_new_card_limit(db_session, limit: int):
+    settings_row = get_app_settings(db_session)
+    settings_row.daily_new_card_limit = limit
+    db_session.commit()
 
 
 def _add_vocabulary(db_session, **overrides):
@@ -57,7 +57,10 @@ def test_queue_returns_new_cards_ordered_by_id(client, db_session):
     assert [item["id"] for item in response.json()] == [first.id, second.id]
 
 
-def test_queue_due_cards_ordered_most_overdue_first(client, db_session):
+def test_queue_due_cards_include_all_regardless_of_how_overdue(client, db_session):
+    # Due cards are intentionally shuffled (not sorted by how overdue), since
+    # Niko's vocabulary has no difficulty ranking and wants every due card to
+    # rotate through evenly rather than always surfacing the same order.
     now = dt.datetime.now()
     less_overdue = _add_vocabulary(
         db_session,
@@ -74,11 +77,32 @@ def test_queue_due_cards_ordered_most_overdue_first(client, db_session):
 
     response = client.get("/api/v1/reviews/queue", params={"language": "en"})
 
-    assert [item["id"] for item in response.json()] == [more_overdue.id, less_overdue.id]
+    returned_ids = {item["id"] for item in response.json()}
+    assert returned_ids == {more_overdue.id, less_overdue.id}
 
 
-def test_new_cards_capped_by_daily_limit(client, db_session, monkeypatch):
-    monkeypatch.setattr("app.api.reviews.get_settings", lambda: _make_settings(2))
+def test_queue_due_cards_are_shuffled(client, db_session, monkeypatch):
+    now = dt.datetime.now()
+    vocabs = [
+        _add_vocabulary(
+            db_session,
+            headword=f"word{i}",
+            srs_last_reviewed_at=now,
+            srs_next_review_at=now - dt.timedelta(hours=i + 1),
+        )
+        for i in range(5)
+    ]
+    ordered_ids = [v.id for v in vocabs]
+
+    monkeypatch.setattr("app.api.reviews.random.shuffle", lambda seq: seq.reverse())
+
+    response = client.get("/api/v1/reviews/queue", params={"language": "en"})
+
+    assert [item["id"] for item in response.json()] == list(reversed(ordered_ids))
+
+
+def test_new_cards_capped_by_daily_limit(client, db_session):
+    _set_daily_new_card_limit(db_session, 2)
     for i in range(5):
         _add_vocabulary(db_session, headword=f"word{i}")
 
@@ -87,10 +111,8 @@ def test_new_cards_capped_by_daily_limit(client, db_session, monkeypatch):
     assert len(response.json()) == 2
 
 
-def test_new_cards_already_introduced_today_count_against_limit(
-    client, db_session, monkeypatch
-):
-    monkeypatch.setattr("app.api.reviews.get_settings", lambda: _make_settings(2))
+def test_new_cards_already_introduced_today_count_against_limit(client, db_session):
+    _set_daily_new_card_limit(db_session, 2)
 
     already_seen = _add_vocabulary(
         db_session, headword="seen", srs_last_reviewed_at=dt.datetime.now()

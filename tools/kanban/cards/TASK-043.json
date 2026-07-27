@@ -1,0 +1,49 @@
+{
+  "id": "TASK-043",
+  "title": "設定頁（前端，含 AppRail 入口與真實 API 串接）",
+  "content": "新增 /settings 頁面（選定變體 A：置中單卡表單），AppRail 主導覽新增設定入口，串接 TASK-042 的 GET/PATCH /settings。詳見 ai/artifacts/設定與偏好/task-cards/TASK-043.md。",
+  "stage": "blocked",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-27",
+  "epic": "設定與偏好",
+  "userStory": "每日新卡引入上限設定",
+  "dependsOn": ["TASK-042"],
+  "order": 43,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": true,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "ai/artifacts/設定與偏好/feature-spec.md",
+    "screenSpec": "ai/artifacts/設定與偏好/screen-spec-settings.md",
+    "mockupDecision": "ai/artifacts/設定與偏好/mockup-decision-settings.md",
+    "taskCard": "ai/artifacts/設定與偏好/task-cards/TASK-043.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [],
+  "evidence": {
+    "commands": [],
+    "findings": [],
+    "residual": ""
+  },
+  "comments": [
+    "2026-07-27: feature-spec／screen-spec／mockup-decision 皆已核准（變體 A），implementation-plan 拆出本卡（前端），依賴 TASK-042（後端 API）完成後才可進 ready／implementing。"
+  ]
+}

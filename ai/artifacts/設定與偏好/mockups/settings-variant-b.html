@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>設定頁 — 變體 B：底部獨立入口＋分組清單版型</title>
+<style>
+  :root {
+    --grey-100:#ededed; --grey-500:#6e6e72; --grey-800:#26262a; --grey-900:#1b1b1e; --grey-950:#121214;
+    --brand-500:#e8b944; --brand-600:#c89b2f; --info-500:#4fa3c7; --danger:#e5484d; --success:#3ea574;
+    --bg-page:var(--grey-950); --bg-surface:var(--grey-900); --bg-surface-hover:var(--grey-800);
+    --border:#2b2b2e; --fg:var(--grey-100); --fg-muted:#9a9a9a;
+    --radius-card:3px; --radius-control:4px; --radius-pill:999px;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    --font-mono:ui-monospace,"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg-page); color:var(--fg); font-family:var(--font-sans); font-size:14px; line-height:1.6; }
+  h1,h2 { margin:0; font-weight:600; }
+  .layout { display:grid; grid-template-columns:64px 1fr; min-height:100vh; margin-top:34px; }
+  .rail { background:var(--bg-surface); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:16px; }
+  .rail-logo { width:28px; height:28px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; }
+  .rail-nav { display:flex; flex-direction:column; gap:8px; flex:1; }
+  .rail-item { width:36px; height:36px; border-radius:var(--radius-control); display:flex; align-items:center; justify-content:center; color:var(--fg-muted); font-size:16px; }
+  .rail-item.active { background:var(--bg-surface-hover); color:var(--brand-500); }
+  .rail-utility { display:flex; flex-direction:column; gap:8px; align-items:center; }
+  .rail-divider { width:24px; height:1px; background:var(--border); }
+  .rail-item-utility { width:32px; height:32px; border-radius:var(--radius-control); display:flex; align-items:center; justify-content:center; color:var(--fg-muted); font-size:14px; }
+  .rail-item-utility.active { background:var(--bg-surface-hover); color:var(--brand-500); }
+  .rail-lang { display:flex; flex-direction:column; gap:4px; }
+  .rail-lang button { width:32px; height:24px; border-radius:var(--radius-control); border:none; font-size:11px; font-weight:600; cursor:pointer; background:var(--bg-surface-hover); color:var(--fg-muted); }
+  .rail-lang button.active { background:var(--brand-500); color:var(--grey-950); }
+
+  .main { padding:32px; display:flex; flex-direction:column; gap:24px; max-width:720px; }
+  .page-head h1 { font-size:24px; }
+  .page-head p { margin:8px 0 0; color:var(--fg-muted); font-size:13px; }
+
+  .section { display:flex; flex-direction:column; gap:12px; }
+  .section-title { font-size:12px; font-weight:600; color:var(--fg-muted); letter-spacing:0.04em; text-transform:uppercase; padding:0 4px; }
+  .setting-list { background:var(--bg-surface); border-radius:var(--radius-card); overflow:hidden; }
+  .setting-row { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:20px 24px; }
+  .setting-row + .setting-row { border-top:1px solid var(--border); }
+  .setting-row .label-group { display:flex; flex-direction:column; gap:4px; max-width:400px; }
+  .setting-row .label-group .title { font-size:14px; font-weight:500; }
+  .setting-row .label-group .desc { font-size:12px; color:var(--fg-muted); }
+  .setting-row .control { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .setting-row input { height:36px; width:88px; border-radius:var(--radius-control); border:1px solid var(--border); background:transparent; color:var(--fg); padding:0 10px; font-family:var(--font-mono); font-size:15px; text-align:right; }
+  .setting-row input:focus { outline:2px solid var(--info-500); outline-offset:1px; }
+  .setting-row.error input { border-color:var(--danger); }
+  .setting-row .error-text { font-size:12px; color:var(--danger); margin-top:4px; }
+  .setting-row .error-text::before { content:"⚠ "; }
+  .btn { display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 16px; border-radius:var(--radius-control); background:var(--brand-500); color:var(--grey-950); font-weight:600; font-size:14px; border:none; cursor:pointer; white-space:nowrap; }
+  .btn:hover { background:var(--brand-600); }
+  .future-note { display:flex; align-items:center; gap:8px; padding:16px 24px; color:var(--fg-muted); font-size:12px; border:1px dashed var(--border); border-radius:var(--radius-card); }
+
+  .variant-banner { position:fixed; top:0; left:0; right:0; z-index:30; background:var(--info-500); color:var(--grey-950); font-size:12px; padding:8px 16px; text-align:center; font-weight:500; }
+</style>
+</head>
+<body>
+<div class="variant-banner">Mockup 變體 B — 設定入口獨立於主導覽底部（與語言切換相鄰，非主要內容頁）＋分組清單版型（僅供版型比較，非最終實作）</div>
+<div class="layout">
+  <aside class="rail">
+    <div class="rail-logo">IT</div>
+    <div class="rail-nav">
+      <div class="rail-item">▦</div>
+      <div class="rail-item">📖</div>
+      <div class="rail-item">🎬</div>
+    </div>
+    <div class="rail-utility">
+      <div class="rail-item-utility active">⚙️</div>
+      <div class="rail-divider"></div>
+      <div class="rail-lang"><button class="active">DE</button><button>EN</button></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <h1>設定與偏好</h1>
+      <p>調整複習與系統行為。</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">複習設定</div>
+      <div class="setting-list">
+        <div class="setting-row">
+          <div class="label-group">
+            <div class="title">每日新卡引入上限</div>
+            <div class="desc">複習佇列每天最多引入幾張全新單字，不影響已到期需複習的舊卡。</div>
+          </div>
+          <div class="control">
+            <input type="number" value="15" min="1" max="500" />
+            <button class="btn">儲存</button>
+          </div>
+        </div>
+        <div class="setting-row error">
+          <div class="label-group">
+            <div class="title">每日新卡引入上限（驗證錯誤示範）</div>
+            <div class="desc">複習佇列每天最多引入幾張全新單字，不影響已到期需複習的舊卡。</div>
+            <div class="error-text">請輸入 1～500 之間的整數</div>
+          </div>
+          <div class="control">
+            <input type="number" value="0" min="1" max="500" />
+            <button class="btn">儲存</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="future-note">日後陸續加入的設定會用同樣的「分組清單」樣式，加新的 section-title 分區即可，不需重新設計版面。</div>
+  </main>
+</div>
+</body>
+</html>

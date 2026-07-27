@@ -14,7 +14,11 @@ class Settings(BaseSettings):
 
     llm_api_key: str | None = None
 
-    daily_new_card_limit: int = 20
+    # Seed value only — used to create the app_settings DB row (see
+    # app/services/app_settings.py) the first time it's read. After that, the
+    # persisted DB value is the source of truth (adjustable via GET/PATCH
+    # /settings), not this constant.
+    daily_new_card_limit: int = 15
 
 
 @lru_cache

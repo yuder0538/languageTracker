@@ -1,0 +1,53 @@
+{
+  "id": "TASK-041",
+  "title": "複習佇列到期卡改為隨機排序",
+  "content": "到期複習卡（due_cards）改為隨機排序，不再固定依最久沒複習排最前面；新卡排序與每日新卡上限邏輯不變。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-041.md。",
+  "stage": "verify",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-07-27",
+  "epic": "雙語 SRS 與 Flashcard 測驗",
+  "userStory": "複習佇列 API",
+  "dependsOn": ["TASK-013"],
+  "order": 41,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": false
+  },
+  "gates": {
+    "product": true,
+    "ui": false,
+    "architecture": false,
+    "security": false,
+    "test": true,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "",
+    "mockupDecision": "",
+    "taskCard": "ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-041.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [],
+  "evidence": {
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "根因：Niko 的單字沒有官方難易度分級（都是追劇時第一次碰到的字），現有到期卡固定依 srs_next_review_at 由舊到新排序，每次複習體感順序都一樣，希望改成隨機（間歇性複習）。",
+      "backend/app/api/reviews.py 的 get_review_queue：due_cards 查詢移除 order_by(srs_next_review_at.asc())，改用 random.shuffle() 打亂；new_cards 排序與每日新卡上限邏輯不變。",
+      "backend/tests/test_reviews_queue_api.py：原本斷言固定排序的測試改為只驗證回傳集合正確，新增 test_queue_due_cards_are_shuffled 用 monkeypatch 取代 random.shuffle 驗證確實呼叫了 shuffle。pytest 193 passed、ruff 全數通過。"
+    ],
+    "residual": "無 UI 變更，純後端行為調整。等待 Niko 本機（複習頁多次操作）確認到期卡順序有隨機感後核准轉 done。"
+  },
+  "comments": [
+    "2026-07-27: 討論『設定與偏好』Epic 範圍時，Niko 澄清『每日複習目標』其實就是既有的 daily_new_card_limit（要調成 15），並額外提出到期卡應該打亂順序而非固定依到期時間排序，因為他的單字沒有難易度之分。因為不涉及 UI、範圍單純，直接建卡（比照 TASK-038 快軌模式，不另外走 spec-interrogation），實作並通過 pytest/ruff，等待 Niko 本機驗證轉 done。"
+  ]
+}
