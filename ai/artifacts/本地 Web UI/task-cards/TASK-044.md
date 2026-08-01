@@ -8,10 +8,10 @@
 - 上層 User Story：Dashboard 圖表擴充
 - 分軌：前端
 - 前置任務（dependsOn）：TASK-029
-- 狀態：草稿
+- 狀態：審查中
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待實作後 Niko 本機驗證）
+- 人工核准者：（待 Niko 本機驗證 hover/tap tooltip 與指標切換後核准）
 
 ## 目標
 
@@ -68,9 +68,20 @@
 
 ## 完成證據
 
-- 變更的檔案：待實作後填寫。
-- 執行過的指令：待實作後填寫。
-- 測試輸出：待實作後填寫。
-- 螢幕截圖：待實作後填寫。
-- 已知限制：待實作後填寫。
-- 後續任務：TASK-045（追劇時間趨勢卡片，重用本卡的 Tooltip 元件）。
+- 變更的檔案：
+  - `frontend/src/pages/Dashboard.tsx`（新增 `GrowthMetric` 型別與 `GROWTH_METRIC_LABELS`；新增共用 `useChartHover` hook 與 `ChartTooltip` 元件；`VocabGrowthChart` 改為接受 `metric` prop，計算 `cumulativeValues`／依 metric 切換顯示資料、末端標籤、資料表格欄位；`Dashboard()` 新增 `growthMetric` state 與 `CardHeader` 內的 `Select` 下拉）
+- 執行過的指令：
+  - `npm run build`（`tsc -b && vite build`）→ 通過，無型別錯誤
+  - `npm run lint`（`oxlint`）→ 通過，僅既有、與本卡無關的 5 個 `only-export-components` 警告（既有檔案，非本卡新增）
+  - 本機同時啟動後端（`venv/Scripts/python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000`）與前端（`npm run dev -- --host 127.0.0.1 --port 5173`），用真實資料庫（47 筆德文單字）驗證
+- 測試輸出：無自動化測試（前端無測試框架，沿用既有慣例），以 build/lint 通過＋瀏覽器手動操作為準
+- 螢幕截圖：Claude 用瀏覽器自動化工具實測並目視確認（未落地存檔）：
+  1. 預設「每日新增」下拉選單正確顯示中文標籤（非原始 value 字串——過程中發現並修正了 base-ui `SelectValue` 在下拉未曾開啟前會顯示原始 `value`「daily」而非標籤「每日新增」的問題，改用 `<SelectValue>{(value) => GROWTH_METRIC_LABELS[value]}</SelectValue>` render-prop 寫死中文標籤）
+  2. 切換為「累積總量」：折線變成 0→47 的遞增曲線，末端標籤正確顯示「今天累積 47 字」
+  3. Hover 折線中段資料點：出現 guideline 虛線＋浮動框，內容為「7/26」「累積 19 字」，位置與數值正確
+  4. 滑鼠移出圖表：tooltip 正確消失
+  5. 展開「顯示資料表格」：欄位標題正確顯示「累積單字量」，14 筆逐日累積數值與圖表一致（0,0,0,0,0,0,16,19,25,31,32,36,42,47）
+- 已知限制：
+  1. 觸控裝置的 tap 開合／再次 tap 同一點取消／tap 外部關閉，因瀏覽器自動化工具無直接觸控事件模擬手段，僅完成程式邏輯（`onTouchStart` 尋找最近點＋`document` 層級 `touchstart` 監聽器判斷點擊外部），尚未在真實觸控裝置或瀏覽器 devtools 的觸控模式下實測，建議 Niko 用手機/平板開啟本機網址驗證。
+  2. 累積總量的計算基準是 14 天視窗內的逐日累加（非全站歷史總單字量），已在卡片與 mockup 決策文件註明避免與側欄「總單字量」混淆；本次測試資料剛好全部 47 筆單字都在 14 天內，因此兩個數字相同，未能用不同數字的情境驗證區別是否夠清楚，建議之後累積更久的資料再看一次。
+- 後續任務：TASK-045（追劇時間趨勢卡片，重用本卡的 `useChartHover`／`ChartTooltip`）。

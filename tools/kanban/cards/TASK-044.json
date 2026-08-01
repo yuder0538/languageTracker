@@ -2,7 +2,7 @@
   "id": "TASK-044",
   "title": "Chart Tooltip 共用元件＋套用到「單字成長」卡片（含指標切換）",
   "content": "新增可重用的圖表 hover/tap tooltip（guideline＋浮動框），套用到既有單字成長折線圖，並新增指標切換下拉（每日新增／累積總量）。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-044.md。",
-  "stage": "ready",
+  "stage": "verify",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -41,11 +41,16 @@
     "ai/context/design-system.md"
   ],
   "evidence": {
-    "commands": [],
-    "findings": [],
-    "residual": ""
+    "commands": ["npm run build", "npm run lint"],
+    "findings": [
+      "新增共用 useChartHover hook + ChartTooltip 元件（frontend/src/pages/Dashboard.tsx），VocabGrowthChart 接受 metric prop 切換每日新增/累積總量。",
+      "修正 base-ui SelectValue 在下拉未曾開啟前顯示原始 value 而非標籤的問題，改用 render-prop 寫死中文標籤對照表。",
+      "本機同時起後端(8000)/前端(5173)，用真實 47 筆德文單字資料，透過瀏覽器自動化實測下拉切換、hover tooltip guideline/浮動框、資料表格同步切換，皆正確；mouseleave 正確關閉 tooltip。"
+    ],
+    "residual": "觸控 tap 開合/取消邏輯已實作但未在真實觸控裝置上實測（瀏覽器自動化工具無觸控事件模擬），待 Niko 用手機/平板驗證。累積總量目前測試資料剛好等於全站總單字量，未驗證兩者數字不同時的情境。"
   },
   "comments": [
-    "2026-08-01: mockup-decision-dashboard-charts.md 選定變體 A 後，implementation-plan 拆出本卡（純前端），依賴 TASK-029（Dashboard 頁面已實作）。"
+    "2026-08-01: mockup-decision-dashboard-charts.md 選定變體 A 後，implementation-plan 拆出本卡（純前端），依賴 TASK-029（Dashboard 頁面已實作）。",
+    "2026-08-01: 已實作並自測（build/lint 通過，瀏覽器手動操作下拉切換與 hover tooltip 皆正確），轉 verify，等待 Niko 本機驗證（含觸控裝置的 tap 行為）後轉 done。"
   ]
 }

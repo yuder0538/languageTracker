@@ -1,7 +1,16 @@
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type TouchEvent as ReactTouchEvent,
+} from "react"
 import { RotateCcwIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AppRail } from "@/components/app-rail"
 import { useLanguage } from "@/lib/language-context"
 import { toLocalIsoDate } from "@/lib/utils"
@@ -22,6 +31,13 @@ import {
 const VOCAB_GROWTH_DAYS = 14
 const HISTORY_DAYS = 35
 const WEEKDAY_LABELS = ["日", "一", "二", "三", "四", "五", "六"]
+
+type GrowthMetric = "daily" | "cumulative"
+
+const GROWTH_METRIC_LABELS: Record<GrowthMetric, string> = {
+  daily: "每日新增",
+  cumulative: "累積總量",
+}
 
 function formatDate(iso: string) {
   const [, m, d] = iso.split("-")
@@ -141,7 +157,7 @@ function FocusCard({
   )
 }
 
-// ---- 單字成長趨勢圖 ----
+// ---- 圖表共用工具 ----
 
 function buildLinePoints(values: number[]) {
   const width = 700
@@ -161,7 +177,105 @@ function buildLinePoints(values: number[]) {
   return { points, max, width, height, padLeft, padTop, padBottom, plotHeight }
 }
 
-function VocabGrowthChart({ vocabulary }: { vocabulary: VocabularyRead[] }) {
+// ---- 圖表 hover/tap tooltip（共用，供單字成長圖與後續追劇時間趨勢圖重用） ----
+
+function useChartHover(pointXs: number[]) {
+  const svgRef = useRef<SVGSVGElement>(null)
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+
+  const nearestIndexAt = useCallback(
+    (clientX: number) => {
+      const svg = svgRef.current
+      if (!svg || pointXs.length === 0) return null
+      const rect = svg.getBoundingClientRect()
+      if (rect.width === 0) return null
+      const viewBoxWidth = svg.viewBox.baseVal.width || rect.width
+      const svgX = ((clientX - rect.left) / rect.width) * viewBoxWidth
+      let nearest = 0
+      let nearestDist = Infinity
+      pointXs.forEach((x, i) => {
+        const dist = Math.abs(x - svgX)
+        if (dist < nearestDist) {
+          nearestDist = dist
+          nearest = i
+        }
+      })
+      return nearest
+    },
+    [pointXs]
+  )
+
+  useEffect(() => {
+    if (activeIndex === null) return
+    function handleOutsideTap(e: TouchEvent) {
+      if (svgRef.current && e.target instanceof Node && !svgRef.current.contains(e.target)) {
+        setActiveIndex(null)
+      }
+    }
+    document.addEventListener("touchstart", handleOutsideTap)
+    return () => document.removeEventListener("touchstart", handleOutsideTap)
+  }, [activeIndex])
+
+  return {
+    svgRef,
+    activeIndex,
+    onMouseMove: (e: ReactMouseEvent<SVGSVGElement>) => setActiveIndex(nearestIndexAt(e.clientX)),
+    onMouseLeave: () => setActiveIndex(null),
+    onTouchStart: (e: ReactTouchEvent<SVGSVGElement>) => {
+      e.preventDefault()
+      const touch = e.touches[0]
+      if (!touch) return
+      const nearest = nearestIndexAt(touch.clientX)
+      setActiveIndex((current) => (current === nearest ? null : nearest))
+    },
+  }
+}
+
+function ChartTooltip({
+  x,
+  y,
+  top,
+  bottom,
+  chartWidth,
+  dateLabel,
+  valueLabel,
+}: {
+  x: number
+  y: number
+  top: number
+  bottom: number
+  chartWidth: number
+  dateLabel: string
+  valueLabel: string
+}) {
+  const boxWidth = 92
+  const boxHeight = 38
+  const boxX = Math.min(Math.max(x - boxWidth / 2, 2), chartWidth - boxWidth - 2)
+  const boxY = Math.max(y - boxHeight - 14, 2)
+
+  return (
+    <g pointerEvents="none">
+      <line x1={x} y1={top} x2={x} y2={bottom} style={{ stroke: "var(--border)" }} strokeWidth={1} strokeDasharray="3 3" />
+      <circle cx={x} cy={y} r={4} style={{ fill: "var(--primary)", stroke: "var(--card)" }} strokeWidth={2} />
+      <foreignObject x={boxX} y={boxY} width={boxWidth} height={boxHeight}>
+        <div className="flex h-full flex-col items-center justify-center gap-0.5 rounded-md border border-border bg-card text-center shadow-sm">
+          <span className="font-mono text-[10px] text-muted-foreground">{dateLabel}</span>
+          <span className="text-xs font-semibold text-foreground">{valueLabel}</span>
+        </div>
+      </foreignObject>
+    </g>
+  )
+}
+
+// ---- 單字成長趨勢圖 ----
+
+function VocabGrowthChart({
+  vocabulary,
+  metric,
+}: {
+  vocabulary: VocabularyRead[]
+  metric: GrowthMetric
+}) {
   const today = new Date()
   const buckets = new Map<string, number>()
   for (let i = VOCAB_GROWTH_DAYS - 1; i >= 0; i--) {
@@ -174,8 +288,17 @@ function VocabGrowthChart({ vocabulary }: { vocabulary: VocabularyRead[] }) {
     if (buckets.has(day)) buckets.set(day, (buckets.get(day) ?? 0) + 1)
   }
   const days = Array.from(buckets.keys())
-  const values = Array.from(buckets.values())
-  const total = values.reduce((sum, v) => sum + v, 0)
+  const dailyValues = Array.from(buckets.values())
+  const total = dailyValues.reduce((sum, v) => sum + v, 0)
+  const cumulativeValues = dailyValues.reduce<number[]>((acc, v, i) => {
+    acc.push((acc[i - 1] ?? 0) + v)
+    return acc
+  }, [])
+  const values = metric === "cumulative" ? cumulativeValues : dailyValues
+
+  const { points, max, width, height, padLeft, padTop, plotHeight } = buildLinePoints(values)
+  // useChartHover must run unconditionally (hooks rule), even for the empty-state early return below.
+  const hover = useChartHover(points.map((p) => p.x))
 
   if (vocabulary.length === 0) {
     return (
@@ -185,14 +308,24 @@ function VocabGrowthChart({ vocabulary }: { vocabulary: VocabularyRead[] }) {
     )
   }
 
-  const { points, max, width, height, padLeft, padTop, plotHeight } = buildLinePoints(values)
   const linePoints = points.map((p) => `${p.x},${p.y}`).join(" ")
   const areaPoints = `${linePoints} ${points[points.length - 1].x},${padTop + plotHeight} ${points[0].x},${padTop + plotHeight}`
   const last = points[points.length - 1]
+  const valueLabel = (v: number) => (metric === "cumulative" ? `累積 ${v} 字` : `+${v}`)
 
   return (
     <div className="px-4 pb-4">
-      <svg viewBox={`0 0 ${width} ${height}`} width="100%" height={height} role="img" aria-label="每日新增單字折線圖">
+      <svg
+        ref={hover.svgRef}
+        viewBox={`0 0 ${width} ${height}`}
+        width="100%"
+        height={height}
+        role="img"
+        aria-label={metric === "cumulative" ? "14 天累積單字量折線圖" : "每日新增單字折線圖"}
+        onMouseMove={hover.onMouseMove}
+        onMouseLeave={hover.onMouseLeave}
+        onTouchStart={hover.onTouchStart}
+      >
         <line x1={padLeft} y1={padTop} x2={width - 20} y2={padTop} style={{ stroke: "var(--border)" }} strokeWidth={1} />
         <line x1={padLeft} y1={padTop + plotHeight} x2={width - 20} y2={padTop + plotHeight} style={{ stroke: "var(--border)" }} strokeWidth={1} />
         <text x={padLeft - 10} y={padTop + 4} textAnchor="end" fontSize={11} style={{ fill: "var(--muted-foreground)" }}>{max}</text>
@@ -201,16 +334,27 @@ function VocabGrowthChart({ vocabulary }: { vocabulary: VocabularyRead[] }) {
         <polyline points={linePoints} fill="none" style={{ stroke: "var(--info-500)" }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
         <circle cx={last.x} cy={last.y} r={4} style={{ fill: "var(--primary)", stroke: "var(--card)" }} strokeWidth={2} />
         <text x={last.x - 8} y={last.y - 12} textAnchor="end" fontSize={12} fontWeight={600} style={{ fill: "var(--foreground)" }}>
-          今天 +{values[values.length - 1]}
+          今天{metric === "cumulative" ? `累積 ${values[values.length - 1]} 字` : ` +${values[values.length - 1]}`}
         </text>
         <text x={padLeft} y={height - 4} fontSize={11} style={{ fill: "var(--muted-foreground)" }}>{formatDate(days[0])}</text>
         <text x={width - 20} y={height - 4} textAnchor="end" fontSize={11} style={{ fill: "var(--muted-foreground)" }}>{formatDate(days[days.length - 1])}</text>
+        {hover.activeIndex !== null && (
+          <ChartTooltip
+            x={points[hover.activeIndex].x}
+            y={points[hover.activeIndex].y}
+            top={padTop}
+            bottom={padTop + plotHeight}
+            chartWidth={width}
+            dateLabel={formatDate(days[hover.activeIndex])}
+            valueLabel={valueLabel(values[hover.activeIndex])}
+          />
+        )}
       </svg>
       <details className="mt-1">
         <summary className="cursor-pointer text-xs text-primary select-none">顯示資料表格</summary>
         <table className="mt-2 w-full text-xs [font-variant-numeric:tabular-nums]">
           <thead>
-            <tr><th className="p-1 text-left">日期</th><th className="p-1 text-left">新增單字</th></tr>
+            <tr><th className="p-1 text-left">日期</th><th className="p-1 text-left">{metric === "cumulative" ? "累積單字量" : "新增單字"}</th></tr>
           </thead>
           <tbody>
             {days.map((day, i) => (
@@ -278,6 +422,7 @@ function ReviewHeatmap({ history }: { history: ReviewHistoryDay[] }) {
 export default function Dashboard() {
   const { language } = useLanguage()
   const { navigate } = useRouter()
+  const [growthMetric, setGrowthMetric] = useState<GrowthMetric>("daily")
 
   const stats = useApi(() => fetchReviewStats(language), [language])
   const queue = useApi(() => fetchReviewQueue(language), [language])
@@ -332,11 +477,24 @@ export default function Dashboard() {
         <Card>
           <CardHeader>
             <CardTitle className="text-sm">單字成長</CardTitle>
-            <p className="text-xs text-muted-foreground">過去 {VOCAB_GROWTH_DAYS} 天新增單字數</p>
+            <CardDescription className="text-xs">
+              過去 {VOCAB_GROWTH_DAYS} 天{growthMetric === "cumulative" ? "累積單字量" : "新增單字數"}
+            </CardDescription>
+            <CardAction>
+              <Select value={growthMetric} onValueChange={(value) => setGrowthMetric((value as GrowthMetric) ?? "daily")}>
+                <SelectTrigger size="sm" className="text-xs">
+                  <SelectValue>{(value: GrowthMetric) => GROWTH_METRIC_LABELS[value]}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">每日新增</SelectItem>
+                  <SelectItem value="cumulative">累積總量</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardAction>
           </CardHeader>
           {vocabulary.status === "loading" && <div className="px-4 pb-4"><SkeletonBlock className="h-[170px] w-full" /></div>}
           {vocabulary.status === "error" && <div className="px-4 pb-4"><ErrorNote message={vocabulary.message} onRetry={vocabulary.retry} /></div>}
-          {vocabulary.status === "success" && <VocabGrowthChart vocabulary={vocabulary.data} />}
+          {vocabulary.status === "success" && <VocabGrowthChart vocabulary={vocabulary.data} metric={growthMetric} />}
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2">
