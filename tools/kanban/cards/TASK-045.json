@@ -1,0 +1,51 @@
+{
+  "id": "TASK-045",
+  "title": "追劇時間趨勢卡片（新增，重用 Chart Tooltip）",
+  "content": "Dashboard 新增「追劇時間趨勢」卡片，依既有 mediaLogs 的 watched_date 彙總過去 14 天 duration_minutes，重用 TASK-044 的 tooltip。不需要新的後端端點。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-045.md。",
+  "stage": "blocked",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-08-01",
+  "epic": "本地 Web UI",
+  "userStory": "Dashboard 圖表擴充",
+  "dependsOn": ["TASK-044"],
+  "order": 45,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": true,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/專案設置/screen-spec-dashboard.md",
+    "mockupDecision": "ai/artifacts/專案設置/mockup-decision-dashboard-charts.md",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-045.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [],
+    "residual": ""
+  },
+  "comments": [
+    "2026-08-01: 依賴 TASK-044 提供的 Chart Tooltip 元件，前置任務未完成前停在 blocked，不進 ready。"
+  ]
+}

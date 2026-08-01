@@ -1,0 +1,51 @@
+{
+  "id": "TASK-044",
+  "title": "Chart Tooltip 共用元件＋套用到「單字成長」卡片（含指標切換）",
+  "content": "新增可重用的圖表 hover/tap tooltip（guideline＋浮動框），套用到既有單字成長折線圖，並新增指標切換下拉（每日新增／累積總量）。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-044.md。",
+  "stage": "ready",
+  "risk": "low",
+  "owner": "Niko",
+  "agent": "claude",
+  "approvalRequired": true,
+  "createdAt": "2026-08-01",
+  "epic": "本地 Web UI",
+  "userStory": "Dashboard 圖表擴充",
+  "dependsOn": ["TASK-029"],
+  "order": 44,
+  "readiness": {
+    "problem_clear": true,
+    "non_goals_clear": true,
+    "acceptance_testable": true,
+    "files_known": true,
+    "scope_defined": true,
+    "verification_contract": true,
+    "human_approval_recorded": true
+  },
+  "gates": {
+    "product": true,
+    "ui": true,
+    "architecture": false,
+    "security": false,
+    "test": false,
+    "code_review": false
+  },
+  "links": {
+    "featureSpec": "",
+    "screenSpec": "ai/artifacts/專案設置/screen-spec-dashboard.md",
+    "mockupDecision": "ai/artifacts/專案設置/mockup-decision-dashboard-charts.md",
+    "taskCard": "ai/artifacts/本地 Web UI/task-cards/TASK-044.md",
+    "verificationReport": "",
+    "pr": ""
+  },
+  "refs": [
+    "ai/context/design-system.md"
+  ],
+  "evidence": {
+    "commands": [],
+    "findings": [],
+    "residual": ""
+  },
+  "comments": [
+    "2026-08-01: mockup-decision-dashboard-charts.md 選定變體 A 後，implementation-plan 拆出本卡（純前端），依賴 TASK-029（Dashboard 頁面已實作）。"
+  ]
+}

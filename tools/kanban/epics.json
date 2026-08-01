@@ -169,6 +169,10 @@
         {
           "name": "英文單字自動查詢補上中文翻譯",
           "definition": "2026-07-25 Niko 回報英文模式點自動查詢後「翻譯」欄位沒有內容（例如 cookie）。根因：POST /vocabulary/{id}/enrich/en-dictionary 從一開始就只回填音標/英文解釋，沒有像德文模式一樣呼叫翻譯服務。Niko 確認修法：比照德文模式，英文也串 MyMemory（langpair=en|zh-TW）補上翻譯，同一顆按鈕、同一個端點內完成。"
+        },
+        {
+          "name": "Dashboard 圖表擴充",
+          "definition": "2026-07-30 Niko 回報：想在「單字成長」卡片切換指標（每日新增／累積總量）、圖表 hover 要看到日期的 tooltip，並新增一張「追劇時間趨勢」卡片（依既有 mediaLogs 的 watched_date 彙總 duration_minutes）。天數固定 14 天，不做時間範圍下拉。2026-08-01 選定 mockup 變體 A（Select 下拉＋guideline/浮動框 tooltip＋新卡片獨立全寬堆疊）。純前端工作，不需要新的後端端點（比照 TASK-029「本週觀看時數」已有的前端聚合慣例）。"
         }
       ]
     }
