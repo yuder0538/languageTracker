@@ -173,6 +173,7 @@
 | Toast | 完成 | success/error/info/loading 四種語意（sonner 內建） | `color.success`／`color.danger`／`color.info` | `frontend/src/components/ui/sonner.tsx` | pages/ComponentShowcase.tsx「Toast」區塊（點擊按鈕觸發） | S4 |
 | Alert | 完成 | 預設/危險（destructive） | `color.bg.surface`／`color.danger` | `frontend/src/components/ui/alert.tsx` | pages/ComponentShowcase.tsx「Alert / Badge」區塊 | S4 |
 | Badge | 完成 | default/secondary/destructive/success/warning/outline/ghost/link | `color.accent`／`color.success`／`color.warning`／`color.danger` | `frontend/src/components/ui/badge.tsx` | pages/ComponentShowcase.tsx「Card」「Table」「Alert / Badge」區塊 | S4 |
+| Chart Tooltip | 待實作 | hover（滑鼠）/tap（觸控）；guideline 垂直線＋浮動框顯示於資料點上方 | `color.bg.surface`／`color.border.default`／`color.fg.primary`／`color.fg.muted`／`shadow.sm`（例外：手刻 SVG 圖表浮於內容之上，depth 用陰影而非背景分層，見 S2） | 待實作（規劃於 `frontend/src/components/dashboard/`，非 base-ui primitive——現有圖表為手刻 SVG，需自行以座標計算定位） | 見 `ai/artifacts/專案設置/mockups/dashboard-variant-charts-a.html` | 本地 Web UI Epic（Dashboard 追加需求，2026-07-30 提出，2026-08-01 選定變體 A） |
 
 （「來源階段」記錄這個元件是 S4 初建，還是後續某個功能 Epic 補做並回登的。）
 

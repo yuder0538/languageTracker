@@ -4,7 +4,7 @@
 
 - 功能：本地 Web UI（Phase 4）／Epic 0「UI 設計系統」S5
 - 畫面：Dashboard（首頁）
-- 狀態：草稿 | mockup 已核准 | 已實作 → **草稿，mockup 已產出待人工選定**
+- 狀態：草稿 | mockup 已核准 | 已實作 → **原版面（變體 C）已實作，見 S5；下方「追加需求」區塊為 2026-07-30 新增範圍，狀態：mockup 已選定（變體 A，見 `mockup-decision-dashboard-charts.md`），待拆任務卡**
 
 ## 目的
 
@@ -50,6 +50,49 @@
   - **複習日曆熱力圖（calendar heatmap）**：單一色相（accent／brand 黃）depth 由淺至深対應複習張數多寡（暗色模式下「愈亮＝愈多」，符合 dataviz skill 的 sequential ramp 在暗色模式的 anchor 反轉規則）。
   - 兩個圖表皆附「顯示資料表格」的原生 `<details>` 展開，作為 dataviz skill 要求的「table-view 雙生」無障礙後備。
   - 依 dataviz skill 的六項檢查範圍：六項檢查只適用於「categorical 多數列」色票；本畫面的趨勢圖是單數列、熱力圖是單一色相 sequential ramp，兩者皆不在檢查範圍內（見 `color-formula.md`「Scope」），因此未執行 `validate_palette.js`，也不需要。
+
+## 追加需求（2026-07-30）：單字成長指標切換／圖表 Tooltip／追劇時間趨勢卡片
+
+Niko 反饋：想在「單字成長」卡片多看一種指標（累積總單字量，非只有每日新增），圖表 hover 時要能看到當天日期，另外「追劇時間」也想做成趨勢圖。範圍已與 Niko 對過：天數先固定 14 天，不做時間範圍下拉；追劇時間圖獨立開一張新卡片，不塞進單字成長卡片的下拉裡。
+
+### 版面配置（追加）
+
+- 「單字成長」卡片的 `CardHeader` 新增一個「指標」下拉選單（每日新增單字數／累積總單字量），下拉切換內容、卡片本身位置與大小不變。
+- 新增一張獨立卡片「追劇時間趨勢」，資料來源為既有 `mediaLogs`（依 `watched_date` 分組加總 `duration_minutes`），版面比照「單字成長」卡片的手刻 SVG 折線圖模式；三個 mockup 變體對這張新卡片的放置位置各不相同（見下方變體比較與 `mockup-decision-dashboard-charts.md`）。
+
+### 狀態（追加）
+
+| 狀態 | 必要行為 | 空狀態／錯誤文案 | 驗證方式 |
+|---|---|---|---|
+| 預設（指標=每日新增） | 沿用既有 `VocabGrowthChart` 邏輯，折線末端仍標示「今天 +N」 | — | 見 mockups/ |
+| 預設（指標=累積總量） | 折線改為 14 天內逐日累加的總單字量，末端標示「今天累積 N 字」 | — | 見 mockups/ |
+| 追劇時間趨勢卡片・預設 | 依日彙總過去 14 天 `duration_minutes`，折線圖＋「顯示資料表格」`<details>` | — | 見 mockups/ |
+| 追劇時間趨勢卡片・空狀態 | 14 天內無追劇紀錄時，折線圖全為 0 並顯示提示文字 | 「過去 14 天沒有追劇紀錄。」（比照單字成長卡片「過去 14 天沒有新增單字。」的既有文案模式） | 待實作階段補截圖 |
+| 追劇時間趨勢卡片・錯誤 | `mediaLogs` API 讀取失敗時整張卡片顯示「讀取失敗，請重試」＋重試按鈕，不影響其他卡片 | 「讀取失敗：{message}」 | 待實作階段補截圖 |
+| Tooltip・hover | 滑鼠移到折線任一資料點附近時顯示浮動 tooltip：日期＋當日數值；離開後消失 | — | 見 mockups/（模擬 hover 中狀態） |
+| Tooltip・行動裝置 | 觸控裝置以 tap 觸發同一顆 tooltip（無滑鼠 hover），比照無障礙後備一律保留「顯示資料表格」`<details>` 作為主要取得數值的方式 | — | 待實作階段補截圖 |
+
+### 互動（追加）
+
+| 動作 | 觸發條件 | 結果 | 失敗情境 |
+|---|---|---|---|
+| 切換單字成長指標 | 點擊「指標」下拉，選擇「每日新增」或「累積總量」 | 折線圖與下方資料表格同步切換數值與標題文字，時間範圍不變（固定 14 天） | 不適用（純前端切換，資料已在同一次 `vocabulary` API 回應中） |
+| 查看圖表資料點 | 滑鼠移到折線圖任一資料點（或觸控裝置 tap） | 顯示浮動 tooltip，內容為該點日期＋數值 | 不適用（純前端互動） |
+
+### 設計系統對照（追加）
+
+- 沿用既有 token：`color.bg.surface`／`color.border.default`／`color.fg.primary`／`color.fg.muted`／`color.link`（info-500，折線色不變）／`radius.control`（4px，下拉與 tooltip 邊框）／`space.stack-sm`／字級 11/12。
+- 「指標」下拉選單重用 S4 元件庫既有的 `Select`（`frontend/src/components/ui/select.tsx`），非新元件，不需另行登記。
+- **新視覺模式（目前元件庫 inventory 沒有對應項目，待人工選定變體後需登記回 `design-system.md` S4）**：圖表 hover tooltip（浮動資料點提示框）。三個 mockup 變體提供不同的觸發／樣式選項供比較，選定後：
+  - 若採用「浮動框＋陰影」的畫法（本次 mockup 推薦做法），需在 S4 inventory 新增一列「Chart Tooltip」，並註明例外採用 `shadow.sm` 而非背景分層做 depth——理由是 tooltip 浮在 SVG 折線內容之上，屬於 S2 陰影規則本身列舉的「暗模式極少數需要浮起感時」的情境，非卡片本身的一般化陰影使用。
+  - 因為現有圖表是手刻 SVG（非 DOM 元素），tooltip 無法直接重用 base-ui 的 `Tooltip` primitive 定位邏輯，需自行以滑鼠座標／觸控事件計算定位，此為新 pattern，非既有元件的直接複用。
+- 追劇時間趨勢圖沿用「單字成長趨勢圖（line chart）」已核准的 dataviz 判斷：單一數列 trend over time，不需圖例，並附「顯示資料表格」`<details>` 無障礙後備，與既有兩張圖表一致。
+
+### 視覺驗收標準（追加）
+
+- 下拉選單樣式須與元件庫 inventory 的 `Select` 元件一致（不得另外手刻一份 select 外觀）。
+- Tooltip 內容至少含日期；數值為整數時不需小數點；tooltip 文字對比需達 WCAG AA。
+- 追劇時間趨勢卡片與「單字成長」卡片的版面密度（padding、字級、圖表高度）需一致，讓兩者在視覺上讀起來是同一組件族。
 
 ## 視覺驗收標準
 

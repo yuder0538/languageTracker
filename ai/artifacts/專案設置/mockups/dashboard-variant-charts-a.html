@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<title>Dashboard 圖表擴充 — 變體 A</title>
+<style>
+  :root {
+    --grey-100: #ededed;
+    --grey-500: #6e6e72;
+    --grey-800: #26262a;
+    --grey-900: #1b1b1e;
+    --grey-950: #121214;
+    --brand-500: #e8b944;
+    --brand-600: #c89b2f;
+    --info-500: #4fa3c7;
+    --border: #2b2b2e;
+    --muted: #9a9a9a;
+    --radius-card: 3px;
+    --radius-control: 4px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.24), 0 1px 1px rgba(0,0,0,.16);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--grey-950);
+    color: var(--grey-100);
+    font-family: var(--font);
+    padding: 32px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  h1.label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  .stack { display: flex; flex-direction: column; gap: 16px; max-width: 760px; }
+  .card {
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 16px;
+  }
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .card-title { font-size: 14px; font-weight: 600; margin: 0; }
+  .card-sub { font-size: 12px; color: var(--muted); margin: 2px 0 0; }
+  .select {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--grey-100);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .select:hover { background: var(--grey-800); }
+  .select svg { width: 12px; height: 12px; stroke: var(--muted); }
+  .chart-wrap { position: relative; margin-top: 8px; }
+  .tooltip {
+    position: absolute;
+    left: 483px;
+    top: 4px;
+    transform: translate(-50%, -100%);
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: 6px 10px;
+    box-shadow: var(--shadow-sm);
+    pointer-events: none;
+    width: max-content;
+  }
+  .tooltip .date { font-size: 11px; color: var(--muted); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .tooltip .value { font-size: 13px; font-weight: 600; color: var(--grey-100); margin-top: 1px; }
+  .tooltip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--grey-900);
+  }
+  details summary { cursor: pointer; font-size: 12px; color: var(--info-500); user-select: none; margin-top: 4px; }
+  .caption { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .variant-tag { font-size: 11px; color: var(--brand-500); font-weight: 600; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+  <h1 class="label">Dashboard — 圖表擴充 mockup</h1>
+  <div class="variant-tag">變體 A · Select 下拉＋浮動 tooltip（guideline＋上方框）＋新卡片獨立全寬堆疊 · 推薦</div>
+
+  <div class="stack">
+    <!-- 單字成長卡片，指標=累積總量，模擬 hover 在第 10 個資料點 -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <p class="card-title">單字成長</p>
+          <p class="card-sub">過去 14 天 · 累積總單字量</p>
+        </div>
+        <div class="select">
+          累積總單字量
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 700 170" width="100%" height="170" role="img" aria-label="累積總單字量折線圖">
+          <line x1="40" y1="20" x2="680" y2="20" stroke="var(--border)" stroke-width="1"/>
+          <line x1="40" y1="150" x2="680" y2="150" stroke="var(--border)" stroke-width="1"/>
+          <text x="30" y="24" text-anchor="end" font-size="11" fill="var(--muted)">70</text>
+          <text x="30" y="154" text-anchor="end" font-size="11" fill="var(--muted)">0</text>
+          <polygon points="40,128 89,122 138,117 188,113 237,104 286,96 335,87 385,76 434,68 483,57 532,48 582,39 631,31 680,20 680,150 40,150" fill="var(--info-500)" opacity="0.1"/>
+          <polyline points="40,128 89,122 138,117 188,113 237,104 286,96 335,87 385,76 434,68 483,57 532,48 582,39 631,31 680,20" fill="none" stroke="var(--info-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- guideline at hovered point (index 9, x=483) -->
+          <line x1="483" y1="20" x2="483" y2="150" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
+          <circle cx="483" cy="57" r="4" fill="var(--info-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <circle cx="680" cy="20" r="4" fill="var(--brand-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <text x="672" y="8" text-anchor="end" font-size="12" font-weight="600" fill="var(--grey-100)">今天累積 70 字</text>
+          <text x="40" y="166" font-size="11" fill="var(--muted)">7/17</text>
+          <text x="680" y="166" text-anchor="end" font-size="11" fill="var(--muted)">7/30</text>
+        </svg>
+        <div class="tooltip">
+          <div class="date">7/26</div>
+          <div class="value">累積 50 字</div>
+        </div>
+      </div>
+      <details><summary>顯示資料表格</summary></details>
+    </div>
+
+    <!-- 新卡片：追劇時間趨勢，獨立全寬 -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <p class="card-title">追劇時間趨勢</p>
+          <p class="card-sub">過去 14 天每日觀看分鐘數</p>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 700 170" width="100%" height="170" role="img" aria-label="每日追劇分鐘數折線圖">
+          <line x1="40" y1="20" x2="680" y2="20" stroke="var(--border)" stroke-width="1"/>
+          <line x1="40" y1="150" x2="680" y2="150" stroke="var(--border)" stroke-width="1"/>
+          <text x="30" y="24" text-anchor="end" font-size="11" fill="var(--muted)">120</text>
+          <text x="30" y="154" text-anchor="end" font-size="11" fill="var(--muted)">0</text>
+          <polygon points="40,150 89,101 138,118 188,85 237,150 286,53 335,20 385,101 434,150 483,69 532,85 582,118 631,53 680,36 680,150 40,150" fill="var(--info-500)" opacity="0.1"/>
+          <polyline points="40,150 89,101 138,118 188,85 237,150 286,53 335,20 385,101 434,150 483,69 532,85 582,118 631,53 680,36" fill="none" stroke="var(--info-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="335" y1="20" x2="335" y2="150" stroke="var(--muted)" stroke-width="1" stroke-dasharray="2 3" opacity="0.6"/>
+          <circle cx="335" cy="20" r="4" fill="var(--info-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <circle cx="680" cy="36" r="4" fill="var(--brand-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <text x="672" y="24" text-anchor="end" font-size="12" font-weight="600" fill="var(--grey-100)">今天 105 分鐘</text>
+          <text x="40" y="166" font-size="11" fill="var(--muted)">7/17</text>
+          <text x="680" y="166" text-anchor="end" font-size="11" fill="var(--muted)">7/30</text>
+        </svg>
+        <div class="tooltip" style="left:335px;">
+          <div class="date">7/23</div>
+          <div class="value">120 分鐘</div>
+        </div>
+      </div>
+      <details><summary>顯示資料表格</summary></details>
+    </div>
+  </div>
+
+  <p class="caption" style="max-width:760px;">變體 A：下拉重用既有 Select 元件外觀（不需新登記元件）；tooltip 用虛線 guideline＋浮在資料點上方的框（沿用「終點文字標籤」的既有視覺語言，只是變成任一點都能看）；追劇時間趨勢卡片獨立全寬，緊接在單字成長卡片下方，維持與原本「單字成長」卡片相同的全寬單卡節奏。</p>
+</body>
+</html>

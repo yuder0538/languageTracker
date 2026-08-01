@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<title>Dashboard 圖表擴充 — 變體 C</title>
+<style>
+  :root {
+    --grey-100: #ededed;
+    --grey-500: #6e6e72;
+    --grey-800: #26262a;
+    --grey-900: #1b1b1e;
+    --grey-950: #121214;
+    --brand-500: #e8b944;
+    --info-500: #4fa3c7;
+    --border: #2b2b2e;
+    --muted: #9a9a9a;
+    --radius-card: 3px;
+    --radius-control: 4px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.24), 0 1px 1px rgba(0,0,0,.16);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--grey-950);
+    color: var(--grey-100);
+    font-family: var(--font);
+    padding: 32px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  h1.label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  .stack { display: flex; flex-direction: column; gap: 16px; max-width: 1000px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .card {
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 16px;
+    min-width: 0;
+  }
+  .card-title { font-size: 14px; font-weight: 600; margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .toggle { font-size: 11px; font-weight: 400; }
+  .toggle a { color: var(--muted); text-decoration: none; cursor: pointer; }
+  .toggle a.active { color: var(--info-500); text-decoration: underline; text-underline-offset: 3px; }
+  .toggle .sep { color: var(--border); margin: 0 2px; }
+  .card-sub { font-size: 12px; color: var(--muted); margin: 2px 0 8px; }
+  .chart-wrap { position: relative; margin-top: 4px; }
+  .tooltip {
+    position: absolute;
+    left: 200px;
+    top: 30px;
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: 3px 7px;
+    box-shadow: var(--shadow-sm);
+    pointer-events: none;
+    white-space: nowrap;
+    font-size: 11px;
+  }
+  .tooltip .date { color: var(--muted); font-family: var(--mono); }
+  .tooltip .value { color: var(--grey-100); font-weight: 600; margin-left: 4px; }
+  details summary { cursor: pointer; font-size: 12px; color: var(--info-500); user-select: none; margin-top: 4px; }
+  .caption { font-size: 11px; color: var(--muted); margin-top: 16px; max-width: 1000px; }
+  .variant-tag { font-size: 11px; color: var(--brand-500); font-weight: 600; margin-bottom: 24px; }
+  .heat-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; max-width: 140px; }
+  .heat-cell { aspect-ratio: 1; border-radius: 2px; background: var(--grey-800); }
+</style>
+</head>
+<body>
+  <h1 class="label">Dashboard — 圖表擴充 mockup</h1>
+  <div class="variant-tag">變體 C · 純文字連結切換＋貼點小型 tooltip＋併入底部三卡列（最緊湊）</div>
+
+  <div class="stack">
+    <!-- 單字成長卡片，全寬，維持原位置 -->
+    <div class="card">
+      <div class="card-title">
+        單字成長
+        <span class="toggle"><a>新增</a><span class="sep">｜</span><a class="active">累積</a></span>
+      </div>
+      <p class="card-sub">過去 14 天</p>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 700 150" width="100%" height="150" role="img" aria-label="累積總單字量折線圖">
+          <line x1="40" y1="15" x2="680" y2="15" stroke="var(--border)" stroke-width="1"/>
+          <line x1="40" y1="120" x2="680" y2="120" stroke="var(--border)" stroke-width="1"/>
+          <text x="30" y="19" text-anchor="end" font-size="11" fill="var(--muted)">70</text>
+          <text x="30" y="124" text-anchor="end" font-size="11" fill="var(--muted)">0</text>
+          <polyline points="40,102 89,97 138,93 188,89 237,81 286,74 335,66 385,57 434,50 483,40 532,32 582,24 631,18 680,15" fill="none" stroke="var(--info-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="483" cy="40" r="4" fill="var(--info-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <text x="40" y="136" font-size="11" fill="var(--muted)">7/18</text>
+          <text x="680" y="136" text-anchor="end" font-size="11" fill="var(--muted)">7/31</text>
+        </svg>
+        <div class="tooltip" style="left:495px; top:16px;">
+          <span class="date">7/27</span><span class="value">累積 50 字</span>
+        </div>
+      </div>
+      <details><summary>顯示資料表格</summary></details>
+    </div>
+
+    <!-- 底部三卡列：複習日曆／追劇時間趨勢／最近追劇 -->
+    <div class="grid3">
+      <div class="card">
+        <div class="card-title">複習日曆</div>
+        <p class="card-sub">過去 5 週每日複習張數</p>
+        <div class="heat-row">
+          <div class="heat-cell" style="background:var(--grey-800)"></div>
+          <div class="heat-cell" style="background:#524014"></div>
+          <div class="heat-cell" style="background:#a17d26"></div>
+          <div class="heat-cell" style="background:#c89b2f"></div>
+          <div class="heat-cell" style="background:var(--brand-500)"></div>
+          <div class="heat-cell" style="background:var(--grey-800)"></div>
+          <div class="heat-cell" style="background:#a17d26"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">追劇時間趨勢</div>
+        <p class="card-sub">過去 14 天每日觀看分鐘數</p>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 260 110" width="100%" height="110" role="img" aria-label="每日追劇分鐘數折線圖">
+            <line x1="24" y1="10" x2="250" y2="10" stroke="var(--border)" stroke-width="1"/>
+            <line x1="24" y1="88" x2="250" y2="88" stroke="var(--border)" stroke-width="1"/>
+            <text x="18" y="14" text-anchor="end" font-size="9" fill="var(--muted)">120</text>
+            <text x="18" y="92" text-anchor="end" font-size="9" fill="var(--muted)">0</text>
+            <polyline points="24,88 41,60 58,68 75,52 92,88 109,36 126,10 143,60 160,88 177,48 194,52 211,68 228,36 250,26" fill="none" stroke="var(--info-500)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="126" cy="10" r="3.5" fill="var(--info-500)" stroke="var(--grey-900)" stroke-width="1.5"/>
+          </svg>
+          <div class="tooltip" style="left:100px; top:-2px; padding:2px 6px; font-size:10px;">
+            <span class="date">7/24</span><span class="value" style="margin-left:3px;">120分</span>
+          </div>
+        </div>
+        <details><summary style="font-size:11px;">顯示資料表格</summary></details>
+      </div>
+
+      <div class="card">
+        <div class="card-title">最近追劇</div>
+        <p class="card-sub" style="margin-bottom:0;">Friends · 2026-07-30 · 45 分鐘</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="caption">變體 C：指標切換用純文字連結（無框、無底色，視覺權重最低）；tooltip 縮到最小尺寸、直接貼在資料點右上角、無 guideline，實作最簡單；追劇時間趨勢併入原本「複習日曆／最近追劇」那一列，變成三欄，是三個變體中資訊密度最高、但每張圖表最擠、最不利閱讀 14 天細節的版本。</p>
+</body>
+</html>

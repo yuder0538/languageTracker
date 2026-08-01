@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<title>Dashboard 圖表擴充 — 變體 B</title>
+<style>
+  :root {
+    --grey-100: #ededed;
+    --grey-500: #6e6e72;
+    --grey-800: #26262a;
+    --grey-900: #1b1b1e;
+    --grey-950: #121214;
+    --brand-500: #e8b944;
+    --brand-600: #c89b2f;
+    --info-500: #4fa3c7;
+    --border: #2b2b2e;
+    --muted: #9a9a9a;
+    --radius-card: 3px;
+    --radius-control: 4px;
+    --radius-pill: 999px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.24), 0 1px 1px rgba(0,0,0,.16);
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--grey-950);
+    color: var(--grey-100);
+    font-family: var(--font);
+    padding: 32px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  h1.label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 16px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 900px; }
+  .card {
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 16px;
+    min-width: 0;
+  }
+  .card-header { margin-bottom: 8px; }
+  .card-title { font-size: 14px; font-weight: 600; margin: 0; }
+  .card-sub { font-size: 12px; color: var(--muted); margin: 2px 0 8px; }
+  .segmented {
+    display: inline-flex;
+    background: var(--grey-800);
+    border-radius: var(--radius-pill);
+    padding: 2px;
+    gap: 2px;
+  }
+  .segmented button {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .segmented button.active {
+    background: var(--brand-500);
+    color: var(--grey-950);
+    font-weight: 600;
+  }
+  .chart-wrap { position: relative; margin-top: 4px; }
+  .tooltip {
+    position: absolute;
+    left: 240px;
+    top: 78px;
+    transform: translate(-50%, 0);
+    background: var(--grey-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    padding: 4px 8px;
+    box-shadow: var(--shadow-sm);
+    pointer-events: none;
+    white-space: nowrap;
+    font-size: 11px;
+    display: flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .tooltip .date { color: var(--muted); font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .tooltip .value { color: var(--grey-100); font-weight: 600; }
+  details summary { cursor: pointer; font-size: 12px; color: var(--info-500); user-select: none; margin-top: 4px; }
+  .caption { font-size: 11px; color: var(--muted); margin-top: 16px; max-width: 900px; }
+  .variant-tag { font-size: 11px; color: var(--brand-500); font-weight: 600; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+  <h1 class="label">Dashboard — 圖表擴充 mockup</h1>
+  <div class="variant-tag">變體 B · Segmented pill 切換＋下方 tooltip＋兩卡並排（2 欄 grid）</div>
+
+  <div class="grid2">
+    <!-- 單字成長卡片 -->
+    <div class="card">
+      <div class="card-header">
+        <p class="card-title">單字成長</p>
+        <p class="card-sub">過去 14 天</p>
+        <div class="segmented">
+          <button>每日新增</button>
+          <button class="active">累積總量</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 340 150" width="100%" height="150" role="img" aria-label="累積總單字量折線圖">
+          <line x1="30" y1="15" x2="330" y2="15" stroke="var(--border)" stroke-width="1"/>
+          <line x1="30" y1="120" x2="330" y2="120" stroke="var(--border)" stroke-width="1"/>
+          <text x="24" y="19" text-anchor="end" font-size="10" fill="var(--muted)">70</text>
+          <text x="24" y="124" text-anchor="end" font-size="10" fill="var(--muted)">0</text>
+          <polyline points="30,102 53,98 76,94 99,90 122,83 145,77 168,70 191,61 214,55 237,46 260,38 283,31 306,25 330,15" fill="none" stroke="var(--info-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="237" y1="15" x2="237" y2="120" stroke="var(--info-500)" stroke-width="1.5" opacity="0.9"/>
+          <circle cx="237" cy="46" r="4" fill="var(--info-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <text x="30" y="140" font-size="10" fill="var(--muted)">7/17</text>
+          <text x="330" y="140" text-anchor="end" font-size="10" fill="var(--muted)">7/30</text>
+        </svg>
+        <div class="tooltip">
+          <span class="date">7/26</span>
+          <span class="value">累積 50 字</span>
+        </div>
+      </div>
+      <details><summary>顯示資料表格</summary></details>
+    </div>
+
+    <!-- 追劇時間趨勢卡片，並排 -->
+    <div class="card">
+      <div class="card-header">
+        <p class="card-title">追劇時間趨勢</p>
+        <p class="card-sub">過去 14 天每日觀看分鐘數</p>
+      </div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 340 150" width="100%" height="150" role="img" aria-label="每日追劇分鐘數折線圖">
+          <line x1="30" y1="15" x2="330" y2="15" stroke="var(--border)" stroke-width="1"/>
+          <line x1="30" y1="120" x2="330" y2="120" stroke="var(--border)" stroke-width="1"/>
+          <text x="24" y="19" text-anchor="end" font-size="10" fill="var(--muted)">120</text>
+          <text x="24" y="124" text-anchor="end" font-size="10" fill="var(--muted)">0</text>
+          <polyline points="30,120 53,86 76,96 99,74 122,120 145,50 168,15 191,86 214,120 237,60 260,74 283,96 306,50 330,36" fill="none" stroke="var(--info-500)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="168" y1="15" x2="168" y2="120" stroke="var(--info-500)" stroke-width="1.5" opacity="0.9"/>
+          <circle cx="168" cy="15" r="4" fill="var(--info-500)" stroke="var(--grey-900)" stroke-width="2"/>
+          <text x="30" y="140" font-size="10" fill="var(--muted)">7/17</text>
+          <text x="330" y="140" text-anchor="end" font-size="10" fill="var(--muted)">7/30</text>
+        </svg>
+        <div class="tooltip" style="left:168px; top:78px;">
+          <span class="date">7/23</span>
+          <span class="value">120 分鐘</span>
+        </div>
+      </div>
+      <details><summary>顯示資料表格</summary></details>
+    </div>
+  </div>
+
+  <p class="caption">變體 B：指標切換改用膠囊分段按鈕（accent 黃底標示選中），視覺權重比下拉更高、更適合行動裝置直接點；tooltip 改用實線 guideline＋下方貼齊圖表底部的緊湊框；追劇時間趨勢卡片與單字成長卡片並排（2 欄），節省垂直空間但每張圖表寬度變窄，14 天折線在窄欄位下較擠。</p>
+</body>
+</html>
