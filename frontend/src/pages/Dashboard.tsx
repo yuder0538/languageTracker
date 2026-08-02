@@ -29,6 +29,7 @@ import {
 } from "@/lib/dashboard-api"
 
 const VOCAB_GROWTH_DAYS = 14
+const WATCH_TREND_DAYS = 14
 const HISTORY_DAYS = 35
 const WEEKDAY_LABELS = ["日", "一", "二", "三", "四", "五", "六"]
 
@@ -190,7 +191,13 @@ function useChartHover(pointXs: number[]) {
       const rect = svg.getBoundingClientRect()
       if (rect.width === 0) return null
       const viewBoxWidth = svg.viewBox.baseVal.width || rect.width
-      const svgX = ((clientX - rect.left) / rect.width) * viewBoxWidth
+      const viewBoxHeight = svg.viewBox.baseVal.height || rect.height
+      // preserveAspectRatio defaults to "xMidYMid meet", which letterboxes the
+      // content inside rect when rect's aspect ratio differs from the viewBox's.
+      // Scale/offset must match that transform or the nearest-point math drifts.
+      const scale = Math.min(rect.width / viewBoxWidth, rect.height / viewBoxHeight)
+      const offsetX = (rect.width - viewBoxWidth * scale) / 2
+      const svgX = (clientX - rect.left - offsetX) / scale
       let nearest = 0
       let nearestDist = Infinity
       pointXs.forEach((x, i) => {
@@ -373,6 +380,91 @@ function VocabGrowthChart({
   )
 }
 
+// ---- 追劇時間趨勢圖 ----
+
+function WatchTimeTrendChart({ mediaLogs }: { mediaLogs: MediaLogRead[] }) {
+  const today = new Date()
+  const buckets = new Map<string, number>()
+  for (let i = WATCH_TREND_DAYS - 1; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    buckets.set(toLocalIsoDate(d), 0)
+  }
+  for (const log of mediaLogs) {
+    const day = log.watched_date.slice(0, 10)
+    if (buckets.has(day)) buckets.set(day, (buckets.get(day) ?? 0) + log.duration_minutes)
+  }
+  const days = Array.from(buckets.keys())
+  const values = Array.from(buckets.values())
+  const total = values.reduce((sum, v) => sum + v, 0)
+
+  const { points, max, width, height, padLeft, padTop, plotHeight } = buildLinePoints(values)
+  const hover = useChartHover(points.map((p) => p.x))
+
+  const linePoints = points.map((p) => `${p.x},${p.y}`).join(" ")
+  const areaPoints = `${linePoints} ${points[points.length - 1].x},${padTop + plotHeight} ${points[0].x},${padTop + plotHeight}`
+  const last = points[points.length - 1]
+
+  return (
+    <div className="px-4 pb-4">
+      <svg
+        ref={hover.svgRef}
+        viewBox={`0 0 ${width} ${height}`}
+        width="100%"
+        height={height}
+        role="img"
+        aria-label="14 天每日觀看分鐘數折線圖"
+        onMouseMove={hover.onMouseMove}
+        onMouseLeave={hover.onMouseLeave}
+        onTouchStart={hover.onTouchStart}
+      >
+        <line x1={padLeft} y1={padTop} x2={width - 20} y2={padTop} style={{ stroke: "var(--border)" }} strokeWidth={1} />
+        <line x1={padLeft} y1={padTop + plotHeight} x2={width - 20} y2={padTop + plotHeight} style={{ stroke: "var(--border)" }} strokeWidth={1} />
+        <text x={padLeft - 10} y={padTop + 4} textAnchor="end" fontSize={11} style={{ fill: "var(--muted-foreground)" }}>{max}</text>
+        <text x={padLeft - 10} y={padTop + plotHeight + 4} textAnchor="end" fontSize={11} style={{ fill: "var(--muted-foreground)" }}>0</text>
+        <polygon points={areaPoints} style={{ fill: "var(--info-500)" }} opacity={0.1} />
+        <polyline points={linePoints} fill="none" style={{ stroke: "var(--info-500)" }} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx={last.x} cy={last.y} r={4} style={{ fill: "var(--primary)", stroke: "var(--card)" }} strokeWidth={2} />
+        <text x={last.x - 8} y={last.y - 12} textAnchor="end" fontSize={12} fontWeight={600} style={{ fill: "var(--foreground)" }}>
+          今天 {values[values.length - 1]} 分鐘
+        </text>
+        <text x={padLeft} y={height - 4} fontSize={11} style={{ fill: "var(--muted-foreground)" }}>{formatDate(days[0])}</text>
+        <text x={width - 20} y={height - 4} textAnchor="end" fontSize={11} style={{ fill: "var(--muted-foreground)" }}>{formatDate(days[days.length - 1])}</text>
+        {hover.activeIndex !== null && (
+          <ChartTooltip
+            x={points[hover.activeIndex].x}
+            y={points[hover.activeIndex].y}
+            top={padTop}
+            bottom={padTop + plotHeight}
+            chartWidth={width}
+            dateLabel={formatDate(days[hover.activeIndex])}
+            valueLabel={`${values[hover.activeIndex]} 分鐘`}
+          />
+        )}
+      </svg>
+      <details className="mt-1">
+        <summary className="cursor-pointer text-xs text-primary select-none">顯示資料表格</summary>
+        <table className="mt-2 w-full text-xs [font-variant-numeric:tabular-nums]">
+          <thead>
+            <tr><th className="p-1 text-left">日期</th><th className="p-1 text-left">觀看分鐘數</th></tr>
+          </thead>
+          <tbody>
+            {days.map((day, i) => (
+              <tr key={day} className="border-t border-border">
+                <td className="p-1">{formatDate(day)}</td>
+                <td className="p-1">{values[i]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+      {total === 0 && (
+        <p className="mt-2 text-xs text-muted-foreground">過去 {WATCH_TREND_DAYS} 天沒有追劇紀錄。</p>
+      )}
+    </div>
+  )
+}
+
 // ---- 複習日曆熱力圖 ----
 
 function heatLevelClass(count: number) {
@@ -495,6 +587,16 @@ export default function Dashboard() {
           {vocabulary.status === "loading" && <div className="px-4 pb-4"><SkeletonBlock className="h-[170px] w-full" /></div>}
           {vocabulary.status === "error" && <div className="px-4 pb-4"><ErrorNote message={vocabulary.message} onRetry={vocabulary.retry} /></div>}
           {vocabulary.status === "success" && <VocabGrowthChart vocabulary={vocabulary.data} metric={growthMetric} />}
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">追劇時間趨勢</CardTitle>
+            <CardDescription className="text-xs">過去 {WATCH_TREND_DAYS} 天每日觀看分鐘數</CardDescription>
+          </CardHeader>
+          {mediaLogs.status === "loading" && <div className="px-4 pb-4"><SkeletonBlock className="h-[170px] w-full" /></div>}
+          {mediaLogs.status === "error" && <div className="px-4 pb-4"><ErrorNote message={mediaLogs.message} onRetry={mediaLogs.retry} /></div>}
+          {mediaLogs.status === "success" && <WatchTimeTrendChart mediaLogs={mediaLogs.data} />}
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2">

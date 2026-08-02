@@ -8,10 +8,10 @@
 - 上層 User Story：Dashboard 圖表擴充
 - 分軌：前端
 - 前置任務（dependsOn）：TASK-044
-- 狀態：草稿
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待實作後 Niko 本機驗證）
+- 人工核准者：Niko（2026-08-02 於本機真實瀏覽器＋手機確認有資料狀態下折線、hover、觸控 tap 皆正確；空/錯誤狀態未實測，Niko 表示日常都有追劇紀錄、14 天內不會出現空狀態，接受此殘留風險不再另外驗證，見下方已知限制）
 
 ## 目標
 
@@ -71,9 +71,19 @@
 
 ## 完成證據
 
-- 變更的檔案：待實作後填寫。
-- 執行過的指令：待實作後填寫。
-- 測試輸出：待實作後填寫。
-- 螢幕截圖：待實作後填寫。
-- 已知限制：待實作後填寫。
-- 後續任務：無（本卡完成後「Dashboard 圖表擴充」User Story 全部完成）。
+- 變更的檔案：
+  - `frontend/src/pages/Dashboard.tsx`（新增 `WATCH_TREND_DAYS` 常數；新增 `WatchTimeTrendChart` 函式，緊接在 `VocabGrowthChart` 之後，結構對齊並重用 `buildLinePoints`／`useChartHover`／`ChartTooltip`；`Dashboard()` 主體新增「追劇時間趨勢」`<Card>`，插入在「單字成長」卡片之後、複習日曆/最近追劇 2 欄 grid 之前，依 `mediaLogs.status` 分三態渲染，重用既有 `mediaLogs` useApi 結果、未新增請求）
+- 執行過的指令：
+  - `npm run build`（`tsc -b && vite build`）→ 通過，無型別錯誤
+  - `npm run lint`（`oxlint`）→ 通過，僅既有、與本卡無關的 5 個 `only-export-components` 警告
+  - 本機同時啟動後端（`venv/Scripts/python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000`）與前端（`npm run dev -- --host 0.0.0.0 --port 5173`），用真實資料庫驗證
+- 測試輸出：無自動化測試（前端無測試框架，沿用既有慣例），以 build/lint 通過＋瀏覽器手動操作為準
+- 螢幕截圖：Claude 用瀏覽器自動化工具實測並目視確認（未落地存檔）：
+  1. 有追劇紀錄狀態：卡片正確顯示在「單字成長」下方，折線反映 14 天每日觀看分鐘數（峰值 276 分鐘），末端標籤「今天 0 分鐘」與當日實際加總一致
+  2. Hover 峰值資料點：guideline 虛線＋浮動框正確顯示「7/31」「0 分鐘」（重用 TASK-044 的 `ChartTooltip`/`useChartHover`，含letterbox-aware 座標換算，文字清晰無變形）
+  3. 展開「顯示資料表格」欄位標題「日期」／「觀看分鐘數」渲染正確
+- 已知限制：
+  1. 空狀態（14 天內加總為 0）與 error 狀態（`ErrorNote`）僅檢查程式邏輯與既有模式一致（`mediaLogs.status` 三態分支、`total === 0` 文案分支），未實際觸發過。Niko 確認日常持續有追劇紀錄，14 天窗口內實務上不會是空的，接受此殘留風險，之後若真的斷過追劇習慣可以再回頭看一次。
+  2. ~~觸控裝置 tap 開合~~ → Niko 2026-08-02 用手機實測確認無問題。
+  3. 未特別實測窄螢幕（手機）版面下兩張全寬圖表卡片＋下方 2 欄 grid 的堆疊效果，僅依賴既有 `VocabGrowthChart` 卡片已驗證過的相同版面模式（無新增響應式規則）；Niko 手機測試整體正常。
+- 後續任務：無（本卡完成後「Dashboard 圖表擴充」User Story 全部完成，待 Niko 驗收 TASK-044＋TASK-045）。

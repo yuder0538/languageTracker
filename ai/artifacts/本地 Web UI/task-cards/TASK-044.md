@@ -8,10 +8,10 @@
 - 上層 User Story：Dashboard 圖表擴充
 - 分軌：前端
 - 前置任務（dependsOn）：TASK-029
-- 狀態：審查中
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：（待 Niko 本機驗證 hover/tap tooltip 與指標切換後核准）
+- 人工核准者：Niko（2026-08-02 於本機真實瀏覽器＋手機確認 hover 對準、指標切換、觸控 tap 開合皆正確）
 
 ## 目標
 
@@ -82,6 +82,14 @@
   4. 滑鼠移出圖表：tooltip 正確消失
   5. 展開「顯示資料表格」：欄位標題正確顯示「累積單字量」，14 筆逐日累積數值與圖表一致（0,0,0,0,0,0,16,19,25,31,32,36,42,47）
 - 已知限制：
-  1. 觸控裝置的 tap 開合／再次 tap 同一點取消／tap 外部關閉，因瀏覽器自動化工具無直接觸控事件模擬手段，僅完成程式邏輯（`onTouchStart` 尋找最近點＋`document` 層級 `touchstart` 監聽器判斷點擊外部），尚未在真實觸控裝置或瀏覽器 devtools 的觸控模式下實測，建議 Niko 用手機/平板開啟本機網址驗證。
+  1. ~~觸控裝置的 tap 開合~~ → Niko 2026-08-02 用手機實測確認無問題。
   2. 累積總量的計算基準是 14 天視窗內的逐日累加（非全站歷史總單字量），已在卡片與 mockup 決策文件註明避免與側欄「總單字量」混淆；本次測試資料剛好全部 47 筆單字都在 14 天內，因此兩個數字相同，未能用不同數字的情境驗證區別是否夠清楚，建議之後累積更久的資料再看一次。
+
+## 2026-08-02 追加修正：Tooltip 對不準的 bug
+
+- Niko 於 2026-08-01 在真實桌面瀏覽器回報 hover tooltip 「對不準」，經 devtools 檢查確認根因：圖表 `<svg viewBox="0 0 700 170">` 用 `width="100%"` 但未設定 `preserveAspectRatio`，預設值 `xMidYMid meet` 在寬螢幕視窗下會讓實際內容只置中填滿一小段，其餘留白（letterboxing），導致 `useChartHover` 依 `rect.width` 換算座標時算錯。此問題在 Claude 的瀏覽器自動化測試中未重現（自動化工具的座標派送方式不受此影響），僅在 Niko 的實機螢幕上出現。
+- **第一版修正（已撤銷）**：曾嘗試加 `preserveAspectRatio="none"` 讓內容拉伸填滿容器。build/lint 通過、自動化 hover 測試也顯示對準了，但 Niko 實測回報「字很扁」——`preserveAspectRatio="none"` 對 X/Y 軸做不同比例的非等比縮放，連帶把 `<text>` 座標系一起拉伸變形，導致座標軸刻度、日期標籤、tooltip 文字全部視覺失真。此修正已撤銷。
+- **正式修正**：改為保留預設 `preserveAspectRatio`（`xMidYMid meet`），不去動視覺渲染；而是修正 `useChartHover`（`Dashboard.tsx` 的 `nearestIndexAt`）的座標換算邏輯本身——用 `scale = Math.min(rect.width / viewBoxWidth, rect.height / viewBoxHeight)` 算出瀏覽器實際套用的縮放比例，再用 `offsetX = (rect.width - viewBoxWidth * scale) / 2` 算出置中留白的偏移量，還原成正確的 `svgX`。這樣視覺渲染完全不受影響（文字不變形），只修正滑鼠座標對應到資料點的數學。
+- 已重新執行 `npm run build`／`npm run lint`，皆通過；瀏覽器自動化重新 hover 峰值點（+16 資料點），tooltip 正確顯示且文字清晰無變形。
+- **Niko 2026-08-02 於本機真實瀏覽器確認**：「圖表都是對的」——hover 對準與文字清晰度問題皆已解決。
 - 後續任務：TASK-045（追劇時間趨勢卡片，重用本卡的 `useChartHover`／`ChartTooltip`）。
