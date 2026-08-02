@@ -2,7 +2,7 @@
   "id": "TASK-041",
   "title": "複習佇列到期卡改為隨機排序",
   "content": "到期複習卡（due_cards）改為隨機排序，不再固定依最久沒複習排最前面；新卡排序與每日新卡上限邏輯不變。詳見 ai/artifacts/雙語 SRS 與 Flashcard 測驗/task-cards/TASK-041.md。",
-  "stage": "verify",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -19,7 +19,7 @@
     "files_known": true,
     "scope_defined": true,
     "verification_contract": true,
-    "human_approval_recorded": false
+    "human_approval_recorded": true
   },
   "gates": {
     "product": true,
@@ -45,9 +45,10 @@
       "backend/app/api/reviews.py 的 get_review_queue：due_cards 查詢移除 order_by(srs_next_review_at.asc())，改用 random.shuffle() 打亂；new_cards 排序與每日新卡上限邏輯不變。",
       "backend/tests/test_reviews_queue_api.py：原本斷言固定排序的測試改為只驗證回傳集合正確，新增 test_queue_due_cards_are_shuffled 用 monkeypatch 取代 random.shuffle 驗證確實呼叫了 shuffle。pytest 193 passed、ruff 全數通過。"
     ],
-    "residual": "無 UI 變更，純後端行為調整。等待 Niko 本機（複習頁多次操作）確認到期卡順序有隨機感後核准轉 done。"
+    "residual": "無 UI 變更，純後端行為調整。"
   },
   "comments": [
-    "2026-07-27: 討論『設定與偏好』Epic 範圍時，Niko 澄清『每日複習目標』其實就是既有的 daily_new_card_limit（要調成 15），並額外提出到期卡應該打亂順序而非固定依到期時間排序，因為他的單字沒有難易度之分。因為不涉及 UI、範圍單純，直接建卡（比照 TASK-038 快軌模式，不另外走 spec-interrogation），實作並通過 pytest/ruff，等待 Niko 本機驗證轉 done。"
+    "2026-07-27: 討論『設定與偏好』Epic 範圍時，Niko 澄清『每日複習目標』其實就是既有的 daily_new_card_limit（要調成 15），並額外提出到期卡應該打亂順序而非固定依到期時間排序，因為他的單字沒有難易度之分。因為不涉及 UI、範圍單純，直接建卡（比照 TASK-038 快軌模式，不另外走 spec-interrogation），實作並通過 pytest/ruff，等待 Niko 本機驗證轉 done。",
+    "2026-08-02: 補上收尾記錄——實作已於 commit e82a61a 完成，pytest 200 passed（2026-08-02 重跑確認），Niko 確認純後端行為調整不需另外手動複測，轉 done。"
   ]
 }

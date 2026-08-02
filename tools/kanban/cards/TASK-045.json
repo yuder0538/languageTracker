@@ -2,7 +2,7 @@
   "id": "TASK-045",
   "title": "追劇時間趨勢卡片（新增，重用 Chart Tooltip）",
   "content": "Dashboard 新增「追劇時間趨勢」卡片，依既有 mediaLogs 的 watched_date 彙總過去 14 天 duration_minutes，重用 TASK-044 的 tooltip。不需要新的後端端點。詳見 ai/artifacts/本地 Web UI/task-cards/TASK-045.md。",
-  "stage": "blocked",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -41,11 +41,16 @@
     "ai/context/design-system.md"
   ],
   "evidence": {
-    "commands": [],
-    "findings": [],
-    "residual": ""
+    "commands": ["npm run build", "npm run lint"],
+    "findings": [
+      "新增 WatchTimeTrendChart（frontend/src/pages/Dashboard.tsx），重用 TASK-044 的 buildLinePoints／useChartHover／ChartTooltip，依 mediaLogs.watched_date 彙總過去 14 天 duration_minutes，不需新後端端點。",
+      "卡片插入在「單字成長」卡片下方、複習日曆/最近追劇 2 欄 grid 之上，依 mediaLogs.status 分 loading/error/success 三態。",
+      "本機用真實資料庫（48 筆單字含追劇紀錄）驗證，峰值 276 分鐘該天 hover 對準，文字清晰無變形（沿用 TASK-044 修正後的 useChartHover）。"
+    ],
+    "residual": "空狀態（14 天內加總為 0）與 error 狀態未實際觸發過；Niko 確認日常持續有追劇紀錄，實務上不會是空的，接受此殘留風險。"
   },
   "comments": [
-    "2026-08-01: 依賴 TASK-044 提供的 Chart Tooltip 元件，前置任務未完成前停在 blocked，不進 ready。"
+    "2026-08-01: 依賴 TASK-044 提供的 Chart Tooltip 元件，前置任務未完成前停在 blocked，不進 ready。",
+    "2026-08-02: TASK-044 完成後接續實作，重用其 Chart Tooltip／hover 邏輯。build/lint 通過，Niko 本機真實瀏覽器＋手機確認圖表與 hover 皆正確，轉 done。"
   ]
 }

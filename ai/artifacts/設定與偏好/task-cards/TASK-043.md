@@ -8,7 +8,7 @@
 - 上層 User Story：每日新卡引入上限設定
 - 分軌：前端
 - 前置任務（dependsOn）：TASK-042
-- 狀態：就緒（需等 TASK-042 完成才可進入 Agent 執行中）
+- 狀態：審查中
 - 風險等級：低
 - Agent owner：claude
 - 人工核准者：Niko / 2026-07-27（mockup 變體 A 已選定，見 `mockup-decision-settings.md`）
@@ -76,9 +76,22 @@
 
 ## 完成證據
 
-- 變更的檔案：（實作後填寫）
-- 執行過的指令：（實作後填寫）
-- 測試輸出：（實作後填寫）
-- 螢幕截圖：（實作後填寫）
-- 已知限制：（實作後填寫）
-- 後續任務：無（本 User Story 到此完整）。
+- 變更的檔案：
+  - `frontend/src/lib/dashboard-api.ts`（新增 `AppSettings` 型別、`fetchSettings()`／`updateSettings()`）
+  - `frontend/src/pages/Settings.tsx`（新增，置中單卡表單，loading/error/success 三態，前端驗證 1～500 整數，儲存成功用 `sonner` toast）
+  - `frontend/src/components/app-rail.tsx`（`NAV_ITEMS` 新增「設定」項目，`SettingsIcon`）
+  - `frontend/src/lib/router.tsx`（`AppRoute`／`KNOWN_ROUTES` 新增 `"/settings"`）
+  - `frontend/src/App.tsx`（新增 `path === "/settings"` 分支）
+- 執行過的指令：
+  - `npm run build`（`tsc -b && vite build`）→ 通過，無型別錯誤
+  - `npm run lint`（`oxlint`）→ 通過，僅既有、與本卡無關的 5 個 `only-export-components` 警告
+  - 本機同時起後端(8000)/前端(5173)，實際串接真實 `/settings` API 驗證
+- 測試輸出：無自動化測試（前端無測試框架，沿用既有慣例），以 build/lint 通過＋瀏覽器手動操作為準
+- 螢幕截圖：Claude 用瀏覽器自動化工具實測並目視確認（未落地存檔）：
+  1. 預設狀態：開啟 `/settings` 正確顯示目前值 15，AppRail 設定圖示 active
+  2. 驗證錯誤狀態：輸入 0，按儲存後顯示紅框＋「請輸入 1～500 之間的整數」，未送出 API
+  3. 儲存成功：輸入 20 按儲存，出現「已儲存」toast；重新整理頁面後仍顯示 20（確認持久化），測試後已改回 15 還原 Niko 的實際設定
+- 已知限制：
+  1. 後端 422 情境（例如非法值繞過前端驗證，或極端情況下兩個分頁同時修改）僅檢查程式邏輯（`try/catch` 顯示 `ApiError` 訊息），未實際模擬觸發過。
+  2. 未實測窄螢幕（手機）版面，僅依既有頁面相同版面模式（無新增響應式規則）。
+- 後續任務：無（本 User Story 到此完整），待 Niko 本機驗證後核准轉 done。

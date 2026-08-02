@@ -2,7 +2,7 @@
   "id": "TASK-042",
   "title": "每日新卡引入上限設定 API（後端）",
   "content": "新增 GET/PATCH /settings，daily_new_card_limit 持久化到新的 app_settings 資料表（取代 config.py 寫死常數，預設種子值 15），/reviews/queue 改讀持久化值。詳見 ai/artifacts/設定與偏好/task-cards/TASK-042.md。",
-  "stage": "ready",
+  "stage": "done",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -26,7 +26,7 @@
     "ui": false,
     "architecture": false,
     "security": false,
-    "test": false,
+    "test": true,
     "code_review": false
   },
   "links": {
@@ -39,11 +39,16 @@
   },
   "refs": [],
   "evidence": {
-    "commands": [],
-    "findings": [],
+    "commands": ["pytest -q", "ruff check ."],
+    "findings": [
+      "新增 GET/PATCH /settings，daily_new_card_limit 從 config.py 寫死常數改為持久化到新的 app_settings 資料表（get_app_settings get-or-create helper，種子值 15）。",
+      "/reviews/queue 的 get_review_queue 改讀 get_app_settings(db).daily_new_card_limit，取代原本讀 config.py 常數。",
+      "backend/tests/test_settings_api.py 新增 GET/PATCH 端到端測試；pytest 200 passed（2026-08-02 重新執行確認）。"
+    ],
     "residual": ""
   },
   "comments": [
-    "2026-07-27: feature-spec／screen-spec／mockup-decision 皆已核准，implementation-plan 拆出本卡（後端）與 TASK-043（前端，依賴本卡）。本卡是設定與偏好 Epic 第一張卡，依規則依賴專案設置 Epic 全部卡片（皆已 done），可直接進入 ready。"
+    "2026-07-27: feature-spec／screen-spec／mockup-decision 皆已核准，implementation-plan 拆出本卡（後端）與 TASK-043（前端，依賴本卡）。本卡是設定與偏好 Epic 第一張卡，依規則依賴專案設置 Epic 全部卡片（皆已 done），可直接進入 ready。",
+    "2026-08-02: 實作其實已於 commit e82a61a（與 TASK-041 同一次提交）完成，但當時卡片未同步更新，補上完成證據並轉 done，解除 TASK-043 的 blocked。"
   ]
 }

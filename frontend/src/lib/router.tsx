@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
-export type AppRoute = "/" | "/vocabulary" | "/review" | "/review/artikel" | "/media-logs"
+export type AppRoute = "/" | "/vocabulary" | "/review" | "/review/artikel" | "/media-logs" | "/settings"
 
-const KNOWN_ROUTES: AppRoute[] = ["/vocabulary", "/review", "/review/artikel", "/media-logs"]
+const KNOWN_ROUTES: AppRoute[] = ["/vocabulary", "/review", "/review/artikel", "/media-logs", "/settings"]
 
 function normalize(pathname: string): AppRoute {
   return KNOWN_ROUTES.includes(pathname as AppRoute) ? (pathname as AppRoute) : "/"

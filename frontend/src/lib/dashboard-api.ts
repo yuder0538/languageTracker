@@ -43,6 +43,10 @@ export interface ReviewHistoryDay {
   correct_count: number
 }
 
+export interface AppSettings {
+  daily_new_card_limit: number
+}
+
 export interface VocabularyCreate {
   language: AppLanguage
   headword: string
@@ -146,4 +150,12 @@ export function updateMediaLog(id: number, payload: MediaLogUpdate) {
 
 export function deleteMediaLog(id: number) {
   return apiDelete<void>(`/media-logs/${id}`)
+}
+
+export function fetchSettings() {
+  return apiGet<AppSettings>("/settings")
+}
+
+export function updateSettings(payload: AppSettings) {
+  return apiPatch<AppSettings>("/settings", payload)
 }

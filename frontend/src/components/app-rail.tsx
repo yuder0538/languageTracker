@@ -1,4 +1,4 @@
-import { LayoutDashboardIcon, BookOpenIcon, ClapperboardIcon } from "lucide-react"
+import { LayoutDashboardIcon, BookOpenIcon, ClapperboardIcon, SettingsIcon } from "lucide-react"
 
 import { useLanguage, type AppLanguage } from "@/lib/language-context"
 import { useRouter, type AppRoute } from "@/lib/router"
@@ -7,6 +7,7 @@ const NAV_ITEMS: { route: AppRoute; label: string; icon: typeof LayoutDashboardI
   { route: "/", label: "Dashboard", icon: LayoutDashboardIcon },
   { route: "/vocabulary", label: "單字庫", icon: BookOpenIcon },
   { route: "/media-logs", label: "追劇紀錄", icon: ClapperboardIcon },
+  { route: "/settings", label: "設定", icon: SettingsIcon },
 ]
 
 export function AppRail() {

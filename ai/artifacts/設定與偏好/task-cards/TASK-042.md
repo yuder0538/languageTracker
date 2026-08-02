@@ -8,10 +8,10 @@
 - 上層 User Story：每日新卡引入上限設定
 - 分軌：後端
 - 前置任務（dependsOn）：TASK-001、TASK-002、TASK-003、TASK-022、TASK-023、TASK-024、TASK-025、TASK-026（本卡是「設定與偏好」Epic 底下第一張任務卡，依 `ai/skills/implementation-plan.md` 規則強制依賴「專案設置」Epic 全部卡片）
-- 狀態：就緒
+- 狀態：完成
 - 風險等級：低
 - Agent owner：claude
-- 人工核准者：Niko / 2026-07-27（feature-spec／screen-spec／mockup-decision 皆已核准，見 `ai/artifacts/設定與偏好/`）
+- 人工核准者：Niko / 2026-07-27（feature-spec／screen-spec／mockup-decision 皆已核准，見 `ai/artifacts/設定與偏好/`）；2026-08-02 補上任務卡收尾記錄——實作已於 commit `e82a61a` 完成，僅漏了填寫完成證據
 
 ## 目標
 
@@ -78,9 +78,20 @@
 
 ## 完成證據
 
-- 變更的檔案：（實作後填寫）
-- 執行過的指令：（實作後填寫）
-- 測試輸出：（實作後填寫）
-- 螢幕截圖：不適用
-- 已知限制：（實作後填寫）
-- 後續任務：TASK-043（前端 `/settings` 頁面）依賴本卡完成。
+- 變更的檔案（commit `e82a61a`）：
+  - `backend/app/models/app_settings.py`（新增 `AppSettings` model）
+  - `backend/alembic/versions/17d5b5af8c03_add_app_settings_table.py`（新增 migration，建表並種入預設值 15）
+  - `backend/app/schemas/settings.py`（新增 `AppSettingsRead`／`AppSettingsUpdate`）
+  - `backend/app/services/app_settings.py`（新增 `get_app_settings(db)` get-or-create helper）
+  - `backend/app/api/settings.py`（新增 `GET`／`PATCH /settings` 路由）
+  - `backend/app/api/reviews.py`（`get_review_queue` 改讀 `get_app_settings(db).daily_new_card_limit`）
+  - `backend/app/core/config.py`（`daily_new_card_limit` 常數改為僅供 migration 種子值，數值改成 15）
+  - `backend/tests/test_settings_api.py`（新增）
+- 執行過的指令：
+  - `cd backend && pytest -q` → 200 passed（2026-08-02 重新執行確認，涵蓋本卡新增/調整的測試）
+  - `ruff check .`（隨 commit `e82a61a` 執行，見該次提交記錄）
+- 測試輸出：200 passed，0 failed。
+- 螢幕截圖：不適用（無 UI）。
+- 已知限制：無。
+- 後續任務：TASK-043（前端 `/settings` 頁面）依賴本卡完成，現已可開始。
+- 備註：本卡實作與 TASK-041 同一個 commit（`e82a61a`）一起送出，但當時任務卡文件未同步填寫完成證據／更新狀態，2026-08-02 補齊記錄。

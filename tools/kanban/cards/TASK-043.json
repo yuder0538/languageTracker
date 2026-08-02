@@ -2,7 +2,7 @@
   "id": "TASK-043",
   "title": "設定頁（前端，含 AppRail 入口與真實 API 串接）",
   "content": "新增 /settings 頁面（選定變體 A：置中單卡表單），AppRail 主導覽新增設定入口，串接 TASK-042 的 GET/PATCH /settings。詳見 ai/artifacts/設定與偏好/task-cards/TASK-043.md。",
-  "stage": "blocked",
+  "stage": "verify",
   "risk": "low",
   "owner": "Niko",
   "agent": "claude",
@@ -39,11 +39,17 @@
   },
   "refs": [],
   "evidence": {
-    "commands": [],
-    "findings": [],
-    "residual": ""
+    "commands": ["npm run build", "npm run lint"],
+    "findings": [
+      "新增 /settings 頁面（Settings.tsx），置中單卡表單，串接 GET/PATCH /settings，AppRail 新增設定入口。",
+      "前端驗證 1～500 整數，錯誤態紅框＋錯誤文字；儲存成功用 sonner toast「已儲存」。",
+      "本機瀏覽器自動化實測：預設值顯示、驗證錯誤態、儲存成功並重新整理確認持久化，皆正確。"
+    ],
+    "residual": "後端 422（非法值繞過前端驗證等極端情境）僅檢查程式邏輯，未實際觸發測試；未實測窄螢幕版面。"
   },
   "comments": [
-    "2026-07-27: feature-spec／screen-spec／mockup-decision 皆已核准（變體 A），implementation-plan 拆出本卡（前端），依賴 TASK-042（後端 API）完成後才可進 ready／implementing。"
+    "2026-07-27: feature-spec／screen-spec／mockup-decision 皆已核准（變體 A），implementation-plan 拆出本卡（前端），依賴 TASK-042（後端 API）完成後才可進 ready／implementing。",
+    "2026-08-02: TASK-042 補上收尾記錄轉 done，本卡解除 blocked 進入 ready，可開始實作。",
+    "2026-08-02: 已實作並自測（build/lint 通過，瀏覽器手動操作三態皆正確），轉 verify，等待 Niko 本機驗證後轉 done。"
   ]
 }
